@@ -1,0 +1,31 @@
+# Build folder
+/target/
+/build/
+/dist/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/nbdist/
+/.nb-gradle/
+
+# Compiled class files
+*.class
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+
+# Environment
+.env
+
+# Temporary files
+*.tmp
+*.temp
