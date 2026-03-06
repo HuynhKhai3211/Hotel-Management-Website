@@ -1,0 +1,72 @@
+package com.mycompany.hotelmanagementsystem.model;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+public class Booking {
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private int bookingId;
+    private int customerId;
+    private int roomId;
+    private Integer voucherId;
+    private LocalDateTime bookingDate;
+    private LocalDateTime checkInExpected;
+    private LocalDateTime checkOutExpected;
+    private LocalDateTime checkInActual;
+    private LocalDateTime checkOutActual;
+    private BigDecimal totalPrice;
+    private String status;
+    private String note;
+    private Room room;
+    private Customer customer;
+
+    public Booking() {}
+
+    public int getBookingId() { return bookingId; }
+    public void setBookingId(int bookingId) { this.bookingId = bookingId; }
+    public int getCustomerId() { return customerId; }
+    public void setCustomerId(int customerId) { this.customerId = customerId; }
+    public int getRoomId() { return roomId; }
+    public void setRoomId(int roomId) { this.roomId = roomId; }
+    public Integer getVoucherId() { return voucherId; }
+    public void setVoucherId(Integer voucherId) { this.voucherId = voucherId; }
+    public LocalDateTime getBookingDate() { return bookingDate; }
+    public void setBookingDate(LocalDateTime bookingDate) { this.bookingDate = bookingDate; }
+    public LocalDateTime getCheckInExpected() { return checkInExpected; }
+    public void setCheckInExpected(LocalDateTime checkIn) { this.checkInExpected = checkIn; }
+    public LocalDateTime getCheckOutExpected() { return checkOutExpected; }
+    public void setCheckOutExpected(LocalDateTime checkOut) { this.checkOutExpected = checkOut; }
+    public LocalDateTime getCheckInActual() { return checkInActual; }
+    public void setCheckInActual(LocalDateTime checkIn) { this.checkInActual = checkIn; }
+    public LocalDateTime getCheckOutActual() { return checkOutActual; }
+    public void setCheckOutActual(LocalDateTime checkOut) { this.checkOutActual = checkOut; }
+    public BigDecimal getTotalPrice() { return totalPrice; }
+    public void setTotalPrice(BigDecimal totalPrice) { this.totalPrice = totalPrice; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public String getNote() { return note; }
+    public void setNote(String note) { this.note = note; }
+    public Room getRoom() { return room; }
+    public void setRoom(Room room) { this.room = room; }
+    public Customer getCustomer() { return customer; }
+    public void setCustomer(Customer customer) { this.customer = customer; }
+
+    // Formatted date getters for JSP
+    public String getCheckInExpectedFormatted() {
+        return checkInExpected != null ? checkInExpected.format(DATE_TIME_FORMATTER) : "";
+    }
+    public String getCheckOutExpectedFormatted() {
+        return checkOutExpected != null ? checkOutExpected.format(DATE_TIME_FORMATTER) : "";
+    }
+    public String getCheckInExpectedDateOnly() {
+        return checkInExpected != null ? checkInExpected.format(DATE_FORMATTER) : "";
+    }
+    public String getCheckOutExpectedDateOnly() {
+        return checkOutExpected != null ? checkOutExpected.format(DATE_FORMATTER) : "";
+    }
+    public String getBookingDateFormatted() {
+        return bookingDate != null ? bookingDate.format(DATE_TIME_FORMATTER) : "";
+    }
+}
