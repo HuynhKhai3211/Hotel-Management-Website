@@ -57,7 +57,40 @@ public class PaymentService {
         return invoiceRepository.findByBookingId(bookingId);
     }
 
-    
+    public PaymentResult initiateVNPayPayment(int invoiceId, int customerId, String baseUrl, String ipAddress) {
+        Invoice invoice = invoiceRepository.findById(invoiceId);
+        if (invoice == null) {
+            return PaymentResult.failure("Không tìm thấy hóa đơn");
+        }
+
+        if (paymentRepository.hasSuccessfulPayment(invoiceId)) {
+            return PaymentResult.failure("Hóa đơn đã được thanh toán");
+        }
+
+        String txnRef = VNPayService.generateTxnRef();
+        long amount = invoice.getTotalAmount().longValue();
+        String orderInfo = "Thanh toan dat phong - Invoice " + invoiceId;
+
+        Payment payment = new Payment();
+        payment.setInvoiceId(invoiceId);
+        payment.setCustomerId(customerId);
+        payment.setPaymentMethod("VNPay");
+        payment.setTransactionCode(txnRef);
+        payment.setAmount(invoice.getTotalAmount());
+        payment.setStatus(PaymentStatus.PENDING);
+
+        int paymentId = paymentRepository.insert(payment);
+        if (paymentId <= 0) {
+            return PaymentResult.failure("Không thể tạo thanh toán");
+        }
+
+        payment.setPaymentId(paymentId);
+
+        String paymentUrl = VNPayService.createPaymentUrl(baseUrl, txnRef, amount, orderInfo, ipAddress);
+        return PaymentResult.successWithUrl(payment, paymentUrl);
+    }
+
+   
 
     public Payment getPaymentByTransaction(String transactionCode) {
         return paymentRepository.findByTransactionCode(transactionCode);
