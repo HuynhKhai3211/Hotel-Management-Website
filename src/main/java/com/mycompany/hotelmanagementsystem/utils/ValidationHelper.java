@@ -1,4 +1,4 @@
-package com.mycompany.hotelmanagementsystem.util;
+package com.mycompany.hotelmanagementsystem.utils;
 
 import java.util.regex.Pattern;
 

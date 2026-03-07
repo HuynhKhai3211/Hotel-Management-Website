@@ -1,4 +1,4 @@
-package com.mycompany.hotelmanagementsystem.util;
+package com.mycompany.hotelmanagementsystem.utils;
 
 public class ServiceResult {
     private boolean success;
