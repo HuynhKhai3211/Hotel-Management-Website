@@ -40,7 +40,7 @@ public class PaymentController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if ("/payment/vnpay".equals(request.getServletPath())) {
-           
+            handleVNPayPost(request, response);
         }
     }
 
@@ -74,6 +74,49 @@ public class PaymentController extends HttpServlet {
         request.setAttribute("invoice", invoice);
         request.getRequestDispatcher("/WEB-INF/views/payment/process.jsp").forward(request, response);
     }
+
+    private void handleVNPayPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            Integer invoiceId = parseIntParam(request, "invoiceId");
+            if (invoiceId == null) {
+                response.sendRedirect(request.getContextPath() + "/customer/bookings");
+                return;
+            }
+
+            Account account = SessionHelper.getLoggedInAccount(request);
+            if (account == null) {
+                response.sendRedirect(request.getContextPath() + "/auth/login");
+                return;
+            }
+
+            String baseUrl = request.getScheme() + "://" + request.getServerName() + ":"
+                           + request.getServerPort() + request.getContextPath();
+            String ipAddress = VNPayService.getIpAddress(request);
+
+            var result = paymentService.initiateVNPayPayment(invoiceId, account.getAccountId(), baseUrl, ipAddress);
+
+            if (!result.isSuccess()) {
+                Invoice invoice = paymentService.getInvoice(invoiceId);
+                request.getSession().setAttribute("paymentError", result.getMessage());
+                response.sendRedirect(request.getContextPath() + "/payment/process?bookingId=" +
+                    (invoice != null ? invoice.getBookingId() : ""));
+                return;
+            }
+
+            // Store txnRef in session for verification
+            request.getSession().setAttribute("pendingPaymentTxn", result.getPayment().getTransactionCode());
+
+            // Redirect to VNPay
+            response.sendRedirect(result.getPaymentUrl());
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.getSession().setAttribute("paymentError", "Lỗi hệ thống: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/customer/bookings");
+        }
+    }
+
+
     private Integer parseIntParam(HttpServletRequest request, String name) {
         String value = request.getParameter(name);
         if (value != null && !value.isEmpty()) {
@@ -81,5 +124,4 @@ public class PaymentController extends HttpServlet {
         }
         return null;
     }
-    
 }
