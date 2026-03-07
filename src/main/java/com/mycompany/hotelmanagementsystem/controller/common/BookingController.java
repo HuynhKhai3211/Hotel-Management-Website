@@ -39,7 +39,14 @@ public class BookingController extends HttpServlet {
         }
     }
 
-    
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String path = request.getServletPath();
+        switch (path) {
+            case "/booking/create" -> handleCreatePost(request, response);
+        }
+    }
 
     private void handleCreateGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -59,7 +66,44 @@ public class BookingController extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/booking/create.jsp").forward(request, response);
     }
 
-    
+       private void handleCreatePost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        Account account = SessionHelper.getLoggedInAccount(request);
+        int typeId = Integer.parseInt(request.getParameter("typeId"));
+        LocalDateTime checkIn = DateHelper.toCheckInTime(DateHelper.parseDate(request.getParameter("checkIn")));
+        LocalDateTime checkOut = DateHelper.toCheckOutTime(DateHelper.parseDate(request.getParameter("checkOut")));
+        String voucherCode = request.getParameter("voucherCode");
+        String roomIdParam = request.getParameter("roomId");
+
+        List<Room> availableRooms = bookingService.getAvailableRooms(typeId, checkIn, checkOut);
+        if (availableRooms.isEmpty()) {
+            request.setAttribute("error", "Không có phòng trống trong thời gian này");
+            handleCreateGet(request, response);
+            return;
+        }
+
+        // Step 1: Chưa chọn phòng → Hiển thị danh sách phòng
+        if (roomIdParam == null || roomIdParam.isEmpty()) {
+            RoomType roomType = roomService.getRoomTypeById(typeId);
+            request.setAttribute("roomType", roomType);
+            request.setAttribute("availableRooms", availableRooms);
+            request.setAttribute("selectedCheckIn", request.getParameter("checkIn"));
+            request.setAttribute("selectedCheckOut", request.getParameter("checkOut"));
+            request.setAttribute("voucherCode", voucherCode);
+            request.setAttribute("minDate", LocalDate.now().plusDays(1));
+            request.setAttribute("maxDate", LocalDate.now().plusMonths(6));
+            request.getRequestDispatcher("/WEB-INF/views/booking/create.jsp").forward(request, response);
+            return;
+        }
+
+        // Step 2: Đã chọn phòng → Tính giá và redirect confirm
+        int roomId = Integer.parseInt(roomIdParam);
+        var calc = bookingService.calculateBooking(typeId, roomId, checkIn, checkOut, voucherCode);
+
+        request.getSession().setAttribute("pendingBooking", calc);
+        request.getSession().setAttribute("bookingCustomerId", account.getAccountId());
+        response.sendRedirect(request.getContextPath() + "/booking/confirm");
+    }
 
     private Integer parseIntParam(HttpServletRequest request, String name) {
         String value = request.getParameter(name);
