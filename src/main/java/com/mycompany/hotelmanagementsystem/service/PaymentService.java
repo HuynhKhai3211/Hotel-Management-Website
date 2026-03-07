@@ -90,7 +90,30 @@ public class PaymentService {
         return PaymentResult.successWithUrl(payment, paymentUrl);
     }
 
-   
+    public PaymentResult processVNPayCallback(String txnRef, String responseCode) {
+        Payment payment = paymentRepository.findByTransactionCode(txnRef);
+        if (payment == null) {
+            return PaymentResult.failure("Không tìm thấy thanh toán");
+        }
+
+        if (!PaymentStatus.PENDING.equals(payment.getStatus())) {
+            return PaymentResult.failure("Thanh toán đã được xử lý");
+        }
+
+        boolean success = VNPayService.isPaymentSuccess(responseCode);
+        String newStatus = success ? PaymentStatus.SUCCESS : PaymentStatus.FAILED;
+        paymentRepository.updateStatus(payment.getPaymentId(), newStatus);
+        payment.setStatus(newStatus);
+
+        if (success) {
+            Invoice invoice = invoiceRepository.findById(payment.getInvoiceId());
+            if (invoice != null) {
+                bookingRepository.updateStatus(invoice.getBookingId(), BookingStatus.CONFIRMED);
+            }
+        }
+
+        return PaymentResult.success(success ? "Thanh toán thành công" : "Thanh toán thất bại", payment);
+    }
 
     public Payment getPaymentByTransaction(String transactionCode) {
         return paymentRepository.findByTransactionCode(transactionCode);
