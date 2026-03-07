@@ -21,6 +21,7 @@ import java.util.List;
 
 @WebServlet(urlPatterns = {"/booking/create", "/booking/confirm", "/booking/status"})
 public class BookingController extends HttpServlet {
+
     private RoomService roomService;
     private BookingService bookingService;
 
@@ -35,7 +36,8 @@ public class BookingController extends HttpServlet {
             throws ServletException, IOException {
         String path = request.getServletPath();
         switch (path) {
-            case "/booking/create" -> handleCreateGet(request, response);
+            case "/booking/create" ->
+                handleCreateGet(request, response);
         }
     }
 
@@ -44,7 +46,8 @@ public class BookingController extends HttpServlet {
             throws ServletException, IOException {
         String path = request.getServletPath();
         switch (path) {
-            case "/booking/create" -> handleCreatePost(request, response);
+            case "/booking/create" ->
+                handleCreatePost(request, response);
         }
     }
 
@@ -66,7 +69,7 @@ public class BookingController extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/booking/create.jsp").forward(request, response);
     }
 
-       private void handleCreatePost(HttpServletRequest request, HttpServletResponse response)
+    private void handleCreatePost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         Account account = SessionHelper.getLoggedInAccount(request);
         int typeId = Integer.parseInt(request.getParameter("typeId"));
@@ -105,10 +108,26 @@ public class BookingController extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/booking/confirm");
     }
 
+    private void handleConfirmGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        BookingCalcResponse calc = (BookingCalcResponse) request.getSession().getAttribute("pendingBooking");
+        if (calc == null) {
+            response.sendRedirect(request.getContextPath() + "/rooms");
+            return;
+        }
+        request.setAttribute("booking", calc);
+        request.setAttribute("account", SessionHelper.getLoggedInAccount(request));
+        request.getRequestDispatcher("/WEB-INF/views/booking/confirm.jsp").forward(request, response);
+    }
+
     private Integer parseIntParam(HttpServletRequest request, String name) {
         String value = request.getParameter(name);
         if (value != null && !value.isEmpty()) {
-            try { return Integer.parseInt(value); } catch (NumberFormatException e) { return null; }
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                return null;
+            }
         }
         return null;
     }
