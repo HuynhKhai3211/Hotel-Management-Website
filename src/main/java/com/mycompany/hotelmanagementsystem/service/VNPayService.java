@@ -73,7 +73,34 @@ public class VNPayService {
         return VNPayConfig.VNP_PAY_URL + "?" + query;
     }
 
-    
+    /**
+     * Verify VNPay callback signature
+     */
+    public static boolean verifySignature(Map<String, String> params) {
+        String receivedHash = params.get("vnp_SecureHash");
+        if (receivedHash == null) return false;
+
+        Map<String, String> sortedParams = new TreeMap<>(params);
+        sortedParams.remove("vnp_SecureHash");
+        sortedParams.remove("vnp_SecureHashType");
+
+        StringBuilder hashData = new StringBuilder();
+        Iterator<Map.Entry<String, String>> itr = sortedParams.entrySet().iterator();
+        while (itr.hasNext()) {
+            Map.Entry<String, String> entry = itr.next();
+            if (entry.getValue() != null && !entry.getValue().isEmpty()) {
+                hashData.append(entry.getKey());
+                hashData.append('=');
+                hashData.append(URLEncoder.encode(entry.getValue(), StandardCharsets.US_ASCII));
+                if (itr.hasNext()) {
+                    hashData.append('&');
+                }
+            }
+        }
+
+        String calculatedHash = VNPayConfig.hmacSHA512(VNPayConfig.VNP_HASH_SECRET, hashData.toString());
+        return calculatedHash.equalsIgnoreCase(receivedHash);
+    }
 
     /**
      * Check if payment is successful
