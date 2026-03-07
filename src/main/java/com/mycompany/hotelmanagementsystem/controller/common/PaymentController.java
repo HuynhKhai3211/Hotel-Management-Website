@@ -32,7 +32,8 @@ public class PaymentController extends HttpServlet {
         String path = request.getServletPath();
         switch (path) {
             case "/payment/process" -> handleProcessGet(request, response);
-            
+            case "/payment/vnpay-return" -> handleVNPayReturn(request, response);
+           
         }
     }
 
@@ -116,6 +117,41 @@ public class PaymentController extends HttpServlet {
         }
     }
 
+    private void handleVNPayReturn(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        // Extract all VNPay parameters
+        Map<String, String> params = new HashMap<>();
+        request.getParameterMap().forEach((key, values) -> {
+            if (values != null && values.length > 0) {
+                params.put(key, values[0]);
+            }
+        });
+
+        // Verify signature
+        if (!VNPayService.verifySignature(params)) {
+            response.sendRedirect(request.getContextPath() + "/customer/bookings?error=invalid_signature");
+            return;
+        }
+
+        String txnRef = params.get("vnp_TxnRef");
+        String responseCode = params.get("vnp_ResponseCode");
+
+        // Verify session
+        String sessionTxn = (String) request.getSession().getAttribute("pendingPaymentTxn");
+        if (sessionTxn == null || !sessionTxn.equals(txnRef)) {
+            response.sendRedirect(request.getContextPath() + "/customer/bookings?error=session_mismatch");
+            return;
+        }
+
+        request.getSession().removeAttribute("pendingPaymentTxn");
+
+        // Process callback
+        paymentService.processVNPayCallback(txnRef, responseCode);
+
+        response.sendRedirect(request.getContextPath() + "/payment/result?txnCode=" + txnRef);
+    }
+
+    
 
     private Integer parseIntParam(HttpServletRequest request, String name) {
         String value = request.getParameter(name);
