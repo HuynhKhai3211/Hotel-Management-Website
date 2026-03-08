@@ -83,5 +83,23 @@ public class AccountRepository extends BaseRepository<Account> {
             account.getAccountId());
     }
 
-    
+    public java.util.List<Account> findAll() {
+        String sql = "SELECT * FROM Account ORDER BY created_at DESC";
+        return queryList(sql);
+    }
+
+    public java.util.List<Account> findAllByRoleId(int roleId) {
+        String sql = "SELECT * FROM Account WHERE role_id = ? ORDER BY created_at DESC";
+        return queryList(sql, roleId);
+    }
+
+    public int updateIsActive(int accountId, boolean isActive) {
+        String sql = "UPDATE Account SET is_active = ? WHERE account_id = ?";
+        return executeUpdate(sql, isActive ? 1 : 0, accountId);
+    }
+
+    public int updateRoleId(int accountId, int roleId) {
+        String sql = "UPDATE Account SET role_id = ? WHERE account_id = ?";
+        return executeUpdate(sql, roleId, accountId);
+    }
 }
