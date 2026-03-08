@@ -1,0 +1,137 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gán phòng - Staff Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/ui-kit.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/layout.css" rel="stylesheet">
+</head>
+<body>
+    <input type="checkbox" id="sidebar-toggle">
+    <div class="app-layout">
+        <c:set var="activePage" value="bookings" scope="request"/>
+        <jsp:include page="../includes/sidebar.jsp" />
+
+        <main class="app-main">
+            <c:set var="pageTitle" value="Gán phòng" scope="request"/>
+            <jsp:include page="../includes/header.jsp" />
+
+            <div class="app-content">
+                <div class="mb-3">
+                    <a href="${pageContext.request.contextPath}/staff/bookings" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>Quay lại danh sách
+                    </a>
+                </div>
+
+                <c:if test="${not empty error}">
+                    <div class="alert alert-danger">${error}</div>
+                </c:if>
+
+                <div class="row">
+                    <!-- Booking Info -->
+                    <div class="col-lg-5">
+                        <div class="card mb-4">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Thông tin booking</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-borderless mb-0">
+                                    <tr>
+                                        <th>Mã booking:</th>
+                                        <td><strong>#${booking.bookingId}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Khách hàng:</th>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${not empty booking.customer and not empty booking.customer.account}">
+                                                    ${booking.customer.account.fullName}
+                                                </c:when>
+                                                <c:otherwise>-</c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Loại phòng:</th>
+                                        <td>${booking.room.roomType.typeName}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Check-in:</th>
+                                        <td>
+                                            <fmt:parseDate value="${booking.checkInExpected}" pattern="yyyy-MM-dd'T'HH:mm" var="checkIn"/>
+                                            <fmt:formatDate value="${checkIn}" pattern="dd/MM/yyyy HH:mm"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Check-out:</th>
+                                        <td>
+                                            <fmt:parseDate value="${booking.checkOutExpected}" pattern="yyyy-MM-dd'T'HH:mm" var="checkOut"/>
+                                            <fmt:formatDate value="${checkOut}" pattern="dd/MM/yyyy HH:mm"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tổng tiền:</th>
+                                        <td class="text-success fw-bold">
+                                            <fmt:formatNumber value="${booking.totalPrice}" type="currency" currencySymbol="" maxFractionDigits="0"/> VNĐ
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Room Selection -->
+                    <div class="col-lg-7">
+                        <div class="card">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0"><i class="bi bi-door-open me-2"></i>Chọn phòng</h5>
+                            </div>
+                            <div class="card-body">
+                                <c:choose>
+                                    <c:when test="${not empty availableRooms}">
+                                        <form action="${pageContext.request.contextPath}/staff/bookings/assign" method="post">
+                                            <input type="hidden" name="bookingId" value="${booking.bookingId}">
+
+                                            <div class="row g-3 mb-4">
+                                                <c:forEach var="room" items="${availableRooms}">
+                                                    <div class="col-md-4">
+                                                        <input type="radio" class="btn-check" name="roomId"
+                                                               id="room${room.roomId}" value="${room.roomId}" required>
+                                                        <label class="btn btn-outline-success w-100 p-3" for="room${room.roomId}">
+                                                            <strong class="d-block fs-4">${room.roomNumber}</strong>
+                                                            <small>${room.roomType.typeName}</small>
+                                                        </label>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
+
+                                            <button type="submit" class="btn btn-staff-primary btn-lg">
+                                                <i class="bi bi-check-circle me-1"></i>Xác nhận Check-in
+                                            </button>
+                                        </form>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="alert alert-warning mb-0">
+                                            <i class="bi bi-exclamation-triangle me-2"></i>
+                                            Không có phòng trống phù hợp cho loại phòng đã đặt trong khoảng thời gian này.
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <jsp:include page="../includes/footer.jsp" />
+</body>
+</html>
