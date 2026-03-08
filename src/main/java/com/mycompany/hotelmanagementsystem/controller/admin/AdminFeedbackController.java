@@ -36,7 +36,13 @@ public class AdminFeedbackController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-     
+        String path = request.getServletPath();
+
+        switch (path) {
+            case "/admin/feedback/toggle-visibility" -> handleToggleVisibility(request, response);
+            case "/admin/feedback/reply" -> handleReply(request, response);
+            default -> response.sendError(404);
+        }
     }
 
     private void handleList(HttpServletRequest request, HttpServletResponse response)
