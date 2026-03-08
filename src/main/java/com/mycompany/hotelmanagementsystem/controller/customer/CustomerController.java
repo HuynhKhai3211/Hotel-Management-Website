@@ -6,8 +6,7 @@ import com.mycompany.hotelmanagementsystem.model.Booking;
 import com.mycompany.hotelmanagementsystem.model.Account;
 import com.mycompany.hotelmanagementsystem.utils.SessionHelper;
 import com.mycompany.hotelmanagementsystem.utils.ValidationHelper;
-import com.mycompany.hotelmanagementsystem.service.*;
-import com.mycompany.hotelmanagementsystem.dao.AccountRepository;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -20,18 +19,7 @@ import java.util.List;
     "/customer/booking/cancel", "/customer/feedback/update", "/customer/feedback/delete",
     "/customer/request/cancel", "/customer/reviews", "/customer/requests"})
 public class CustomerController extends HttpServlet {
-    private AccountRepository accountRepository;
-    private BookingService bookingService;
-    private ServiceRequestService serviceRequestService;
-    private FeedbackService feedbackService;
-
-    @Override
-    public void init() {
-        accountRepository = new AccountRepository();
-        bookingService = new BookingService();
-        serviceRequestService = new ServiceRequestService();
-        feedbackService = new FeedbackService();
-    }
+   
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -61,13 +49,7 @@ public class CustomerController extends HttpServlet {
         }
     }
 
-    private void handleProfileGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        Account account = SessionHelper.getLoggedInAccount(request);
-        account = accountRepository.findById(account.getAccountId());
-        request.setAttribute("account", account);
-        request.getRequestDispatcher("/WEB-INF/views/customer/profile.jsp").forward(request, response);
-    }
+    
 
     private void handleProfilePost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
