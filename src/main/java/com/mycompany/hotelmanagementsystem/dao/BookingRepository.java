@@ -195,34 +195,35 @@ public class BookingRepository extends BaseRepository<Booking> {
         return 0;
     }
 
-    public int updateRoomId(int bookingId, int roomId) {
-        return executeUpdate("UPDATE Booking SET room_id = ? WHERE booking_id = ?", roomId, bookingId);
-    }
-
-    public int updateCheckInActual(int bookingId, LocalDateTime checkInActual) {
-        return executeUpdate("UPDATE Booking SET check_in_actual = ? WHERE booking_id = ?",
-            Timestamp.valueOf(checkInActual), bookingId);
-    }
-
-    public int updateCheckOutActual(int bookingId, LocalDateTime checkOutActual) {
-        return executeUpdate("UPDATE Booking SET check_out_actual = ? WHERE booking_id = ?",
-            Timestamp.valueOf(checkOutActual), bookingId);
-    }
-
-    private List<Booking> findBookingsWithDetails(String sql, Object... params) {
-        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
-            for (int i = 0; i < params.length; i++) {
-                ps.setObject(i + 1, params[i]);
-            }
-            try (var rs = ps.executeQuery()) {
-                return mapBookingsWithDetails(rs);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Find bookings failed", e);
-        }
-    }
+    
 
     
+
+    private List<Booking> mapBookingsWithDetails(ResultSet rs) throws SQLException {
+        List<Booking> list = new ArrayList<>();
+        while (rs.next()) {
+            Booking b = mapRow(rs);
+            Room room = new Room();
+            room.setRoomNumber(rs.getString("room_number"));
+            RoomType rt = new RoomType();
+            rt.setTypeName(rs.getString("type_name"));
+            room.setRoomType(rt);
+            b.setRoom(room);
+            // Store customer name in note temporarily for display (or create a DTO)
+            try {
+                String customerName = rs.getString("customer_name");
+                if (customerName != null) {
+                    Customer c = new Customer();
+                    Account a = new Account();
+                    a.setFullName(customerName);
+                    c.setAccount(a);
+                    b.setCustomer(c);
+                }
+            } catch (SQLException ignored) {}
+            list.add(b);
+        }
+        return list;
+    }
 
    
 }
