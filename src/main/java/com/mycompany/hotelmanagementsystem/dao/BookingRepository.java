@@ -248,55 +248,5 @@ public class BookingRepository extends BaseRepository<Booking> {
         return list;
     }
 
-    public int countAll() {
-        String sql = "SELECT COUNT(*) FROM Booking";
-        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
-            try (var rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Count bookings failed", e);
-        }
-        return 0;
-    }
-
-    public java.math.BigDecimal sumTotalPrice() {
-        String sql = "SELECT COALESCE(SUM(total_price), 0) FROM Booking WHERE status IN ('CheckedIn', 'CheckedOut')";
-        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
-            try (var rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getBigDecimal(1);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Sum total price failed", e);
-        }
-        return java.math.BigDecimal.ZERO;
-    }
-
-    public java.math.BigDecimal sumTotalPriceByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        String sql = "SELECT COALESCE(SUM(total_price), 0) FROM Booking WHERE status IN ('CheckedIn', 'CheckedOut') AND booking_date BETWEEN ? AND ?";
-        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
-            ps.setTimestamp(1, Timestamp.valueOf(startDate));
-            ps.setTimestamp(2, Timestamp.valueOf(endDate));
-            try (var rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getBigDecimal(1);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Sum total price failed", e);
-        }
-        return java.math.BigDecimal.ZERO;
-    }
-
-    public int countByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        String sql = "SELECT COUNT(*) FROM Booking WHERE booking_date BETWEEN ? AND ?";
-        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
-            ps.setTimestamp(1, Timestamp.valueOf(startDate));
-            ps.setTimestamp(2, Timestamp.valueOf(endDate));
-            try (var rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Count bookings failed", e);
-        }
-        return 0;
-    }
+   
 }
