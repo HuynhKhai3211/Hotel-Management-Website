@@ -222,31 +222,7 @@ public class BookingRepository extends BaseRepository<Booking> {
         }
     }
 
-    private List<Booking> mapBookingsWithDetails(ResultSet rs) throws SQLException {
-        List<Booking> list = new ArrayList<>();
-        while (rs.next()) {
-            Booking b = mapRow(rs);
-            Room room = new Room();
-            room.setRoomNumber(rs.getString("room_number"));
-            RoomType rt = new RoomType();
-            rt.setTypeName(rs.getString("type_name"));
-            room.setRoomType(rt);
-            b.setRoom(room);
-            // Store customer name in note temporarily for display (or create a DTO)
-            try {
-                String customerName = rs.getString("customer_name");
-                if (customerName != null) {
-                    Customer c = new Customer();
-                    Account a = new Account();
-                    a.setFullName(customerName);
-                    c.setAccount(a);
-                    b.setCustomer(c);
-                }
-            } catch (SQLException ignored) {}
-            list.add(b);
-        }
-        return list;
-    }
+    
 
    
 }
