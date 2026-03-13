@@ -29,5 +29,15 @@ public class AdminVoucherService {
         return voucherRepository.insert(voucher);
     }
 
-    
+    public boolean updateVoucher(int voucherId, String code, BigDecimal discountAmount,
+                                  BigDecimal minOrderValue, boolean isActive) {
+        Voucher voucher = voucherRepository.findById(voucherId);
+        if (voucher == null) return false;
+
+        voucher.setCode(code.toUpperCase());
+        voucher.setDiscountAmount(discountAmount);
+        voucher.setMinOrderValue(minOrderValue);
+        voucher.setActive(isActive);
+        return voucherRepository.update(voucher) > 0;
+    }
 }
