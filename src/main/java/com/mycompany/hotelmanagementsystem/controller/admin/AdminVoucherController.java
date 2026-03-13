@@ -41,7 +41,7 @@ public class AdminVoucherController extends HttpServlet {
         switch (path) {
             case "/admin/vouchers/create" -> handleCreate(request, response);
             case "/admin/vouchers/edit" -> handleEdit(request, response);
-           
+            case "/admin/vouchers/delete" -> handleDelete(request, response);
             default -> response.sendError(404);
         }
     }
@@ -125,5 +125,10 @@ public class AdminVoucherController extends HttpServlet {
         }
     }
 
-    
+    private void handleDelete(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        adminVoucherService.deleteVoucher(id);
+        response.sendRedirect(request.getContextPath() + "/admin/vouchers?success=deleted");
+    }
 }
