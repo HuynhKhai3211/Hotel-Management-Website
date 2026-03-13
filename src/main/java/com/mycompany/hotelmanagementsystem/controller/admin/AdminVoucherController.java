@@ -28,7 +28,7 @@ public class AdminVoucherController extends HttpServlet {
         switch (path) {
             case "/admin/vouchers" -> handleList(request, response);
             case "/admin/vouchers/create" -> handleCreateForm(request, response);
-            
+            case "/admin/vouchers/edit" -> handleEditForm(request, response);
             default -> response.sendError(404);
         }
     }
@@ -40,7 +40,7 @@ public class AdminVoucherController extends HttpServlet {
 
         switch (path) {
             case "/admin/vouchers/create" -> handleCreate(request, response);
-           
+            case "/admin/vouchers/edit" -> handleEdit(request, response);
            
             default -> response.sendError(404);
         }
@@ -73,6 +73,22 @@ public class AdminVoucherController extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/admin/vouchers/form.jsp").forward(request, response);
     }
 
+    private void handleEditForm(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        Voucher voucher = adminVoucherService.getVoucherById(id);
+
+        if (voucher == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/vouchers?error=notfound");
+            return;
+        }
+
+        request.setAttribute("voucher", voucher);
+        request.setAttribute("activePage", "vouchers");
+        request.setAttribute("pageTitle", "Sửa Voucher");
+        request.setAttribute("isEdit", true);
+        request.getRequestDispatcher("/WEB-INF/views/admin/vouchers/form.jsp").forward(request, response);
+    }
 
     private void handleCreate(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -88,6 +104,24 @@ public class AdminVoucherController extends HttpServlet {
         } else {
             request.setAttribute("error", "Không thể tạo voucher!");
             request.getRequestDispatcher("/WEB-INF/views/admin/vouchers/form.jsp").forward(request, response);
+        }
+    }
+
+    private void handleEdit(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        String code = request.getParameter("code");
+        BigDecimal discountAmount = new BigDecimal(request.getParameter("discountAmount"));
+        BigDecimal minOrderValue = new BigDecimal(request.getParameter("minOrderValue"));
+        boolean isActive = "on".equals(request.getParameter("isActive"));
+
+        boolean success = adminVoucherService.updateVoucher(id, code, discountAmount, minOrderValue, isActive);
+
+        if (success) {
+            response.sendRedirect(request.getContextPath() + "/admin/vouchers?success=updated");
+        } else {
+            request.setAttribute("error", "Không thể cập nhật voucher!");
+            handleEditForm(request, response);
         }
     }
 
