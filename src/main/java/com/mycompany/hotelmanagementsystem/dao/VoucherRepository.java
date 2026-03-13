@@ -39,4 +39,7 @@ public class VoucherRepository extends BaseRepository<Voucher> {
         return executeUpdate(sql, voucher.getCode(), voucher.getDiscountAmount(),
             voucher.getMinOrderValue(), voucher.isActive() ? 1 : 0, voucher.getVoucherId());
     }
+    public int delete(int voucherId) {
+        return executeUpdate("DELETE FROM Voucher WHERE voucher_id = ?", voucherId);
+    }
 }
