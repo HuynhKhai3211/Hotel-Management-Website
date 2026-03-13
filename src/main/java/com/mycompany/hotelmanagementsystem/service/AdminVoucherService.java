@@ -40,4 +40,7 @@ public class AdminVoucherService {
         voucher.setActive(isActive);
         return voucherRepository.update(voucher) > 0;
     }
+    public boolean deleteVoucher(int voucherId) {
+        return voucherRepository.delete(voucherId) > 0;
+    }
 }
