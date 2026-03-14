@@ -1,10 +1,6 @@
 package com.mycompany.hotelmanagementsystem.dao;
 
-import com.mycompany.hotelmanagementsystem.model.Customer;
-import com.mycompany.hotelmanagementsystem.model.Booking;
-import com.mycompany.hotelmanagementsystem.model.Account;
-import com.mycompany.hotelmanagementsystem.model.Room;
-import com.mycompany.hotelmanagementsystem.model.RoomType;
+import com.mycompany.hotelmanagementsystem.entity.*;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -195,9 +191,32 @@ public class BookingRepository extends BaseRepository<Booking> {
         return 0;
     }
 
-    
+    public int updateRoomId(int bookingId, int roomId) {
+        return executeUpdate("UPDATE Booking SET room_id = ? WHERE booking_id = ?", roomId, bookingId);
+    }
 
-    
+    public int updateCheckInActual(int bookingId, LocalDateTime checkInActual) {
+        return executeUpdate("UPDATE Booking SET check_in_actual = ? WHERE booking_id = ?",
+            Timestamp.valueOf(checkInActual), bookingId);
+    }
+
+    public int updateCheckOutActual(int bookingId, LocalDateTime checkOutActual) {
+        return executeUpdate("UPDATE Booking SET check_out_actual = ? WHERE booking_id = ?",
+            Timestamp.valueOf(checkOutActual), bookingId);
+    }
+
+    private List<Booking> findBookingsWithDetails(String sql, Object... params) {
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            for (int i = 0; i < params.length; i++) {
+                ps.setObject(i + 1, params[i]);
+            }
+            try (var rs = ps.executeQuery()) {
+                return mapBookingsWithDetails(rs);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Find bookings failed", e);
+        }
+    }
 
     private List<Booking> mapBookingsWithDetails(ResultSet rs) throws SQLException {
         List<Booking> list = new ArrayList<>();
@@ -225,5 +244,55 @@ public class BookingRepository extends BaseRepository<Booking> {
         return list;
     }
 
-   
+    public int countAll() {
+        String sql = "SELECT COUNT(*) FROM Booking";
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Count bookings failed", e);
+        }
+        return 0;
+    }
+
+    public java.math.BigDecimal sumTotalPrice() {
+        String sql = "SELECT COALESCE(SUM(total_price), 0) FROM Booking WHERE status IN ('CheckedIn', 'CheckedOut')";
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getBigDecimal(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Sum total price failed", e);
+        }
+        return java.math.BigDecimal.ZERO;
+    }
+
+    public java.math.BigDecimal sumTotalPriceByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        String sql = "SELECT COALESCE(SUM(total_price), 0) FROM Booking WHERE status IN ('CheckedIn', 'CheckedOut') AND booking_date BETWEEN ? AND ?";
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setTimestamp(1, Timestamp.valueOf(startDate));
+            ps.setTimestamp(2, Timestamp.valueOf(endDate));
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getBigDecimal(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Sum total price failed", e);
+        }
+        return java.math.BigDecimal.ZERO;
+    }
+
+    public int countByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        String sql = "SELECT COUNT(*) FROM Booking WHERE booking_date BETWEEN ? AND ?";
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setTimestamp(1, Timestamp.valueOf(startDate));
+            ps.setTimestamp(2, Timestamp.valueOf(endDate));
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Count bookings failed", e);
+        }
+        return 0;
+    }
 }

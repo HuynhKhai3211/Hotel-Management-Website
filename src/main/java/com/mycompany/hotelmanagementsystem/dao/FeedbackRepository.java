@@ -1,11 +1,6 @@
 package com.mycompany.hotelmanagementsystem.dao;
 
-import com.mycompany.hotelmanagementsystem.model.Customer;
-import com.mycompany.hotelmanagementsystem.model.Booking;
-import com.mycompany.hotelmanagementsystem.model.Feedback;
-import com.mycompany.hotelmanagementsystem.model.Account;
-import com.mycompany.hotelmanagementsystem.model.Room;
-import com.mycompany.hotelmanagementsystem.model.RoomType;
+import com.mycompany.hotelmanagementsystem.entity.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
