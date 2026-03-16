@@ -131,5 +131,47 @@ public class RoomRepository extends BaseRepository<Room> {
         }
     }
 
-   
+    public List<Room> findByStatus(String status) {
+        return queryList("SELECT * FROM Room WHERE status = ? ORDER BY room_number", status);
+    }
+
+    public int countByStatus(String status) {
+        String sql = "SELECT COUNT(*) FROM Room WHERE status = ?";
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Count rooms failed", e);
+        }
+        return 0;
+    }
+
+    public int countAll() {
+        String sql = "SELECT COUNT(*) FROM Room";
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Count rooms failed", e);
+        }
+        return 0;
+    }
+
+    public int insert(Room room) {
+        String sql = "INSERT INTO Room (room_number, type_id, status) VALUES (?, ?, ?)";
+        return executeInsert(sql, room.getRoomNumber(), room.getTypeId(), room.getStatus());
+    }
+
+    public int update(Room room) {
+        String sql = "UPDATE Room SET room_number = ?, type_id = ?, status = ? WHERE room_id = ?";
+        return executeUpdate(sql, room.getRoomNumber(), room.getTypeId(), room.getStatus(), room.getRoomId());
+    }
+
+    public int delete(int roomId) {
+        String sql = "DELETE FROM Room WHERE room_id = ?";
+        return executeUpdate(sql, roomId);
+    }
 }
