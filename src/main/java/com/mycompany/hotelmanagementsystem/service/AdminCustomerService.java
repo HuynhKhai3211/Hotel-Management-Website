@@ -46,13 +46,5 @@ public class AdminCustomerService {
         return accountId;
     }
 
-    public boolean updateCustomer(int accountId, String fullName, String phone, String address) {
-        Account account = accountRepository.findById(accountId);
-        if (account == null) return false;
-
-        account.setFullName(fullName);
-        account.setPhone(phone);
-        account.setAddress(address);
-        return accountRepository.update(account) > 0;
-    }
+   
 }
