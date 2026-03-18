@@ -1,6 +1,6 @@
 package com.mycompany.hotelmanagementsystem.dao;
 
-import com.mycompany.hotelmanagementsystem.entity.Occupant;
+import com.mycompany.hotelmanagementsystem.model.Occupant;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
