@@ -3,8 +3,8 @@ package com.mycompany.hotelmanagementsystem.service;
 import com.mycompany.hotelmanagementsystem.constant.BookingStatus;
 import com.mycompany.hotelmanagementsystem.util.ServiceResult;
 import com.mycompany.hotelmanagementsystem.util.ValidationHelper;
-import com.mycompany.hotelmanagementsystem.entity.Booking;
-import com.mycompany.hotelmanagementsystem.entity.Feedback;
+import com.mycompany.hotelmanagementsystem.model.Booking;
+import com.mycompany.hotelmanagementsystem.model.Feedback;
 import com.mycompany.hotelmanagementsystem.dao.BookingRepository;
 import com.mycompany.hotelmanagementsystem.dao.FeedbackRepository;
 
