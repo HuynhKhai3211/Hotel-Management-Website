@@ -1,6 +1,10 @@
 package com.mycompany.hotelmanagementsystem.dao;
 
-import com.mycompany.hotelmanagementsystem.entity.*;
+import com.mycompany.hotelmanagementsystem.model.Account;
+import com.mycompany.hotelmanagementsystem.model.Room;
+import com.mycompany.hotelmanagementsystem.model.Customer;
+import com.mycompany.hotelmanagementsystem.model.Booking;
+import com.mycompany.hotelmanagementsystem.model.RoomType;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

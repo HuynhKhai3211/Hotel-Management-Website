@@ -1,6 +1,6 @@
 package com.mycompany.hotelmanagementsystem.dao;
 
-import com.mycompany.hotelmanagementsystem.entity.Payment;
+import com.mycompany.hotelmanagementsystem.model.Payment;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
