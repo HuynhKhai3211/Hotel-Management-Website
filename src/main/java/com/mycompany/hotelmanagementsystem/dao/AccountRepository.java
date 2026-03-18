@@ -93,5 +93,13 @@ public class AccountRepository extends BaseRepository<Account> {
         return queryList(sql, roleId);
     }
 
-    
+    public int updateIsActive(int accountId, boolean isActive) {
+        String sql = "UPDATE Account SET is_active = ? WHERE account_id = ?";
+        return executeUpdate(sql, isActive ? 1 : 0, accountId);
+    }
+
+    public int updateRoleId(int accountId, int roleId) {
+        String sql = "UPDATE Account SET role_id = ? WHERE account_id = ?";
+        return executeUpdate(sql, roleId, accountId);
+    }
 }
