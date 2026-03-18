@@ -1,9 +1,9 @@
 package com.mycompany.hotelmanagementsystem.controller.admin;
 
-import com.mycompany.hotelmanagementsystem.util.SessionHelper;
+import com.mycompany.hotelmanagementsystem.utils.SessionHelper;
 import com.mycompany.hotelmanagementsystem.service.AdminFeedbackService;
-import com.mycompany.hotelmanagementsystem.entity.Account;
-import com.mycompany.hotelmanagementsystem.entity.Feedback;
+import com.mycompany.hotelmanagementsystem.model.Account;
+import com.mycompany.hotelmanagementsystem.model.Feedback;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
