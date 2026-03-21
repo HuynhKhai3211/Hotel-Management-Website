@@ -1,6 +1,10 @@
-package com.mycompany.hotelmanagementsystem.dal;
+package com.mycompany.hotelmanagementsystem.dao;
 
-import com.mycompany.hotelmanagementsystem.entity.*;
+import com.mycompany.hotelmanagementsystem.model.Account;
+import com.mycompany.hotelmanagementsystem.model.Booking;
+import com.mycompany.hotelmanagementsystem.model.Customer;
+import com.mycompany.hotelmanagementsystem.model.Room;
+import com.mycompany.hotelmanagementsystem.model.RoomType;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -383,8 +387,9 @@ public class BookingRepository extends BaseRepository<Booking> {
     }
 
     /**
-     * Lấy tất cả khoảng ngày đã đặt (active) theo loại phòng để hiển thị lịch cho customer.
-     * Trả về list gồm các cặp [checkInExpected, checkOutExpected].
+     * Lấy tất cả khoảng ngày đã đặt (active) theo loại phòng để hiển thị lịch cho customer.Trả về list gồm các cặp [checkInExpected, checkOutExpected].
+     * @param typeId
+     * @return 
      */
     public List<LocalDateTime[]> findOccupiedDateRangesByTypeId(int typeId) {
         String sql = """
