@@ -1,12 +1,17 @@
 package com.mycompany.hotelmanagementsystem.controller.common;
 
-import com.mycompany.hotelmanagementsystem.util.BookingCalcResponse;
-import com.mycompany.hotelmanagementsystem.util.DateHelper;
-import com.mycompany.hotelmanagementsystem.util.SessionHelper;
+import com.mycompany.hotelmanagementsystem.utils.BookingCalcResponse;
+import com.mycompany.hotelmanagementsystem.utils.DateHelper;
+import com.mycompany.hotelmanagementsystem.utils.SessionHelper;
 import com.mycompany.hotelmanagementsystem.constant.PaymentType;
 import com.mycompany.hotelmanagementsystem.service.BookingService;
 import com.mycompany.hotelmanagementsystem.service.RoomService;
-import com.mycompany.hotelmanagementsystem.entity.*;
+import com.mycompany.hotelmanagementsystem.model.Account;
+import com.mycompany.hotelmanagementsystem.model.Booking;
+import com.mycompany.hotelmanagementsystem.model.Occupant;
+import com.mycompany.hotelmanagementsystem.model.Room;
+import com.mycompany.hotelmanagementsystem.utils.BookingCalcResponse;
+import com.mycompany.hotelmanagementsystem.utils.SessionHelper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
