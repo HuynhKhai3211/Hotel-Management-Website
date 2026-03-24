@@ -1,12 +1,11 @@
 package com.mycompany.hotelmanagementsystem.controller.common;
 
-import com.mycompany.hotelmanagementsystem.model.Invoice;
-import com.mycompany.hotelmanagementsystem.model.Booking;
-import com.mycompany.hotelmanagementsystem.model.Account;
-import com.mycompany.hotelmanagementsystem.model.Payment;
-import com.mycompany.hotelmanagementsystem.utils.SessionHelper;
+import com.mycompany.hotelmanagementsystem.util.SessionHelper;
 import com.mycompany.hotelmanagementsystem.service.BookingService;
 import com.mycompany.hotelmanagementsystem.service.PaymentService;
+import com.mycompany.hotelmanagementsystem.entity.*;
+import com.mycompany.hotelmanagementsystem.model.Account;
+import com.mycompany.hotelmanagementsystem.model.Invoice;
 import com.mycompany.hotelmanagementsystem.service.VNPayService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,7 +14,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-@WebServlet(urlPatterns = {"/payment/process", "/payment/vnpay", "/payment/vnpay-return", "/payment/result"})
+@WebServlet(urlPatterns = {"/payment/process", "/payment/vnpay", "/payment/vnpay-return", "/payment/result", "/payment/simulate"})
 public class PaymentController extends HttpServlet {
     private PaymentService paymentService;
     private BookingService bookingService;
@@ -33,15 +32,17 @@ public class PaymentController extends HttpServlet {
         switch (path) {
             case "/payment/process" -> handleProcessGet(request, response);
             case "/payment/vnpay-return" -> handleVNPayReturn(request, response);
-           
+            case "/payment/result" -> handleResult(request, response);
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if ("/payment/vnpay".equals(request.getServletPath())) {
-            handleVNPayPost(request, response);
+        String path = request.getServletPath();
+        switch (path) {
+            case "/payment/vnpay" -> handleVNPayPost(request, response);
+            case "/payment/simulate" -> handleSimulatePost(request, response);
         }
     }
 
@@ -61,14 +62,32 @@ public class PaymentController extends HttpServlet {
             return;
         }
 
-        if ("Confirmed".equals(booking.getStatus())) {
-            response.sendRedirect(request.getContextPath() + "/booking/status?bookingId=" + bookingId);
-            return;
+        // Check invoice type: Booking (default), Extension, Remaining
+        String invoiceType = request.getParameter("invoiceType");
+        Integer invoiceId = parseIntParam(request, "invoiceId");
+        Invoice invoice;
+
+        if (invoiceId != null) {
+            // Direct invoice ID provided (e.g., from staff or extension flow)
+            invoice = paymentService.getInvoice(invoiceId);
+        } else if ("Extension".equals(invoiceType)) {
+            // Find the latest unpaid extension invoice for this booking
+            invoice = paymentService.findLatestInvoiceByType(bookingId, "Extension");
+        } else if ("Remaining".equals(invoiceType)) {
+            // Find the remaining balance invoice for checkout
+            invoice = paymentService.findLatestInvoiceByType(bookingId, "Remaining");
+        } else {
+            // Default booking invoice
+            if ("Confirmed".equals(booking.getStatus()) && !"Deposit".equals(booking.getPaymentType())) {
+                response.sendRedirect(request.getContextPath() + "/booking/status?bookingId=" + bookingId);
+                return;
+            }
+            invoice = paymentService.getOrCreateInvoice(bookingId);
         }
 
-        Invoice invoice = paymentService.getOrCreateInvoice(bookingId);
         if (invoice == null) {
-            request.setAttribute("error", "Không thể tạo hóa đơn");
+            response.sendRedirect(request.getContextPath() + "/booking/status?bookingId=" + bookingId + "&error=invoice");
+            return;
         }
 
         request.setAttribute("booking", booking);
@@ -151,7 +170,64 @@ public class PaymentController extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/payment/result?txnCode=" + txnRef);
     }
 
-    
+    /**
+     * Xử lý thanh toán giả lập (không qua VNPay thật).
+     * POST /payment/simulate?invoiceId=X
+     * Dùng cho demo/test để hoàn thành luồng thanh toán ngay lập tức.
+     */
+    private void handleSimulatePost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        Integer invoiceId = parseIntParam(request, "invoiceId");
+        if (invoiceId == null) {
+            response.sendRedirect(request.getContextPath() + "/customer/bookings");
+            return;
+        }
+
+        Account account = SessionHelper.getLoggedInAccount(request);
+        if (account == null) {
+            response.sendRedirect(request.getContextPath() + "/auth/login");
+            return;
+        }
+
+        var result = paymentService.processSimulatedPayment(invoiceId, account.getAccountId());
+
+        if (!result.isSuccess()) {
+            request.getSession().setAttribute("paymentError", result.getMessage());
+            Invoice inv = paymentService.getInvoice(invoiceId);
+            int bookingId = inv != null ? inv.getBookingId() : 0;
+            response.sendRedirect(request.getContextPath() + "/payment/process?bookingId=" + bookingId);
+            return;
+        }
+
+        // Redirect tới trang kết quả như VNPay
+        response.sendRedirect(request.getContextPath() + "/payment/result?txnCode=" + result.getPayment().getTransactionCode());
+    }
+
+    private void handleResult(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String txnCode = request.getParameter("txnCode");
+        if (txnCode == null) {
+            response.sendRedirect(request.getContextPath() + "/customer/bookings");
+            return;
+        }
+
+        Payment payment = paymentService.getPaymentByTransaction(txnCode);
+        if (payment == null) {
+            response.sendRedirect(request.getContextPath() + "/customer/bookings");
+            return;
+        }
+
+        Booking booking = paymentService.getBookingFromPayment(payment);
+
+        request.setAttribute("payment", payment);
+        request.setAttribute("booking", booking);
+
+        String viewPath = "Success".equals(payment.getStatus())
+            ? "/WEB-INF/views/payment/success.jsp"
+            : "/WEB-INF/views/payment/failed.jsp";
+
+        request.getRequestDispatcher(viewPath).forward(request, response);
+    }
 
     private Integer parseIntParam(HttpServletRequest request, String name) {
         String value = request.getParameter(name);
