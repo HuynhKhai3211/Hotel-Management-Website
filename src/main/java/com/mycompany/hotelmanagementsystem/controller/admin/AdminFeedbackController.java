@@ -62,7 +62,12 @@ public class AdminFeedbackController extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/admin/feedback/list.jsp").forward(request, response);
     }
 
-   
+    private void handleToggleVisibility(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        adminFeedbackService.toggleVisibility(id);
+        response.sendRedirect(request.getContextPath() + "/admin/feedback?success=toggled");
+    }
 
     private void handleReply(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
