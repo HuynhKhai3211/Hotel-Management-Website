@@ -1,17 +1,12 @@
 package com.mycompany.hotelmanagementsystem.controller.common;
 
-import com.mycompany.hotelmanagementsystem.utils.BookingCalcResponse;
-import com.mycompany.hotelmanagementsystem.utils.DateHelper;
-import com.mycompany.hotelmanagementsystem.utils.SessionHelper;
+import com.mycompany.hotelmanagementsystem.util.BookingCalcResponse;
+import com.mycompany.hotelmanagementsystem.util.DateHelper;
+import com.mycompany.hotelmanagementsystem.util.SessionHelper;
 import com.mycompany.hotelmanagementsystem.constant.PaymentType;
 import com.mycompany.hotelmanagementsystem.service.BookingService;
 import com.mycompany.hotelmanagementsystem.service.RoomService;
-import com.mycompany.hotelmanagementsystem.model.Account;
-import com.mycompany.hotelmanagementsystem.model.Booking;
-import com.mycompany.hotelmanagementsystem.model.Occupant;
-import com.mycompany.hotelmanagementsystem.model.Room;
-import com.mycompany.hotelmanagementsystem.utils.BookingCalcResponse;
-import com.mycompany.hotelmanagementsystem.utils.SessionHelper;
+import com.mycompany.hotelmanagementsystem.entity.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -70,7 +65,7 @@ public class BookingController extends HttpServlet {
             return;
         }
         request.setAttribute("roomType", roomType);
-        request.setAttribute("minDate", LocalDate.now().plusDays(1));
+        request.setAttribute("minDate", LocalDate.now());
         request.setAttribute("maxDate", LocalDate.now().plusMonths(6));
         request.getRequestDispatcher("/WEB-INF/views/booking/create.jsp").forward(request, response);
     }
@@ -79,8 +74,12 @@ public class BookingController extends HttpServlet {
             throws ServletException, IOException {
         Account account = SessionHelper.getLoggedInAccount(request);
         int typeId = Integer.parseInt(request.getParameter("typeId"));
-        LocalDateTime checkIn = DateHelper.toCheckInTime(DateHelper.parseDate(request.getParameter("checkIn")));
-        LocalDateTime checkOut = DateHelper.toCheckOutTime(DateHelper.parseDate(request.getParameter("checkOut")));
+        LocalDateTime checkIn = DateHelper.toCheckInTime(
+            DateHelper.parseDate(request.getParameter("checkIn")),
+            request.getParameter("checkInTime"));
+        LocalDateTime checkOut = DateHelper.toCheckOutTime(
+            DateHelper.parseDate(request.getParameter("checkOut")),
+            request.getParameter("checkOutTime"));
         String voucherCode = request.getParameter("voucherCode");
 
         List<Room> availableRooms = bookingService.getAvailableRooms(typeId, checkIn, checkOut);
@@ -136,6 +135,17 @@ public class BookingController extends HttpServlet {
                 if (phones != null && i < phones.length) occ.setPhoneNumber(phones[i]);
                 occupants.add(occ);
             }
+        }
+
+        // Validate: số khách không được vượt quá sức chứa của loại phòng
+        int maxCapacity = calc.getRoomType().getCapacity();
+        if (occupants.size() > maxCapacity) {
+            request.setAttribute("error", "Số lượng khách (" + occupants.size()
+                + ") vượt quá sức chứa tối đa của phòng (" + maxCapacity + " người).");
+            request.setAttribute("booking", calc);
+            request.setAttribute("account", SessionHelper.getLoggedInAccount(request));
+            request.getRequestDispatcher("/WEB-INF/views/booking/confirm.jsp").forward(request, response);
+            return;
         }
 
         Integer voucherId = calc.getVoucher() != null ? calc.getVoucher().getVoucherId() : null;
