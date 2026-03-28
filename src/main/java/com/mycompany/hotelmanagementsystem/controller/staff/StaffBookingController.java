@@ -1,15 +1,27 @@
 package com.mycompany.hotelmanagementsystem.controller.staff;
 
 import com.mycompany.hotelmanagementsystem.service.StaffBookingService;
-import com.mycompany.hotelmanagementsystem.model.Booking;
-import com.mycompany.hotelmanagementsystem.model.Occupant;
-import com.mycompany.hotelmanagementsystem.model.Room;
+import com.mycompany.hotelmanagementsystem.service.BookingService;
+import com.mycompany.hotelmanagementsystem.constant.PaymentType;
+import com.mycompany.hotelmanagementsystem.entity.Booking;
+import com.mycompany.hotelmanagementsystem.entity.Occupant;
+import com.mycompany.hotelmanagementsystem.entity.BookingExtension;
+import com.mycompany.hotelmanagementsystem.entity.Room;
+import com.mycompany.hotelmanagementsystem.entity.RoomType;
+import com.mycompany.hotelmanagementsystem.util.BookingCalcResponse;
+import com.mycompany.hotelmanagementsystem.util.BookingResult;
+import com.mycompany.hotelmanagementsystem.util.WalkInCustomerResult;
+import com.mycompany.hotelmanagementsystem.util.EmailHelper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,14 +30,19 @@ import java.util.List;
     "/staff/bookings/detail",
     "/staff/bookings/assign",
     "/staff/bookings/occupants",
-    "/staff/bookings/checkout"
+    "/staff/bookings/checkout",
+    "/staff/bookings/walkin",
+    "/staff/bookings/walkin-room",
+    "/staff/bookings/walkin-confirm"
 })
 public class StaffBookingController extends HttpServlet {
     private StaffBookingService staffBookingService;
+    private BookingService bookingService;
 
     @Override
     public void init() {
         staffBookingService = new StaffBookingService();
+        bookingService = new BookingService();
     }
 
     @Override
@@ -39,6 +56,9 @@ public class StaffBookingController extends HttpServlet {
             case "/staff/bookings/assign" -> handleAssignRoomGet(request, response);
             case "/staff/bookings/occupants" -> handleOccupantsGet(request, response);
             case "/staff/bookings/checkout" -> handleCheckoutGet(request, response);
+            case "/staff/bookings/walkin" -> handleWalkInStep1Get(request, response);
+            case "/staff/bookings/walkin-room" -> handleWalkInStep2Get(request, response);
+            case "/staff/bookings/walkin-confirm" -> handleWalkInStep3Get(request, response);
             default -> response.sendError(404);
         }
     }
@@ -52,6 +72,9 @@ public class StaffBookingController extends HttpServlet {
             case "/staff/bookings/assign" -> handleAssignRoomPost(request, response);
             case "/staff/bookings/occupants" -> handleOccupantsPost(request, response);
             case "/staff/bookings/checkout" -> handleCheckoutPost(request, response);
+            case "/staff/bookings/walkin" -> handleWalkInStep1Post(request, response);
+            case "/staff/bookings/walkin-room" -> handleWalkInStep2Post(request, response);
+            case "/staff/bookings/walkin-confirm" -> handleWalkInStep3Post(request, response);
             default -> response.sendError(404);
         }
     }
@@ -89,9 +112,16 @@ public class StaffBookingController extends HttpServlet {
         }
 
         List<Occupant> occupants = staffBookingService.getOccupants(bookingId);
+        List<BookingExtension> extensions = staffBookingService.getExtensions(bookingId);
+
+        // Handle success messages from checkout redirect
+        if ("checkedout".equals(request.getParameter("success"))) {
+            request.setAttribute("success", "Check-out thanh cong!");
+        }
 
         request.setAttribute("booking", booking);
         request.setAttribute("occupants", occupants);
+        request.setAttribute("extensions", extensions);
         request.setAttribute("activePage", "bookings");
         request.setAttribute("pageTitle", "Chi tiết booking #" + bookingId);
         request.getRequestDispatcher("/WEB-INF/views/staff/bookings/detail.jsp").forward(request, response);
@@ -225,9 +255,18 @@ public class StaffBookingController extends HttpServlet {
         }
 
         List<Occupant> occupants = staffBookingService.getOccupants(bookingId);
+        List<BookingExtension> extensions = staffBookingService.getExtensions(bookingId);
+
+        // Check if payment is needed at checkout
+        boolean needsPayment = staffBookingService.needsCheckoutPayment(bookingId);
+        request.setAttribute("needsCheckoutPayment", needsPayment);
+        if (needsPayment) {
+            request.setAttribute("checkoutPaymentAmount", staffBookingService.getCheckoutPaymentAmount(bookingId));
+        }
 
         request.setAttribute("booking", booking);
         request.setAttribute("occupants", occupants);
+        request.setAttribute("extensions", extensions);
         request.setAttribute("activePage", "bookings");
         request.setAttribute("pageTitle", "Check-out - Booking #" + bookingId);
         request.getRequestDispatcher("/WEB-INF/views/staff/bookings/checkout.jsp").forward(request, response);
@@ -244,11 +283,339 @@ public class StaffBookingController extends HttpServlet {
         boolean success = staffBookingService.processCheckout(bookingId);
 
         if (success) {
-            // Redirect to payment processing
-            response.sendRedirect(request.getContextPath() + "/staff/payments/process?bookingId=" + bookingId);
+            // Check if payment is needed (Standard room unpaid, or Deposit remaining)
+            if (staffBookingService.needsCheckoutPayment(bookingId)) {
+                Booking booking = staffBookingService.getBookingDetail(bookingId);
+                String invoiceType = PaymentType.DEPOSIT.equals(booking.getPaymentType()) ? "Remaining" : "Booking";
+                response.sendRedirect(request.getContextPath() + "/staff/payments/process?bookingId=" + bookingId + "&invoiceType=" + invoiceType);
+            } else {
+                response.sendRedirect(request.getContextPath() + "/staff/bookings/detail?id=" + bookingId + "&success=checkedout");
+            }
         } else {
             request.setAttribute("error", "Không thể xử lý check-out. Vui lòng thử lại.");
             handleCheckoutGet(request, response);
+        }
+    }
+
+    // === Walk-in Booking Flow ===
+
+    // Step 1: Customer info form
+    private void handleWalkInStep1Get(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setAttribute("activePage", "walkin");
+        request.setAttribute("pageTitle", "Dat phong tai quay");
+        request.getRequestDispatcher("/WEB-INF/views/staff/bookings/walkin-step1.jsp").forward(request, response);
+    }
+
+    // Step 1: Process customer info
+    private void handleWalkInStep1Post(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String fullName = request.getParameter("fullName");
+        String phone = request.getParameter("phone");
+        String email = request.getParameter("email");
+        String idCard = request.getParameter("idCard");
+        String confirmEmailLink = request.getParameter("confirmEmailLink");
+        String skipEmail = request.getParameter("skipEmail");
+
+        // Validate required fields
+        if (fullName == null || fullName.trim().isEmpty() || phone == null || phone.trim().isEmpty()) {
+            request.setAttribute("error", "Vui long nhap ho ten va so dien thoai");
+            setWalkInFormAttributes(request, fullName, phone, email, idCard);
+            handleWalkInStep1Get(request, response);
+            return;
+        }
+
+        try {
+            // If staff confirmed to link existing email account
+            if ("true".equals(confirmEmailLink)) {
+                WalkInCustomerResult result = staffBookingService.findOrCreateWalkInCustomer(
+                        fullName.trim(), phone.trim(), email, false);
+                saveWalkInSession(request, result.getAccountId(), fullName, phone, email, idCard);
+                response.sendRedirect(request.getContextPath() + "/staff/bookings/walkin-room");
+                return;
+            }
+
+            // If staff chose to skip email (create without email)
+            boolean doSkipEmail = "true".equals(skipEmail);
+
+            WalkInCustomerResult result = staffBookingService.findOrCreateWalkInCustomer(
+                    fullName.trim(), phone.trim(), email, doSkipEmail);
+
+            if (result.isFoundByEmail()) {
+                // Email exists with different phone - ask staff to confirm
+                request.setAttribute("emailConflict", true);
+                request.setAttribute("conflictName", result.getExistingName());
+                request.setAttribute("conflictPhone", maskPhone(result.getExistingPhone()));
+                setWalkInFormAttributes(request, fullName, phone, email, idCard);
+                handleWalkInStep1Get(request, response);
+                return;
+            }
+
+            // FOUND_BY_PHONE or CREATED - proceed
+            saveWalkInSession(request, result.getAccountId(), fullName, phone, email, idCard);
+
+            // Send credentials email if new account was created and has real email
+            if (result.isCreated() && result.getGeneratedPassword() != null
+                    && result.getEmail() != null && !result.getEmail().contains("@walkin.local")) {
+                System.out.println("=== WALK-IN EMAIL DEBUG ===");
+                System.out.println("Sending credentials to: " + result.getEmail());
+                System.out.println("FullName: " + fullName.trim());
+                System.out.println("Password length: " + result.getGeneratedPassword().length());
+                boolean sent = EmailHelper.sendWalkInCredentials(result.getEmail(),
+                        fullName.trim(), result.getGeneratedPassword());
+                System.out.println("Email sent result: " + sent);
+            } else {
+                System.out.println("=== WALK-IN EMAIL SKIPPED ===");
+                System.out.println("Status: " + result.getStatus());
+                System.out.println("isCreated: " + result.isCreated());
+                System.out.println("Password: " + (result.getGeneratedPassword() != null ? "set" : "null"));
+                System.out.println("Email: " + result.getEmail());
+            }
+
+            response.sendRedirect(request.getContextPath() + "/staff/bookings/walkin-room");
+
+        } catch (Exception e) {
+            request.setAttribute("error", "Loi khi xu ly thong tin khach: " + e.getMessage());
+            setWalkInFormAttributes(request, fullName, phone, email, idCard);
+            handleWalkInStep1Get(request, response);
+        }
+    }
+
+    private void setWalkInFormAttributes(HttpServletRequest request,
+            String fullName, String phone, String email, String idCard) {
+        request.setAttribute("fullName", fullName);
+        request.setAttribute("phone", phone);
+        request.setAttribute("email", email);
+        request.setAttribute("idCard", idCard);
+    }
+
+    private void saveWalkInSession(HttpServletRequest request, int customerId,
+            String fullName, String phone, String email, String idCard) {
+        HttpSession session = request.getSession();
+        session.setAttribute("walkin_customerId", customerId);
+        session.setAttribute("walkin_fullName", fullName.trim());
+        session.setAttribute("walkin_phone", phone.trim());
+        session.setAttribute("walkin_email", email != null ? email.trim() : "");
+        session.setAttribute("walkin_idCard", idCard != null ? idCard.trim() : "");
+    }
+
+    // Mask phone for privacy: 0901234567 -> 090***4567
+    private String maskPhone(String phone) {
+        if (phone == null || phone.length() < 7) return phone;
+        return phone.substring(0, 3) + "***" + phone.substring(phone.length() - 4);
+    }
+
+    // Step 2: Select room type + dates
+    private void handleWalkInStep2Get(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        if (session.getAttribute("walkin_customerId") == null) {
+            response.sendRedirect(request.getContextPath() + "/staff/bookings/walkin");
+            return;
+        }
+
+        List<RoomType> roomTypes = staffBookingService.getAllRoomTypes();
+        request.setAttribute("roomTypes", roomTypes);
+        request.setAttribute("activePage", "walkin");
+        request.setAttribute("pageTitle", "Chon phong - Dat phong tai quay");
+        request.getRequestDispatcher("/WEB-INF/views/staff/bookings/walkin-step2.jsp").forward(request, response);
+    }
+
+    // Step 2: Process room selection (2 phases: search rooms, then confirm room choice)
+    private void handleWalkInStep2Post(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        if (session.getAttribute("walkin_customerId") == null) {
+            response.sendRedirect(request.getContextPath() + "/staff/bookings/walkin");
+            return;
+        }
+
+        // Phase 2: Staff has chosen a specific room -> calculate and go to step 3
+        String selectedRoomId = request.getParameter("roomId");
+        if (selectedRoomId != null && !selectedRoomId.isEmpty()) {
+            handleWalkInRoomConfirm(request, response, session, selectedRoomId);
+            return;
+        }
+
+        // Phase 1: Staff selected type + dates -> show available rooms
+        int typeId = parseIntParam(request, "typeId");
+        String checkInStr = request.getParameter("checkIn");
+        String checkOutStr = request.getParameter("checkOut");
+
+        if (typeId <= 0 || checkInStr == null || checkOutStr == null
+                || checkInStr.isEmpty() || checkOutStr.isEmpty()) {
+            request.setAttribute("error", "Vui long chon loai phong va ngay nhan/tra phong");
+            handleWalkInStep2Get(request, response);
+            return;
+        }
+
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+            LocalDateTime checkIn = LocalDateTime.parse(checkInStr, formatter);
+            LocalDateTime checkOut = LocalDateTime.parse(checkOutStr, formatter);
+
+            if (!checkOut.isAfter(checkIn)) {
+                request.setAttribute("error", "Ngay tra phong phai sau ngay nhan phong");
+                handleWalkInStep2Get(request, response);
+                return;
+            }
+
+            // Find available rooms
+            List<Room> availableRooms = staffBookingService.findAvailableRoomsForDates(typeId, checkIn, checkOut);
+            if (availableRooms.isEmpty()) {
+                request.setAttribute("error", "Khong con phong trong cho loai phong nay trong khoang thoi gian da chon");
+                handleWalkInStep2Get(request, response);
+                return;
+            }
+
+            // Store search params in session for phase 2
+            session.setAttribute("walkin_typeId", typeId);
+            session.setAttribute("walkin_checkIn", checkIn);
+            session.setAttribute("walkin_checkOut", checkOut);
+
+            // Show room selection UI
+            RoomType roomType = staffBookingService.getRoomTypeById(typeId);
+            request.setAttribute("availableRooms", availableRooms);
+            request.setAttribute("selectedType", roomType);
+            request.setAttribute("selectedCheckIn", checkInStr);
+            request.setAttribute("selectedCheckOut", checkOutStr);
+            request.setAttribute("selectedTypeId", typeId);
+
+            // Re-populate form fields
+            List<RoomType> roomTypes = staffBookingService.getAllRoomTypes();
+            request.setAttribute("roomTypes", roomTypes);
+            request.setAttribute("activePage", "walkin");
+            request.setAttribute("pageTitle", "Chon phong - Dat phong tai quay");
+            request.getRequestDispatcher("/WEB-INF/views/staff/bookings/walkin-step2.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            request.setAttribute("error", "Loi xu ly: " + e.getMessage());
+            handleWalkInStep2Get(request, response);
+        }
+    }
+
+    // Phase 2: Staff confirmed a specific room -> calculate price and go to step 3
+    private void handleWalkInRoomConfirm(HttpServletRequest request, HttpServletResponse response,
+            HttpSession session, String selectedRoomId) throws ServletException, IOException {
+        try {
+            int roomId = Integer.parseInt(selectedRoomId);
+            int typeId = (int) session.getAttribute("walkin_typeId");
+            LocalDateTime checkIn = (LocalDateTime) session.getAttribute("walkin_checkIn");
+            LocalDateTime checkOut = (LocalDateTime) session.getAttribute("walkin_checkOut");
+
+            // Calculate booking price
+            BookingCalcResponse calc = bookingService.calculateBooking(typeId, roomId, checkIn, checkOut, null);
+            if (calc == null) {
+                request.setAttribute("error", "Khong the tinh gia phong. Vui long thu lai.");
+                handleWalkInStep2Get(request, response);
+                return;
+            }
+
+            // Store in session
+            session.setAttribute("walkin_roomId", roomId);
+            session.setAttribute("walkin_calc", calc);
+
+            response.sendRedirect(request.getContextPath() + "/staff/bookings/walkin-confirm");
+        } catch (Exception e) {
+            request.setAttribute("error", "Loi xu ly: " + e.getMessage());
+            handleWalkInStep2Get(request, response);
+        }
+    }
+
+    // Step 3: Confirm + show summary
+    private void handleWalkInStep3Get(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        if (session.getAttribute("walkin_customerId") == null
+                || session.getAttribute("walkin_calc") == null) {
+            response.sendRedirect(request.getContextPath() + "/staff/bookings/walkin");
+            return;
+        }
+
+        BookingCalcResponse calc = (BookingCalcResponse) session.getAttribute("walkin_calc");
+        request.setAttribute("calc", calc);
+        request.setAttribute("walkin_fullName", session.getAttribute("walkin_fullName"));
+        request.setAttribute("walkin_phone", session.getAttribute("walkin_phone"));
+        request.setAttribute("walkin_email", session.getAttribute("walkin_email"));
+        request.setAttribute("walkin_idCard", session.getAttribute("walkin_idCard"));
+        request.setAttribute("activePage", "walkin");
+        request.setAttribute("pageTitle", "Xac nhan dat phong tai quay");
+        request.getRequestDispatcher("/WEB-INF/views/staff/bookings/walkin-step3.jsp").forward(request, response);
+    }
+
+    // Step 3: Create booking + redirect to payment
+    private void handleWalkInStep3Post(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        if (session.getAttribute("walkin_customerId") == null
+                || session.getAttribute("walkin_calc") == null) {
+            response.sendRedirect(request.getContextPath() + "/staff/bookings/walkin");
+            return;
+        }
+
+        int customerId = (int) session.getAttribute("walkin_customerId");
+        int typeId = (int) session.getAttribute("walkin_typeId");
+        LocalDateTime checkIn = (LocalDateTime) session.getAttribute("walkin_checkIn");
+        LocalDateTime checkOut = (LocalDateTime) session.getAttribute("walkin_checkOut");
+        BookingCalcResponse calc = (BookingCalcResponse) session.getAttribute("walkin_calc");
+        String note = request.getParameter("note");
+
+        // Parse occupants from form
+        List<Occupant> occupants = new ArrayList<>();
+        String[] names = request.getParameterValues("occFullName");
+        String[] idCards = request.getParameterValues("occIdCard");
+        String[] phones = request.getParameterValues("occPhone");
+
+        if (names != null) {
+            for (int i = 0; i < names.length; i++) {
+                if (names[i] != null && !names[i].trim().isEmpty()) {
+                    Occupant o = new Occupant();
+                    o.setFullName(names[i].trim());
+                    o.setIdCardNumber(idCards != null && i < idCards.length ? idCards[i] : "");
+                    o.setPhoneNumber(phones != null && i < phones.length ? phones[i] : "");
+                    occupants.add(o);
+                }
+            }
+        }
+
+        // Validate occupant count against room capacity
+        if (calc.getRoomType() != null && occupants.size() > calc.getRoomType().getCapacity()) {
+            request.setAttribute("error", "So luong khach vuot qua suc chua phong (toi da "
+                    + calc.getRoomType().getCapacity() + " nguoi)");
+            handleWalkInStep3Get(request, response);
+            return;
+        }
+
+        try {
+            BookingResult result = staffBookingService.createWalkInBooking(
+                    customerId, typeId, checkIn, checkOut,
+                    calc.getTotal(), note, occupants);
+
+            if (result.isSuccess()) {
+                int bookingId = result.getBooking().getBookingId();
+
+                // Clear walk-in session data
+                session.removeAttribute("walkin_customerId");
+                session.removeAttribute("walkin_fullName");
+                session.removeAttribute("walkin_phone");
+                session.removeAttribute("walkin_email");
+                session.removeAttribute("walkin_idCard");
+                session.removeAttribute("walkin_typeId");
+                session.removeAttribute("walkin_roomId");
+                session.removeAttribute("walkin_checkIn");
+                session.removeAttribute("walkin_checkOut");
+                session.removeAttribute("walkin_calc");
+
+                // Redirect to payment flow
+                response.sendRedirect(request.getContextPath()
+                        + "/staff/payments/process?bookingId=" + bookingId + "&invoiceType=Booking");
+            } else {
+                request.setAttribute("error", result.getMessage());
+                handleWalkInStep3Get(request, response);
+            }
+        } catch (Exception e) {
+            request.setAttribute("error", "Loi khi tao booking: " + e.getMessage());
+            handleWalkInStep3Get(request, response);
         }
     }
 
