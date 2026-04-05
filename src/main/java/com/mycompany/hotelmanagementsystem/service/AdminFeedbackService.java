@@ -1,7 +1,7 @@
 package com.mycompany.hotelmanagementsystem.service;
 
-import com.mycompany.hotelmanagementsystem.entity.Feedback;
-import com.mycompany.hotelmanagementsystem.dal.FeedbackRepository;
+import com.mycompany.hotelmanagementsystem.model.Feedback;
+import com.mycompany.hotelmanagementsystem.dao.FeedbackRepository;
 import java.util.List;
 
 public class AdminFeedbackService {
