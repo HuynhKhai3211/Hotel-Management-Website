@@ -1,9 +1,9 @@
 package com.mycompany.hotelmanagementsystem.service;
 
 import com.mycompany.hotelmanagementsystem.constant.RoomStatus;
-import com.mycompany.hotelmanagementsystem.dal.BookingRepository;
-import com.mycompany.hotelmanagementsystem.dal.CustomerRepository;
-import com.mycompany.hotelmanagementsystem.dal.RoomRepository;
+import com.mycompany.hotelmanagementsystem.dao.BookingRepository;
+import com.mycompany.hotelmanagementsystem.dao.CustomerRepository;
+import com.mycompany.hotelmanagementsystem.dao.RoomRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
