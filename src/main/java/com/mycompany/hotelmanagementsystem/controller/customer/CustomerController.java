@@ -1,10 +1,13 @@
 package com.mycompany.hotelmanagementsystem.controller.customer;
 
-import com.mycompany.hotelmanagementsystem.util.SessionHelper;
-import com.mycompany.hotelmanagementsystem.util.ValidationHelper;
+import com.mycompany.hotelmanagementsystem.model.Feedback;
+import com.mycompany.hotelmanagementsystem.model.ServiceRequest;
+import com.mycompany.hotelmanagementsystem.model.Account;
+import com.mycompany.hotelmanagementsystem.model.Booking;
+import com.mycompany.hotelmanagementsystem.utils.SessionHelper;
+import com.mycompany.hotelmanagementsystem.utils.ValidationHelper;
 import com.mycompany.hotelmanagementsystem.service.*;
-import com.mycompany.hotelmanagementsystem.entity.*;
-import com.mycompany.hotelmanagementsystem.dal.AccountRepository;
+import com.mycompany.hotelmanagementsystem.dao.AccountRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
