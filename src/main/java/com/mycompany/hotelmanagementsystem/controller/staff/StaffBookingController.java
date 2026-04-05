@@ -2,16 +2,24 @@ package com.mycompany.hotelmanagementsystem.controller.staff;
 
 import com.mycompany.hotelmanagementsystem.service.StaffBookingService;
 import com.mycompany.hotelmanagementsystem.service.BookingService;
+import com.mycompany.hotelmanagementsystem.service.RoomSuggestionService;
 import com.mycompany.hotelmanagementsystem.constant.PaymentType;
 import com.mycompany.hotelmanagementsystem.entity.Booking;
 import com.mycompany.hotelmanagementsystem.entity.Occupant;
 import com.mycompany.hotelmanagementsystem.entity.BookingExtension;
+import com.mycompany.hotelmanagementsystem.entity.BookingRoom;
 import com.mycompany.hotelmanagementsystem.entity.Room;
 import com.mycompany.hotelmanagementsystem.entity.RoomType;
+import com.mycompany.hotelmanagementsystem.entity.RoomSuggestionItem;
+import com.mycompany.hotelmanagementsystem.entity.UnassignedRoomInfo;
+import com.mycompany.hotelmanagementsystem.dal.BookingRoomRepository;
+import com.mycompany.hotelmanagementsystem.dal.RoomRepository;
 import com.mycompany.hotelmanagementsystem.util.BookingCalcResponse;
 import com.mycompany.hotelmanagementsystem.util.BookingResult;
 import com.mycompany.hotelmanagementsystem.util.WalkInCustomerResult;
 import com.mycompany.hotelmanagementsystem.util.EmailHelper;
+import com.mycompany.hotelmanagementsystem.util.RoomSelectionItem;
+import com.mycompany.hotelmanagementsystem.util.MultiRoomCalcResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -23,26 +31,38 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet(urlPatterns = {
     "/staff/bookings",
     "/staff/bookings/detail",
     "/staff/bookings/assign",
+    "/staff/bookings/assign-room",
+    "/staff/bookings/checkout-room",
+    "/staff/bookings/complete-checkout",
+    "/staff/bookings/suggest-rooms",
+    "/staff/bookings/bulk-assign",
     "/staff/bookings/occupants",
     "/staff/bookings/checkout",
     "/staff/bookings/walkin",
     "/staff/bookings/walkin-room",
+    "/staff/bookings/walkin-multi",
     "/staff/bookings/walkin-confirm"
 })
 public class StaffBookingController extends HttpServlet {
     private StaffBookingService staffBookingService;
     private BookingService bookingService;
+    private RoomRepository roomRepository;
 
     @Override
     public void init() {
         staffBookingService = new StaffBookingService();
         bookingService = new BookingService();
+        roomRepository = new RoomRepository();
     }
 
     @Override
@@ -54,11 +74,16 @@ public class StaffBookingController extends HttpServlet {
             case "/staff/bookings" -> handleBookingList(request, response);
             case "/staff/bookings/detail" -> handleBookingDetail(request, response);
             case "/staff/bookings/assign" -> handleAssignRoomGet(request, response);
+            case "/staff/bookings/assign-room" -> handleAssignRoomGet(request, response);
             case "/staff/bookings/occupants" -> handleOccupantsGet(request, response);
             case "/staff/bookings/checkout" -> handleCheckoutGet(request, response);
+            case "/staff/bookings/checkout-room" -> handleCheckoutBookingRoom(request, response);
+            case "/staff/bookings/complete-checkout" -> handleCompleteCheckout(request, response);
             case "/staff/bookings/walkin" -> handleWalkInStep1Get(request, response);
             case "/staff/bookings/walkin-room" -> handleWalkInStep2Get(request, response);
+            case "/staff/bookings/walkin-multi" -> handleWalkInMultiGet(request, response);
             case "/staff/bookings/walkin-confirm" -> handleWalkInStep3Get(request, response);
+            case "/staff/bookings/suggest-rooms" -> handleSuggestRooms(request, response);
             default -> response.sendError(404);
         }
     }
@@ -70,10 +95,14 @@ public class StaffBookingController extends HttpServlet {
 
         switch (path) {
             case "/staff/bookings/assign" -> handleAssignRoomPost(request, response);
+            case "/staff/bookings/assign-room" -> handleAssignBookingRoom(request, response);
+            case "/staff/bookings/checkout-room" -> handleCheckoutBookingRoom(request, response);
+            case "/staff/bookings/bulk-assign" -> handleBulkAssign(request, response);
             case "/staff/bookings/occupants" -> handleOccupantsPost(request, response);
             case "/staff/bookings/checkout" -> handleCheckoutPost(request, response);
             case "/staff/bookings/walkin" -> handleWalkInStep1Post(request, response);
             case "/staff/bookings/walkin-room" -> handleWalkInStep2Post(request, response);
+            case "/staff/bookings/walkin-multi" -> handleWalkInMultiPost(request, response);
             case "/staff/bookings/walkin-confirm" -> handleWalkInStep3Post(request, response);
             default -> response.sendError(404);
         }
@@ -91,7 +120,18 @@ public class StaffBookingController extends HttpServlet {
             bookings = staffBookingService.getActiveBookings();
         }
 
+        // Load BookingRoom info for multi-room detection
+        BookingRoomRepository brRepo = new BookingRoomRepository();
+        Map<Integer, List<BookingRoom>> bookingRoomsMap = new HashMap<>();
+        for (Booking booking : bookings) {
+            List<BookingRoom> brs = brRepo.findByBookingId(booking.getBookingId());
+            if (!brs.isEmpty()) {
+                bookingRoomsMap.put(booking.getBookingId(), brs);
+            }
+        }
+
         request.setAttribute("bookings", bookings);
+        request.setAttribute("bookingRoomsMap", bookingRoomsMap);
         request.setAttribute("activePage", "bookings");
         request.setAttribute("pageTitle", "Danh sách đặt phòng");
         request.getRequestDispatcher("/WEB-INF/views/staff/bookings/list.jsp").forward(request, response);
@@ -114,6 +154,51 @@ public class StaffBookingController extends HttpServlet {
         List<Occupant> occupants = staffBookingService.getOccupants(bookingId);
         List<BookingExtension> extensions = staffBookingService.getExtensions(bookingId);
 
+        // Load booking rooms for multi-room support
+        Booking bookingWithRooms = staffBookingService.getBookingDetailWithRooms(bookingId);
+        var bookingRooms = bookingWithRooms != null ? bookingWithRooms.getBookingRooms() : null;
+        boolean isMultiRoom = bookingRooms != null && !bookingRooms.isEmpty();
+
+        // Room suggestions for unassigned rooms
+        Map<Integer, List<RoomSuggestionItem>> suggestionsByType = Collections.emptyMap();
+        boolean hasUnassignedRooms = false;
+        if (isMultiRoom) {
+            hasUnassignedRooms = bookingRooms.stream().anyMatch(br -> br.getRoomId() == null);
+            if (hasUnassignedRooms) {
+                RoomSuggestionService suggestionService = new RoomSuggestionService();
+                Map<Integer, Integer> needs = new LinkedHashMap<>();
+                for (var br : bookingRooms) {
+                    if (br.getRoomId() == null) {
+                        needs.merge(br.getTypeId(), 1, Integer::sum);
+                    }
+                }
+                Map<Integer, List<Room>> rawSuggestions = suggestionService.suggestNearbyRooms(
+                    needs, booking.getCheckInExpected(), booking.getCheckOutExpected());
+
+                // Convert Map<Integer, List<Room>> to Map<Integer, List<RoomSuggestionItem>>
+                suggestionsByType = new LinkedHashMap<>();
+                for (var entry : rawSuggestions.entrySet()) {
+                    int typeId = entry.getKey();
+                    List<RoomSuggestionItem> items = new ArrayList<>();
+                    for (Room room : entry.getValue()) {
+                        // Find corresponding BookingRoom for this type
+                        for (var br : bookingRooms) {
+                            if (br.getTypeId() == typeId && br.getRoomId() == null) {
+                                items.add(new RoomSuggestionItem(
+                                    br.getBookingRoomId(),
+                                    room.getRoomId(),
+                                    room.getRoomType() != null ? room.getRoomType().getTypeName() : "",
+                                    room.getRoomNumber()
+                                ));
+                                break;
+                            }
+                        }
+                    }
+                    suggestionsByType.put(typeId, items);
+                }
+            }
+        }
+
         // Handle success messages from checkout redirect
         if ("checkedout".equals(request.getParameter("success"))) {
             request.setAttribute("success", "Check-out thanh cong!");
@@ -122,12 +207,16 @@ public class StaffBookingController extends HttpServlet {
         request.setAttribute("booking", booking);
         request.setAttribute("occupants", occupants);
         request.setAttribute("extensions", extensions);
+        request.setAttribute("isMultiRoom", isMultiRoom);
+        request.setAttribute("bookingRooms", bookingRooms);
+        request.setAttribute("hasUnassignedRooms", hasUnassignedRooms);
+        request.setAttribute("suggestionsByType", suggestionsByType);
         request.setAttribute("activePage", "bookings");
         request.setAttribute("pageTitle", "Chi tiết booking #" + bookingId);
         request.getRequestDispatcher("/WEB-INF/views/staff/bookings/detail.jsp").forward(request, response);
     }
 
-    // UC-19.1: Assign Room
+    // UC-19.1: Assign Room (Multi-room optimized)
     private void handleAssignRoomGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int bookingId = parseIntParam(request, "bookingId");
@@ -142,10 +231,14 @@ public class StaffBookingController extends HttpServlet {
             return;
         }
 
-        List<Room> availableRooms = staffBookingService.getAvailableRoomsForBooking(bookingId);
+        // Get all unassigned rooms with suggestions
+        List<UnassignedRoomInfo> unassignedRooms = staffBookingService.getUnassignedRoomsWithSuggestions(bookingId);
+        BookingRoomRepository brRepo = new BookingRoomRepository();
+        List<BookingRoom> bookingRooms = brRepo.findByBookingIdWithDetails(bookingId);
 
         request.setAttribute("booking", booking);
-        request.setAttribute("availableRooms", availableRooms);
+        request.setAttribute("bookingRooms", bookingRooms);
+        request.setAttribute("unassignedRooms", unassignedRooms);
         request.setAttribute("activePage", "bookings");
         request.setAttribute("pageTitle", "Gán phòng cho booking #" + bookingId);
         request.getRequestDispatcher("/WEB-INF/views/staff/bookings/assign-room.jsp").forward(request, response);
@@ -372,7 +465,13 @@ public class StaffBookingController extends HttpServlet {
                 System.out.println("Email: " + result.getEmail());
             }
 
-            response.sendRedirect(request.getContextPath() + "/staff/bookings/walkin-room");
+            // Check booking type - single or multi room
+            String bookingType = request.getParameter("bookingType");
+            if ("multi".equals(bookingType)) {
+                response.sendRedirect(request.getContextPath() + "/staff/bookings/walkin-multi");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/staff/bookings/walkin-room");
+            }
 
         } catch (Exception e) {
             request.setAttribute("error", "Loi khi xu ly thong tin khach: " + e.getMessage());
@@ -460,6 +559,13 @@ public class StaffBookingController extends HttpServlet {
                 return;
             }
 
+            LocalDateTime now = LocalDateTime.now();
+            if (checkIn.isBefore(now)) {
+                request.setAttribute("error", "Ngay nhan phong khong duoc trong qua khu");
+                handleWalkInStep2Get(request, response);
+                return;
+            }
+
             // Find available rooms
             List<Room> availableRooms = staffBookingService.findAvailableRoomsForDates(typeId, checkIn, checkOut);
             if (availableRooms.isEmpty()) {
@@ -522,18 +628,156 @@ public class StaffBookingController extends HttpServlet {
         }
     }
 
-    // Step 3: Confirm + show summary
-    private void handleWalkInStep3Get(HttpServletRequest request, HttpServletResponse response)
+    // Walk-in Multi-Room: Show room type + qty selection
+    private void handleWalkInMultiGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        if (session.getAttribute("walkin_customerId") == null
-                || session.getAttribute("walkin_calc") == null) {
+        if (session.getAttribute("walkin_customerId") == null) {
             response.sendRedirect(request.getContextPath() + "/staff/bookings/walkin");
             return;
         }
 
+        List<RoomType> roomTypes = staffBookingService.getAllRoomTypes();
+
+        // Calculate availability for default dates (today to tomorrow)
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime defaultCheckIn = now.plusHours(2).withMinute(0).withSecond(0);
+        LocalDateTime defaultCheckOut = defaultCheckIn.plusDays(1);
+
+        Map<Integer, Integer> availability = new HashMap<>();
+        for (RoomType rt : roomTypes) {
+            int count = roomRepository.countAvailableForDates(rt.getTypeId(), defaultCheckIn, defaultCheckOut);
+            availability.put(rt.getTypeId(), count);
+        }
+
+        request.setAttribute("roomTypes", roomTypes);
+        request.setAttribute("availability", availability);
+        request.setAttribute("walkin_fullName", session.getAttribute("walkin_fullName"));
+        request.setAttribute("walkin_phone", session.getAttribute("walkin_phone"));
+        request.setAttribute("selectedCheckIn", session.getAttribute("walkin_checkIn") != null
+            ? ((LocalDateTime) session.getAttribute("walkin_checkIn")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+            : defaultCheckIn.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")));
+        request.setAttribute("selectedCheckOut", session.getAttribute("walkin_checkOut") != null
+            ? ((LocalDateTime) session.getAttribute("walkin_checkOut")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+            : defaultCheckOut.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")));
+        request.setAttribute("activePage", "walkin");
+        request.setAttribute("pageTitle", "Chon phong - Dat phong tai quay");
+        request.getRequestDispatcher("/WEB-INF/views/staff/bookings/walkin-step2-multi.jsp").forward(request, response);
+    }
+
+    // Walk-in Multi-Room: Handle form submission with selections
+    private void handleWalkInMultiPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        if (session.getAttribute("walkin_customerId") == null) {
+            response.sendRedirect(request.getContextPath() + "/staff/bookings/walkin");
+            return;
+        }
+
+        try {
+            // Parse check-in/out
+            String checkInStr = request.getParameter("checkIn");
+            String checkOutStr = request.getParameter("checkOut");
+            if (checkInStr == null || checkOutStr == null || checkInStr.isEmpty() || checkOutStr.isEmpty()) {
+                request.setAttribute("error", "Vui long chon ngay nhan/tra phong");
+                handleWalkInMultiGet(request, response);
+                return;
+            }
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+            LocalDateTime checkIn = LocalDateTime.parse(checkInStr, formatter);
+            LocalDateTime checkOut = LocalDateTime.parse(checkOutStr, formatter);
+
+            if (!checkOut.isAfter(checkIn)) {
+                request.setAttribute("error", "Ngay tra phong phai sau ngay nhan phong");
+                handleWalkInMultiGet(request, response);
+                return;
+            }
+
+            LocalDateTime now = LocalDateTime.now();
+            if (checkIn.isBefore(now)) {
+                request.setAttribute("error", "Ngay nhan phong khong duoc trong qua khu");
+                handleWalkInMultiGet(request, response);
+                return;
+            }
+
+            // Parse room selections (typeId and qty)
+            String[] typeIds = request.getParameterValues("typeId");
+            String[] qtys = request.getParameterValues("qty");
+
+            if (typeIds == null || typeIds.length == 0) {
+                request.setAttribute("error", "Vui long chon it nhat 1 loai phong");
+                handleWalkInMultiGet(request, response);
+                return;
+            }
+
+            List<RoomSelectionItem> selections = new ArrayList<>();
+            for (int i = 0; i < typeIds.length; i++) {
+                if (typeIds[i] != null && !typeIds[i].isEmpty()) {
+                    int typeId = Integer.parseInt(typeIds[i]);
+                    int qty = 1;
+                    if (qtys != null && i < qtys.length) {
+                        qty = Integer.parseInt(qtys[i]);
+                    }
+                    selections.add(new RoomSelectionItem(typeId, qty));
+                }
+            }
+
+            if (selections.isEmpty()) {
+                request.setAttribute("error", "Vui long chon it nhat 1 loai phong");
+                handleWalkInMultiGet(request, response);
+                return;
+            }
+
+            // Calculate total price
+            MultiRoomCalcResponse multiCalc = bookingService.calculateMultiRoomBooking(
+                selections, checkIn, checkOut, null);
+
+            if (multiCalc == null || multiCalc.getRoomCalcs() == null || multiCalc.getRoomCalcs().isEmpty()) {
+                request.setAttribute("error", "Khong co phong trong. Vui long chon loai phong khac.");
+                handleWalkInMultiGet(request, response);
+                return;
+            }
+
+            // Store in session
+            session.setAttribute("walkin_selections", selections);
+            session.setAttribute("walkin_checkIn", checkIn);
+            session.setAttribute("walkin_checkOut", checkOut);
+            session.setAttribute("walkin_multiCalc", multiCalc);
+
+            // Redirect to confirm page
+            response.sendRedirect(request.getContextPath() + "/staff/bookings/walkin-confirm");
+
+        } catch (Exception e) {
+            request.setAttribute("error", "Loi xu ly: " + e.getMessage());
+            handleWalkInMultiGet(request, response);
+        }
+    }
+
+    // Step 3: Confirm + show summary
+    private void handleWalkInStep3Get(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        if (session.getAttribute("walkin_customerId") == null) {
+            response.sendRedirect(request.getContextPath() + "/staff/bookings/walkin");
+            return;
+        }
+
+        // Check for multi-room or single-room
+        MultiRoomCalcResponse multiCalc = (MultiRoomCalcResponse) session.getAttribute("walkin_multiCalc");
         BookingCalcResponse calc = (BookingCalcResponse) session.getAttribute("walkin_calc");
-        request.setAttribute("calc", calc);
+
+        if (multiCalc != null) {
+            request.setAttribute("multiCalc", multiCalc);
+            request.setAttribute("isMultiRoom", true);
+        } else if (calc != null) {
+            request.setAttribute("calc", calc);
+            request.setAttribute("isMultiRoom", false);
+        } else {
+            response.sendRedirect(request.getContextPath() + "/staff/bookings/walkin");
+            return;
+        }
+
         request.setAttribute("walkin_fullName", session.getAttribute("walkin_fullName"));
         request.setAttribute("walkin_phone", session.getAttribute("walkin_phone"));
         request.setAttribute("walkin_email", session.getAttribute("walkin_email"));
@@ -547,18 +791,17 @@ public class StaffBookingController extends HttpServlet {
     private void handleWalkInStep3Post(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        if (session.getAttribute("walkin_customerId") == null
-                || session.getAttribute("walkin_calc") == null) {
+        if (session.getAttribute("walkin_customerId") == null) {
             response.sendRedirect(request.getContextPath() + "/staff/bookings/walkin");
             return;
         }
 
         int customerId = (int) session.getAttribute("walkin_customerId");
-        int typeId = (int) session.getAttribute("walkin_typeId");
-        LocalDateTime checkIn = (LocalDateTime) session.getAttribute("walkin_checkIn");
-        LocalDateTime checkOut = (LocalDateTime) session.getAttribute("walkin_checkOut");
-        BookingCalcResponse calc = (BookingCalcResponse) session.getAttribute("walkin_calc");
         String note = request.getParameter("note");
+
+        // Check for multi-room or single-room
+        MultiRoomCalcResponse multiCalc = (MultiRoomCalcResponse) session.getAttribute("walkin_multiCalc");
+        BookingCalcResponse calc = (BookingCalcResponse) session.getAttribute("walkin_calc");
 
         // Parse occupants from form
         List<Occupant> occupants = new ArrayList<>();
@@ -578,38 +821,57 @@ public class StaffBookingController extends HttpServlet {
             }
         }
 
-        // Validate occupant count against room capacity
-        if (calc.getRoomType() != null && occupants.size() > calc.getRoomType().getCapacity()) {
-            request.setAttribute("error", "So luong khach vuot qua suc chua phong (toi da "
-                    + calc.getRoomType().getCapacity() + " nguoi)");
-            handleWalkInStep3Get(request, response);
-            return;
-        }
-
         try {
-            BookingResult result = staffBookingService.createWalkInBooking(
-                    customerId, typeId, checkIn, checkOut,
-                    calc.getTotal(), note, occupants);
+            BookingResult result = null;
 
-            if (result.isSuccess()) {
-                int bookingId = result.getBooking().getBookingId();
+            if (multiCalc != null) {
+                // Multi-room booking
+                List<RoomSelectionItem> selections = (List<RoomSelectionItem>) session.getAttribute("walkin_selections");
+                LocalDateTime checkIn = (LocalDateTime) session.getAttribute("walkin_checkIn");
+                LocalDateTime checkOut = (LocalDateTime) session.getAttribute("walkin_checkOut");
 
-                // Clear walk-in session data
-                session.removeAttribute("walkin_customerId");
-                session.removeAttribute("walkin_fullName");
-                session.removeAttribute("walkin_phone");
-                session.removeAttribute("walkin_email");
-                session.removeAttribute("walkin_idCard");
-                session.removeAttribute("walkin_typeId");
-                session.removeAttribute("walkin_roomId");
-                session.removeAttribute("walkin_checkIn");
-                session.removeAttribute("walkin_checkOut");
-                session.removeAttribute("walkin_calc");
+                result = staffBookingService.createWalkInMultiRoom(
+                    customerId, selections, checkIn, checkOut,
+                    multiCalc.getTotal(), note, occupants);
 
-                // Redirect to payment flow
-                response.sendRedirect(request.getContextPath()
-                        + "/staff/payments/process?bookingId=" + bookingId + "&invoiceType=Booking");
+                if (result.isSuccess()) {
+                    int bookingId = result.getBooking().getBookingId();
+                    clearWalkInSession(session);
+
+                    response.sendRedirect(request.getContextPath()
+                            + "/staff/payments/process?bookingId=" + bookingId + "&invoiceType=Booking");
+                }
+            } else if (calc != null) {
+                // Single room booking
+                int typeId = (int) session.getAttribute("walkin_typeId");
+                LocalDateTime checkIn = (LocalDateTime) session.getAttribute("walkin_checkIn");
+                LocalDateTime checkOut = (LocalDateTime) session.getAttribute("walkin_checkOut");
+
+                // Validate occupant count against room capacity
+                if (calc.getRoomType() != null && occupants.size() > calc.getRoomType().getCapacity()) {
+                    request.setAttribute("error", "So luong khach vuot qua suc chua phong (toi da "
+                            + calc.getRoomType().getCapacity() + " nguoi)");
+                    handleWalkInStep3Get(request, response);
+                    return;
+                }
+
+                result = staffBookingService.createWalkInBooking(
+                        customerId, typeId, checkIn, checkOut,
+                        calc.getTotal(), note, occupants);
+
+                if (result.isSuccess()) {
+                    int bookingId = result.getBooking().getBookingId();
+                    clearWalkInSession(session);
+
+                    response.sendRedirect(request.getContextPath()
+                            + "/staff/payments/process?bookingId=" + bookingId + "&invoiceType=Booking");
+                }
             } else {
+                response.sendRedirect(request.getContextPath() + "/staff/bookings/walkin");
+                return;
+            }
+
+            if (result != null && !result.isSuccess()) {
                 request.setAttribute("error", result.getMessage());
                 handleWalkInStep3Get(request, response);
             }
@@ -617,6 +879,233 @@ public class StaffBookingController extends HttpServlet {
             request.setAttribute("error", "Loi khi tao booking: " + e.getMessage());
             handleWalkInStep3Get(request, response);
         }
+    }
+
+    private void clearWalkInSession(HttpSession session) {
+        session.removeAttribute("walkin_customerId");
+        session.removeAttribute("walkin_fullName");
+        session.removeAttribute("walkin_phone");
+        session.removeAttribute("walkin_email");
+        session.removeAttribute("walkin_idCard");
+        session.removeAttribute("walkin_typeId");
+        session.removeAttribute("walkin_roomId");
+        session.removeAttribute("walkin_checkIn");
+        session.removeAttribute("walkin_checkOut");
+        session.removeAttribute("walkin_calc");
+        session.removeAttribute("walkin_selections");
+        session.removeAttribute("walkin_multiCalc");
+    }
+
+    private void handleSuggestRooms(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int bookingId = parseIntParam(request, "bookingId");
+        if (bookingId <= 0) {
+            response.sendError(400, "Invalid booking ID");
+            return;
+        }
+
+        Booking booking = staffBookingService.getBookingDetail(bookingId);
+        if (booking == null) {
+            response.sendError(404, "Booking not found");
+            return;
+        }
+
+        BookingRoomRepository brRepo = new BookingRoomRepository();
+        List<BookingRoom> bookingRooms = brRepo.findByBookingIdWithDetails(bookingId);
+
+        // Build needs map: typeId -> count of unassigned BookingRooms
+        Map<Integer, Integer> needs = new LinkedHashMap<>();
+        for (BookingRoom br : bookingRooms) {
+            if (br.getRoomId() == null) {
+                needs.merge(br.getTypeId(), 1, Integer::sum);
+            }
+        }
+
+        if (needs.isEmpty()) {
+            request.setAttribute("suggestionsEmpty", true);
+        } else {
+            RoomSuggestionService suggestionService = new RoomSuggestionService();
+            Map<Integer, List<Room>> rawSuggestions = suggestionService.suggestNearbyRooms(
+                needs, booking.getCheckInExpected(), booking.getCheckOutExpected());
+
+            // Convert to List<RoomSuggestionItem>
+            List<RoomSuggestionItem> suggestionItems = new ArrayList<>();
+            for (Map.Entry<Integer, List<Room>> entry : rawSuggestions.entrySet()) {
+                for (Room room : entry.getValue()) {
+                    for (BookingRoom br : bookingRooms) {
+                        if (br.getTypeId() == entry.getKey() && br.getRoomId() == null) {
+                            suggestionItems.add(new RoomSuggestionItem(
+                                br.getBookingRoomId(),
+                                room.getRoomId(),
+                                room.getRoomType() != null ? room.getRoomType().getTypeName() : "",
+                                room.getRoomNumber()
+                            ));
+                            break;
+                        }
+                    }
+                }
+            }
+            request.setAttribute("suggestions", suggestionItems);
+        }
+
+        request.setAttribute("booking", booking);
+        request.setAttribute("bookingRooms", bookingRooms);
+        request.setAttribute("activePage", "bookings");
+        request.setAttribute("pageTitle", "Go y chon phong - Booking #" + bookingId);
+        request.getRequestDispatcher("/WEB-INF/views/staff/bookings/suggest-rooms.jsp").forward(request, response);
+    }
+
+    private void handleBulkAssign(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int bookingId = parseIntParam(request, "bookingId");
+        if (bookingId <= 0) {
+            response.sendError(400, "Invalid booking ID");
+            return;
+        }
+
+        Map<Integer, Integer> assignments = new LinkedHashMap<>();
+
+        // Handle acceptedSuggestions format: "bookingRoomId:roomId"
+        String[] acceptedSuggestions = request.getParameterValues("acceptedSuggestions");
+        if (acceptedSuggestions != null) {
+            for (String suggestion : acceptedSuggestions) {
+                if (suggestion != null && suggestion.contains(":")) {
+                    String[] parts = suggestion.split(":");
+                    if (parts.length == 2) {
+                        try {
+                            int brId = Integer.parseInt(parts[0]);
+                            int roomId = Integer.parseInt(parts[1]);
+                            if (brId > 0 && roomId > 0) {
+                                assignments.put(brId, roomId);
+                            }
+                        } catch (NumberFormatException e) {
+                            // ignore invalid format
+                        }
+                    }
+                }
+            }
+        }
+
+        // Handle bookingRoomId + roomId_${bookingRoomId} pairs (new format from assign-room.jsp)
+        String[] brIds = request.getParameterValues("bookingRoomId");
+        if (brIds != null) {
+            for (String brIdStr : brIds) {
+                if (brIdStr != null && !brIdStr.isEmpty()) {
+                    try {
+                        int brId = Integer.parseInt(brIdStr);
+                        String roomIdParam = "roomId_" + brId;
+                        String roomIdStr = request.getParameter(roomIdParam);
+                        if (roomIdStr != null && !roomIdStr.isEmpty()) {
+                            int roomId = Integer.parseInt(roomIdStr);
+                            if (brId > 0 && roomId > 0) {
+                                assignments.put(brId, roomId);
+                            }
+                        }
+                    } catch (NumberFormatException e) {
+                        // ignore invalid
+                    }
+                }
+            }
+        }
+
+        // Also handle individual bookingRoomId + suggestedRoomId pairs (legacy format)
+        String[] roomIds = request.getParameterValues("suggestedRoomId");
+        if (brIds != null && roomIds != null) {
+            for (int i = 0; i < brIds.length; i++) {
+                if (brIds[i] != null && roomIds[i] != null && !brIds[i].isEmpty() && !roomIds[i].isEmpty()) {
+                    int brId = Integer.parseInt(brIds[i]);
+                    int roomId = Integer.parseInt(roomIds[i]);
+                    if (brId > 0 && roomId > 0) {
+                        assignments.put(brId, roomId);
+                    }
+                }
+            }
+        }
+
+        if (!assignments.isEmpty()) {
+            staffBookingService.bulkAssignRooms(bookingId, assignments);
+        }
+
+        response.sendRedirect(request.getContextPath() + "/staff/bookings/detail?id=" + bookingId);
+    }
+
+    private void handleAssignBookingRoom(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int bookingId = parseIntParam(request, "bookingId");
+        int bookingRoomId = parseIntParam(request, "bookingRoomId");
+        int roomId = parseIntParam(request, "roomId");
+
+        if (bookingRoomId <= 0 || roomId <= 0) {
+            response.sendRedirect(request.getContextPath() + "/staff/bookings/detail?id=" + bookingId);
+            return;
+        }
+
+        staffBookingService.assignRoomToBookingRoom(bookingRoomId, roomId);
+        response.sendRedirect(request.getContextPath() + "/staff/bookings/detail?id=" + bookingId);
+    }
+
+    private void handleCheckoutBookingRoom(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int bookingId = parseIntParam(request, "bookingId");
+        int bookingRoomId = parseIntParam(request, "bookingRoomId");
+
+        if (bookingRoomId <= 0) {
+            response.sendRedirect(request.getContextPath() + "/staff/bookings/detail?id=" + bookingId);
+            return;
+        }
+
+        BookingRoomRepository brRepo = new BookingRoomRepository();
+        BookingRoom br = brRepo.findById(bookingRoomId);
+        if (br == null) {
+            response.sendRedirect(request.getContextPath() + "/staff/bookings/detail?id=" + bookingId);
+            return;
+        }
+
+        // Check if payment is needed BEFORE checkout
+        boolean needsPayment = staffBookingService.needsCheckoutPaymentForRoom(bookingRoomId);
+
+        if (needsPayment) {
+            // Store bookingRoomId in session for checkout after payment
+            request.getSession().setAttribute("pendingCheckoutBookingRoomId", bookingRoomId);
+            request.getSession().setAttribute("pendingCheckoutBookingId", bookingId);
+            // Payment first, checkout will happen after payment is completed
+            response.sendRedirect(request.getContextPath() + "/staff/payments/process?bookingId=" + bookingId + "&invoiceType=Remaining");
+            return;
+        }
+
+        // No payment needed, proceed with checkout directly
+        boolean success = staffBookingService.checkoutBookingRoom(bookingRoomId);
+
+        if (success) {
+            response.sendRedirect(request.getContextPath() + "/staff/bookings/detail?id=" + bookingId + "&success=checkedout");
+        } else {
+            response.sendRedirect(request.getContextPath() + "/staff/bookings/detail?id=" + bookingId);
+        }
+    }
+
+    // Handle checkout after payment is completed
+    private void handleCompleteCheckout(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        Integer bookingRoomId = (Integer) request.getSession().getAttribute("pendingCheckoutBookingRoomId");
+        Integer bookingId = (Integer) request.getSession().getAttribute("pendingCheckoutBookingId");
+
+        if (bookingRoomId != null && bookingRoomId > 0 && bookingId != null && bookingId > 0) {
+            // Perform checkout
+            boolean success = staffBookingService.checkoutBookingRoom(bookingRoomId);
+
+            // Clear session attributes
+            request.getSession().removeAttribute("pendingCheckoutBookingRoomId");
+            request.getSession().removeAttribute("pendingCheckoutBookingId");
+
+            if (success) {
+                response.sendRedirect(request.getContextPath() + "/staff/bookings/detail?id=" + bookingId + "&success=checkedout");
+                return;
+            }
+        }
+
+        // Fallback redirect
+        int fallbackBookingId = bookingId != null ? bookingId : 0;
+        response.sendRedirect(request.getContextPath() + "/staff/bookings/detail?id=" + fallbackBookingId);
     }
 
     private int parseIntParam(HttpServletRequest request, String name) {
