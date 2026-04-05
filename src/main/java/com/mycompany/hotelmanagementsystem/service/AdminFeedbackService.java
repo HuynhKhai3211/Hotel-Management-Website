@@ -1,7 +1,7 @@
 package com.mycompany.hotelmanagementsystem.service;
 
-import com.mycompany.hotelmanagementsystem.model.Feedback;
-import com.mycompany.hotelmanagementsystem.dao.FeedbackRepository;
+import com.mycompany.hotelmanagementsystem.entity.Feedback;
+import com.mycompany.hotelmanagementsystem.dal.FeedbackRepository;
 import java.util.List;
 
 public class AdminFeedbackService {
@@ -13,6 +13,10 @@ public class AdminFeedbackService {
 
     public List<Feedback> getAllFeedback() {
         return feedbackRepository.findAllWithDetails();
+    }
+
+    public List<Feedback> getVisibleFeedback(int limit) {
+        return feedbackRepository.findVisibleWithDetails(limit);
     }
 
     public boolean toggleVisibility(int feedbackId) {
