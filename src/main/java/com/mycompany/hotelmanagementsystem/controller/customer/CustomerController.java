@@ -1,13 +1,10 @@
 package com.mycompany.hotelmanagementsystem.controller.customer;
 
-import com.mycompany.hotelmanagementsystem.model.Account;
-import com.mycompany.hotelmanagementsystem.model.Feedback;
-import com.mycompany.hotelmanagementsystem.model.ServiceRequest;
-import com.mycompany.hotelmanagementsystem.model.Booking;
 import com.mycompany.hotelmanagementsystem.util.SessionHelper;
 import com.mycompany.hotelmanagementsystem.util.ValidationHelper;
 import com.mycompany.hotelmanagementsystem.service.*;
-import com.mycompany.hotelmanagementsystem.dao.AccountRepository;
+import com.mycompany.hotelmanagementsystem.entity.*;
+import com.mycompany.hotelmanagementsystem.dal.AccountRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -18,7 +15,8 @@ import java.util.List;
 @WebServlet(urlPatterns = {"/customer/profile", "/customer/bookings", "/customer/booking",
     "/customer/service-request", "/customer/feedback",
     "/customer/booking/cancel", "/customer/feedback/update", "/customer/feedback/delete",
-    "/customer/request/cancel", "/customer/reviews", "/customer/requests"})
+    "/customer/request/cancel", "/customer/reviews", "/customer/requests",
+    "/customer/requests/create"})
 public class CustomerController extends HttpServlet {
     private AccountRepository accountRepository;
     private BookingService bookingService;
@@ -53,6 +51,7 @@ public class CustomerController extends HttpServlet {
         switch (path) {
             case "/customer/profile" -> handleProfilePost(request, response);
             case "/customer/service-request" -> handleServiceRequestPost(request, response);
+            case "/customer/requests/create" -> handleCreateRequestPost(request, response);
             case "/customer/feedback" -> handleFeedbackPost(request, response);
             case "/customer/booking/cancel" -> handleCancelBookingPost(request, response);
             case "/customer/feedback/update" -> handleFeedbackUpdatePost(request, response);
@@ -137,6 +136,11 @@ public class CustomerController extends HttpServlet {
         boolean canLeaveFeedback = !feedbackService.hasFeedback(bookingId) &&
             ("CheckedOut".equals(booking.getStatus()) || "Confirmed".equals(booking.getStatus()));
 
+        // Multi-room support
+        Booking bookingWithRooms = bookingService.getBookingWithRooms(bookingId);
+        var bookingRooms = bookingWithRooms != null ? bookingWithRooms.getBookingRooms() : null;
+        boolean isMultiRoom = bookingRooms != null && !bookingRooms.isEmpty();
+
         // Flash messages
         String successMsg = (String) request.getSession().getAttribute("successMessage");
         String errorMsg = (String) request.getSession().getAttribute("errorMessage");
@@ -149,6 +153,10 @@ public class CustomerController extends HttpServlet {
         request.setAttribute("canLeaveFeedback", canLeaveFeedback);
         request.setAttribute("successMessage", successMsg);
         request.setAttribute("errorMessage", errorMsg);
+        request.setAttribute("isMultiRoom", isMultiRoom);
+        request.setAttribute("bookingRooms", bookingRooms);
+        request.setAttribute("earlySurcharge", booking.getEarlySurcharge());
+        request.setAttribute("lateSurcharge", booking.getLateSurcharge());
 
         request.getRequestDispatcher("/WEB-INF/views/customer/booking-detail.jsp").forward(request, response);
     }
@@ -171,6 +179,28 @@ public class CustomerController extends HttpServlet {
         }
 
         response.sendRedirect(request.getContextPath() + "/customer/booking?id=" + bookingId);
+    }
+
+    private void handleCreateRequestPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        Integer bookingId = parseIntParam(request, "bookingId");
+        String serviceType = request.getParameter("serviceType");
+        String description = request.getParameter("description");
+        String priority = request.getParameter("priority");
+
+        if (bookingId == null || serviceType == null || serviceType.isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/customer/requests");
+            return;
+        }
+
+        Account account = SessionHelper.getLoggedInAccount(request);
+        var result = serviceRequestService.createRequest(
+                bookingId, account.getAccountId(), serviceType, description,
+                priority != null && !priority.isEmpty() ? priority : "Normal");
+
+        request.getSession().setAttribute(
+                result.isSuccess() ? "successMessage" : "errorMessage", result.getMessage());
+        response.sendRedirect(request.getContextPath() + "/customer/requests");
     }
 
     private void handleFeedbackPost(HttpServletRequest request, HttpServletResponse response)
@@ -286,6 +316,11 @@ public class CustomerController extends HttpServlet {
         Account account = SessionHelper.getLoggedInAccount(request);
         List<Booking> bookings = bookingService.getCustomerBookings(account.getAccountId());
 
+        // Bookings that are checked-in (eligible for service requests)
+        List<Booking> checkedInBookings = bookings.stream()
+                .filter(b -> "CheckedIn".equals(b.getStatus()))
+                .toList();
+
         List<ServiceRequest> allRequests = new ArrayList<>();
         for (Booking booking : bookings) {
             List<ServiceRequest> requests = serviceRequestService.getBookingRequests(booking.getBookingId());
@@ -300,7 +335,16 @@ public class CustomerController extends HttpServlet {
             return b.getRequestTime().compareTo(a.getRequestTime());
         });
 
+        // Flash messages
+        String successMsg = (String) request.getSession().getAttribute("successMessage");
+        String errorMsg = (String) request.getSession().getAttribute("errorMessage");
+        request.getSession().removeAttribute("successMessage");
+        request.getSession().removeAttribute("errorMessage");
+
         request.setAttribute("serviceRequests", allRequests);
+        request.setAttribute("checkedInBookings", checkedInBookings);
+        request.setAttribute("successMessage", successMsg);
+        request.setAttribute("errorMessage", errorMsg);
         request.getRequestDispatcher("/WEB-INF/views/customer/requests.jsp").forward(request, response);
     }
 
