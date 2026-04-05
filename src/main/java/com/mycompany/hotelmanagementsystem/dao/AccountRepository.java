@@ -1,6 +1,6 @@
-package com.mycompany.hotelmanagementsystem.dao;
+package com.mycompany.hotelmanagementsystem.dal;
 
-import com.mycompany.hotelmanagementsystem.model.Account;
+import com.mycompany.hotelmanagementsystem.entity.Account;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -28,6 +28,11 @@ public class AccountRepository extends BaseRepository<Account> {
     public Account findByEmail(String email) {
         String sql = "SELECT * FROM Account WHERE email = ?";
         return queryOne(sql, email);
+    }
+
+    public Account findByPhone(String phone) {
+        String sql = "SELECT * FROM Account WHERE phone = ?";
+        return queryOne(sql, phone);
     }
 
     public Account findById(int accountId) {
