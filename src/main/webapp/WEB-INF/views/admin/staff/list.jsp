@@ -1,11 +1,11 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Quản lý nhân viên - Admin Portal</title>
+    <title>Quản lý nhân viên - Cổng Quản Trị</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -25,7 +25,7 @@
             <div class="app-content">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin/dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin/dashboard">Bảng điều khiển</a></li>
                         <li class="breadcrumb-item active">Nhân viên</li>
                     </ol>
                 </nav>
@@ -33,6 +33,13 @@
                 <c:if test="${not empty success}">
                     <div class="alert alert-success alert-dismissible fade show">
                         <i class="bi bi-check-circle me-2"></i>${success}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                </c:if>
+
+                <c:if test="${not empty error}">
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <i class="bi bi-exclamation-circle me-2"></i>${error}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 </c:if>
