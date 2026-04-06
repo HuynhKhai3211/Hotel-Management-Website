@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+=======
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
@@ -6,7 +10,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<<<<<<< HEAD
     <title>Chi tiết phòng ${room.roomNumber} - Staff Portal</title>
+=======
+    <title>Chi tiết phòng ${room.roomNumber} - Cổng Nhân Viên</title>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -52,6 +60,16 @@
                                     </c:when>
                                 </c:choose>
                             </div>
+<<<<<<< HEAD
+=======
+                            <c:if test="${not empty room.roomType.images}">
+                                <div style="height:220px;overflow:hidden;">
+                                    <img src="${pageContext.request.contextPath}${room.roomType.images[0].imageUrl}"
+                                         alt="${room.roomType.typeName}"
+                                         style="width:100%;height:100%;object-fit:cover;">
+                                </div>
+                            </c:if>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                             <div class="card-body">
                                 <table class="table table-borderless mb-0">
                                     <tr>
@@ -87,6 +105,17 @@
                     </div>
 
                     <div class="col-lg-6">
+<<<<<<< HEAD
+=======
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <a href="${pageContext.request.contextPath}/staff/rooms/history?id=${room.roomId}"
+                                   class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-clock-history me-1"></i>Lịch sử sử dụng
+                                </a>
+                            </div>
+                        </div>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                         <div class="card">
                             <div class="card-header bg-white">
                                 <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Thao tác</h5>

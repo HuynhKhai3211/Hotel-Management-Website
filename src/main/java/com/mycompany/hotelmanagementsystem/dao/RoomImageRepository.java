@@ -12,6 +12,11 @@ public class RoomImageRepository extends BaseRepository<RoomImage> {
         RoomImage img = new RoomImage();
         img.setImageId(rs.getInt("image_id"));
         img.setTypeId(rs.getInt("type_id"));
+<<<<<<< HEAD
+=======
+        int roomId = rs.getInt("room_id");
+        img.setRoomId(rs.wasNull() ? null : roomId);
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         img.setImageUrl(rs.getString("image_url"));
         return img;
     }
@@ -25,4 +30,27 @@ public class RoomImageRepository extends BaseRepository<RoomImage> {
         String sql = "SELECT TOP 1 * FROM RoomImage WHERE type_id = ? ORDER BY image_id";
         return queryOne(sql, typeId);
     }
+<<<<<<< HEAD
+=======
+
+    public int insert(int typeId, String imageUrl) {
+        String sql = "INSERT INTO RoomImage (type_id, image_url) VALUES (?, ?)";
+        return executeInsert(sql, typeId, imageUrl);
+    }
+
+    public int deleteById(int imageId) {
+        String sql = "DELETE FROM RoomImage WHERE image_id = ?";
+        return executeUpdate(sql, imageId);
+    }
+
+    public List<RoomImage> findByRoomId(int roomId) {
+        String sql = "SELECT * FROM RoomImage WHERE room_id = ? ORDER BY image_id";
+        return queryList(sql, roomId);
+    }
+
+    public int insertForRoom(int roomId, String imageUrl) {
+        String sql = "INSERT INTO RoomImage (type_id, room_id, image_url) SELECT type_id, ?, ? FROM Room WHERE room_id = ?";
+        return executeInsert(sql, roomId, imageUrl, roomId);
+    }
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 }

@@ -88,7 +88,11 @@ const AdminTable = (function() {
         let html = `
             <div class="pagination-wrapper">
                 <div class="pagination-info">
+<<<<<<< HEAD
                     <span data-start="${start}" data-end="${end}" data-total="${total}"></span>
+=======
+                    <span>Hi\u1EC3n th\u1ECB ${start}-${end} c\u1EE7a ${total}</span>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                 </div>
                 <div class="pagination-controls">
                     <div class="per-page-wrapper">

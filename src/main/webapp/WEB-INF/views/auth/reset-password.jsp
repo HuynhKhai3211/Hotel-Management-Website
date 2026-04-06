@@ -5,7 +5,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<<<<<<< HEAD
     <title>Dat lai mat khau - Luxury Hotel</title>
+=======
+    <title>Đặt lại mật khẩu - Luxury Hotel</title>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -18,6 +22,7 @@
         <div class="auth-hero d-none d-lg-flex">
             <div class="auth-hero-content">
                 <div class="auth-hero-logo">Luxury<span>Hotel</span></div>
+<<<<<<< HEAD
                 <h2 class="mb-4" style="font-family: var(--font-display);">Dat mat khau moi</h2>
                 <p class="auth-hero-text">Tao mat khau moi cho tai khoan cua ban. Mat khau phai co it nhat 8 ky tu.</p>
                 <div class="mt-5">
@@ -32,6 +37,22 @@
                     <div class="d-flex align-items-center gap-3">
                         <i class="bi bi-3-circle-fill" style="color: var(--secondary);"></i>
                         <span>Dat mat khau moi</span>
+=======
+                <h2 class="mb-4" style="font-family: var(--font-display);">Đặt mật khẩu mới</h2>
+                <p class="auth-hero-text">Tạo mật khẩu mới cho tài khoản của bạn. Mật khẩu phải có ít nhất 8 ký tự.</p>
+                <div class="mt-5">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <i class="bi bi-check-circle-fill" style="color: var(--secondary);"></i>
+                        <span>Nhập email của bạn</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <i class="bi bi-check-circle-fill" style="color: var(--secondary);"></i>
+                        <span>Xác thực mã OTP</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="bi bi-3-circle-fill" style="color: var(--secondary);"></i>
+                        <span>Đặt mật khẩu mới</span>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                     </div>
                 </div>
             </div>
@@ -45,8 +66,13 @@
                     <div class="auth-hero-logo" style="color: var(--primary);">Luxury<span>Hotel</span></div>
                 </div>
 
+<<<<<<< HEAD
                 <h2 class="auth-form-title">Dat mat khau moi</h2>
                 <p class="auth-form-subtitle">Nhap mat khau moi cho tai khoan cua ban</p>
+=======
+                <h2 class="auth-form-title">Đặt mật khẩu mới</h2>
+                <p class="auth-form-subtitle">Nhập mật khẩu mới cho tài khoản của bạn</p>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 
                 <c:if test="${not empty error}">
                     <div class="alert alert-danger">
@@ -56,6 +82,7 @@
 
                 <form method="post" action="${pageContext.request.contextPath}/auth/reset-password">
                     <div class="mb-3">
+<<<<<<< HEAD
                         <label for="newPassword" class="form-label">Mat khau moi</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-lock"></i></span>
@@ -71,17 +98,42 @@
                             <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
                             <input type="password" class="form-control" id="confirmPassword"
                                    name="confirmPassword" placeholder="Nhap lai mat khau" required minlength="8">
+=======
+                        <label for="newPassword" class="form-label">Mật khẩu mới</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" class="form-control" id="newPassword"
+                                   name="newPassword" placeholder="Nhập mật khẩu mới" required minlength="8">
+                        </div>
+                        <div class="form-text">Mật khẩu phải có ít nhất 8 ký tự</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="confirmPassword" class="form-label">Xác nhận mật khẩu</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                            <input type="password" class="form-control" id="confirmPassword"
+                                   name="confirmPassword" placeholder="Nhập lại mật khẩu" required minlength="8">
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                         </div>
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">
+<<<<<<< HEAD
                         <i class="bi bi-check-lg me-2"></i>Dat lai mat khau
+=======
+                        <i class="bi bi-check-lg me-2"></i>Đặt lại mật khẩu
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                     </button>
                 </form>
 
                 <div class="text-center mt-4">
                     <a href="${pageContext.request.contextPath}/auth/login" class="text-muted small">
+<<<<<<< HEAD
                         <i class="bi bi-arrow-left me-1"></i>Quay lai dang nhap
+=======
+                        <i class="bi bi-arrow-left me-1"></i>Quay lại đăng nhập
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                     </a>
                 </div>
             </div>
@@ -96,7 +148,11 @@
 
             if (newPassword !== confirmPassword) {
                 e.preventDefault();
+<<<<<<< HEAD
                 alert('Mat khau xac nhan khong khop');
+=======
+                alert('Mật khẩu xác nhận không khớp');
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             }
         });
     </script>

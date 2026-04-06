@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+=======
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
@@ -6,7 +10,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<<<<<<< HEAD
     <title>Danh sách đặt phòng - Staff Portal</title>
+=======
+    <title>Danh sách đặt phòng - Cổng Nhân Viên</title>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -31,6 +39,11 @@
                             <span class="fw-bold me-2">Lọc theo:</span>
                             <a href="${pageContext.request.contextPath}/staff/bookings"
                                class="btn btn-sm ${empty filterStatus ? 'btn-primary' : 'btn-outline-primary'}">Tất cả</a>
+<<<<<<< HEAD
+=======
+                            <a href="${pageContext.request.contextPath}/staff/bookings?status=Pending"
+                               class="btn btn-sm ${filterStatus == 'Pending' ? 'btn-warning' : 'btn-outline-warning'}">Chờ xử lý</a>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                             <a href="${pageContext.request.contextPath}/staff/bookings?status=Confirmed"
                                class="btn btn-sm ${filterStatus == 'Confirmed' ? 'btn-success' : 'btn-outline-success'}">Chờ check-in</a>
                             <a href="${pageContext.request.contextPath}/staff/bookings?status=CheckedIn"
@@ -69,6 +82,7 @@
                                         </c:choose>
                                     </td>
                                     <td>
+<<<<<<< HEAD
                                         <c:if test="${not empty booking.room}">
                                             <strong>${booking.room.roomNumber}</strong>
                                             <small class="text-muted d-block">${booking.room.roomType.typeName}</small>
@@ -82,6 +96,22 @@
                                         <fmt:parseDate value="${booking.checkOutExpected}" pattern="yyyy-MM-dd'T'HH:mm" var="checkOut"/>
                                         <fmt:formatDate value="${checkOut}" pattern="dd/MM/yyyy"/>
                                     </td>
+=======
+                                        <c:choose>
+                                            <c:when test="${not empty bookingRoomsMap[booking.bookingId]}">
+                                                <span class="badge bg-purple">Nhiều phòng</span>
+                                                <small class="text-muted d-block">${bookingRoomsMap[booking.bookingId].size()} phòng</small>
+                                            </c:when>
+                                            <c:when test="${not empty booking.room}">
+                                                <strong>${booking.room.roomNumber}</strong>
+                                                <small class="text-muted d-block">${booking.room.roomType.typeName}</small>
+                                            </c:when>
+                                            <c:otherwise>-</c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td>${booking.checkInExpectedDateOnly}</td>
+                                    <td>${booking.checkOutExpectedDateOnly}</td>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                     <td>
                                         <fmt:formatNumber value="${booking.totalPrice}" type="currency" currencySymbol="" maxFractionDigits="0"/> đ
                                     </td>

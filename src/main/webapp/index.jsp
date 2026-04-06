@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<<<<<<< HEAD
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -472,3 +473,6 @@
     </script>
 </body>
 </html>
+=======
+<% response.sendRedirect(request.getContextPath() + "/home"); %>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b

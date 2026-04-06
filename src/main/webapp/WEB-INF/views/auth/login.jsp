@@ -11,12 +11,81 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/assets/css/ui-kit.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/assets/css/layout.css" rel="stylesheet">
+<<<<<<< HEAD
+=======
+    <style>
+        .auth-form {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        .auth-form .form-control,
+        .auth-form .form-select {
+            padding: 20px 22px;
+            font-size: 18px;
+            border-radius: 14px;
+            border: 2px solid #e0e0e0;
+            height: 68px;
+        }
+        .auth-form .form-control:focus,
+        .auth-form .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(189, 156, 93, 0.15);
+        }
+        .auth-form .input-group {
+            width: 100%;
+        }
+        .auth-form .input-group-text {
+            padding: 20px 22px;
+            border-radius: 14px 0 0 14px;
+            border: 2px solid #e0e0e0;
+            border-right: none;
+            background: #f8f9fa;
+            min-width: 68px;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .auth-form .input-group .form-control {
+            border-radius: 0 14px 14px 0;
+        }
+        .auth-form .btn-lg {
+            padding: 20px 40px;
+            font-size: 18px;
+            border-radius: 14px;
+            height: 68px;
+            font-weight: 600;
+        }
+        .auth-form .form-check-input {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            margin-top: 2px;
+        }
+        .auth-form label.form-label {
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        .auth-form-title {
+            font-size: 32px;
+        }
+        .auth-form-subtitle {
+            font-size: 16px;
+        }
+    </style>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 </head>
 <body>
     <div class="auth-layout">
         <!-- Hero Section - Left -->
+<<<<<<< HEAD
         <div class="auth-hero d-none d-lg-flex">
             <div class="auth-hero-content">
+=======
+        <div class="auth-hero d-none d-lg-flex" style="position: relative; overflow: hidden;">
+            <img src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=1200&q=80" alt="Hotel Lobby"
+                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.3;">
+            <div class="auth-hero-content" style="position: relative; z-index: 1;">
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                 <div class="auth-hero-logo">Luxury<span>Hotel</span></div>
                 <h2 class="mb-4" style="font-family: var(--font-display);">Chào mừng trở lại</h2>
                 <p class="auth-hero-text">Trải nghiệm dịch vụ đẳng cấp 5 sao. Quản lý đặt phòng dễ dàng, nhanh chóng và tiện lợi.</p>
@@ -56,13 +125,21 @@
 
                 <c:if test="${param.registered == 'true'}">
                     <div class="alert alert-success">
+<<<<<<< HEAD
                         <i class="bi bi-check-circle me-2"></i>Dang ky thanh cong! Vui long dang nhap.
+=======
+                        <i class="bi bi-check-circle me-2"></i>Đăng ký thành công! Vui lòng đăng nhập.
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                     </div>
                 </c:if>
 
                 <c:if test="${param.reset == 'success'}">
                     <div class="alert alert-success">
+<<<<<<< HEAD
                         <i class="bi bi-check-circle me-2"></i>Dat lai mat khau thanh cong! Vui long dang nhap.
+=======
+                        <i class="bi bi-check-circle me-2"></i>Đặt lại mật khẩu thành công! Vui lòng đăng nhập.
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                     </div>
                 </c:if>
 
@@ -93,8 +170,13 @@
                 <form method="post" action="${pageContext.request.contextPath}/auth/login">
                     <input type="hidden" name="returnUrl" value="${returnUrl}">
 
+<<<<<<< HEAD
                     <div class="mb-3">
                         <label for="email" class="form-label">Địa chỉ Email</label>
+=======
+                    <div class="mb-4">
+                        <label for="email" class="form-label fw-semibold">Địa chỉ Email</label>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                             <input type="email" class="form-control" id="email" name="email"
@@ -102,8 +184,13 @@
                         </div>
                     </div>
 
+<<<<<<< HEAD
                     <div class="mb-3">
                         <label for="password" class="form-label">Mật khẩu</label>
+=======
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-semibold">Mật khẩu</label>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-lock"></i></span>
                             <input type="password" class="form-control" id="password"
@@ -116,7 +203,11 @@
                             <input type="checkbox" class="form-check-input" id="remember" name="remember">
                             <label class="form-check-label" for="remember">Ghi nhớ đăng nhập</label>
                         </div>
+<<<<<<< HEAD
                         <a href="${pageContext.request.contextPath}/auth/forgot-password" class="small" style="color: var(--secondary-dark);">Quen mat khau?</a>
+=======
+                        <a href="${pageContext.request.contextPath}/auth/forgot-password" class="small" style="color: var(--secondary-dark);">Quên mật khẩu?</a>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">
@@ -125,15 +216,24 @@
                 </form>
 
                 <!-- Divider -->
+<<<<<<< HEAD
                 <div class="d-flex align-items-center my-3">
+=======
+                <div class="d-flex align-items-center my-4">
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                     <hr class="flex-grow-1">
                     <span class="px-3 text-muted small">hoặc</span>
                     <hr class="flex-grow-1">
                 </div>
 
                 <!-- Google Login Button -->
+<<<<<<< HEAD
                 <a href="${pageContext.request.contextPath}/auth/google" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48">
+=======
+                <a href="${pageContext.request.contextPath}/auth/google" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 btn-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48">
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                         <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
                         <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
                         <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>

@@ -6,6 +6,7 @@ public class Occupant {
     private String fullName;
     private String idCardNumber;
     private String phoneNumber;
+    private Integer bookingRoomId;  // nullable, for per-room guest assignment
 
     public Occupant() {}
 
@@ -19,4 +20,6 @@ public class Occupant {
     public void setIdCardNumber(String idCardNumber) { this.idCardNumber = idCardNumber; }
     public String getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+    public Integer getBookingRoomId() { return bookingRoomId; }
+    public void setBookingRoomId(Integer bookingRoomId) { this.bookingRoomId = bookingRoomId; }
 }

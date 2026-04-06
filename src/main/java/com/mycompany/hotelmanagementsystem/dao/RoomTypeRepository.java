@@ -13,6 +13,11 @@ public class RoomTypeRepository extends BaseRepository<RoomType> {
         rt.setTypeId(rs.getInt("type_id"));
         rt.setTypeName(rs.getString("type_name"));
         rt.setBasePrice(rs.getBigDecimal("base_price"));
+<<<<<<< HEAD
+=======
+        rt.setPricePerHour(rs.getBigDecimal("price_per_hour"));
+        rt.setDepositPercent(rs.getBigDecimal("deposit_percent"));
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         rt.setCapacity(rs.getInt("capacity"));
         rt.setDescription(rs.getString("description"));
         return rt;
@@ -50,6 +55,7 @@ public class RoomTypeRepository extends BaseRepository<RoomType> {
     }
 
     public int insert(RoomType roomType) {
+<<<<<<< HEAD
         String sql = "INSERT INTO RoomType (type_name, base_price, capacity, description) VALUES (?, ?, ?, ?)";
         return executeInsert(sql, roomType.getTypeName(), roomType.getBasePrice(), roomType.getCapacity(), roomType.getDescription());
     }
@@ -57,6 +63,19 @@ public class RoomTypeRepository extends BaseRepository<RoomType> {
     public int update(RoomType roomType) {
         String sql = "UPDATE RoomType SET type_name = ?, base_price = ?, capacity = ?, description = ? WHERE type_id = ?";
         return executeUpdate(sql, roomType.getTypeName(), roomType.getBasePrice(), roomType.getCapacity(), roomType.getDescription(), roomType.getTypeId());
+=======
+        String sql = "INSERT INTO RoomType (type_name, base_price, price_per_hour, deposit_percent, capacity, description) VALUES (?, ?, ?, ?, ?, ?)";
+        return executeInsert(sql, roomType.getTypeName(), roomType.getBasePrice(),
+            roomType.getPricePerHour(), roomType.getDepositPercent(),
+            roomType.getCapacity(), roomType.getDescription());
+    }
+
+    public int update(RoomType roomType) {
+        String sql = "UPDATE RoomType SET type_name = ?, base_price = ?, price_per_hour = ?, deposit_percent = ?, capacity = ?, description = ? WHERE type_id = ?";
+        return executeUpdate(sql, roomType.getTypeName(), roomType.getBasePrice(),
+            roomType.getPricePerHour(), roomType.getDepositPercent(),
+            roomType.getCapacity(), roomType.getDescription(), roomType.getTypeId());
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     }
 
     public int delete(int typeId) {

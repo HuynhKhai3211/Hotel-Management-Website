@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+=======
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
@@ -6,7 +10,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<<<<<<< HEAD
     <title>Quản lý loại phòng - Admin Portal</title>
+=======
+    <title>Quản lý loại phòng - Cổng Quản Trị</title>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -26,7 +34,11 @@
             <div class="app-content">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
+<<<<<<< HEAD
                         <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin/dashboard">Dashboard</a></li>
+=======
+                        <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin/dashboard">Bảng điều khiển</a></li>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                         <li class="breadcrumb-item active">Loại phòng</li>
                     </ol>
                 </nav>
@@ -49,6 +61,15 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 </c:if>
+<<<<<<< HEAD
+=======
+                <c:if test="${param.success == 'imageUploaded'}">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle me-2"></i>Tải ảnh lên thành công.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                </c:if>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                 <c:if test="${param.error == 'deleteFailed'}">
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <i class="bi bi-exclamation-circle me-2"></i>Không thể xóa loại phòng. Loại phòng này có thể đang được sử dụng.
@@ -102,6 +123,10 @@
                                         <th>Tên loại phòng</th>
                                         <th>Giá cơ bản</th>
                                         <th>Sức chứa</th>
+<<<<<<< HEAD
+=======
+                                        <th>Đặt cọc (%)</th>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                         <th>Mô tả</th>
                                         <th class="text-end">Thao tác</th>
                                     </tr>
@@ -110,7 +135,11 @@
                                     <c:choose>
                                         <c:when test="${empty roomTypes}">
                                             <tr>
+<<<<<<< HEAD
                                                 <td colspan="5" class="text-center text-muted py-4">
+=======
+                                                <td colspan="6" class="text-center text-muted py-4">
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                                     Chưa có loại phòng nào.
                                                 </td>
                                             </tr>
@@ -125,6 +154,19 @@
                                                         VND
                                                     </td>
                                                     <td data-field="capacity" data-value="${rt.capacity}">${rt.capacity} người</td>
+<<<<<<< HEAD
+=======
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${rt.depositPercent != null && rt.depositPercent > 0}">
+                                                                ${rt.depositPercent}%
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <span class="text-muted">0%</span>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                                     <td class="text-muted" style="max-width: 250px;">
                                                         <span title="${rt.description}">
                                                             <c:choose>

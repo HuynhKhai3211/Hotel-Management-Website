@@ -1,11 +1,19 @@
+<<<<<<< HEAD
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+=======
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<<<<<<< HEAD
     <title>Quản lý người dùng - Admin Portal</title>
+=======
+    <title>Quản lý người dùng - Cổng Quản Trị</title>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -26,7 +34,11 @@
                 <!-- Breadcrumb -->
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
+<<<<<<< HEAD
                         <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin/dashboard">Dashboard</a></li>
+=======
+                        <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin/dashboard">Bảng điều khiển</a></li>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                         <li class="breadcrumb-item active">Người dùng</li>
                     </ol>
                 </nav>
@@ -70,9 +82,15 @@
                                 <label class="form-label">Vai trò</label>
                                 <select class="form-select" name="role">
                                     <option value="">Tất cả</option>
+<<<<<<< HEAD
                                     <option value="1" ${param.role == '1' ? 'selected' : ''}>Admin</option>
                                     <option value="2" ${param.role == '2' ? 'selected' : ''}>Customer</option>
                                     <option value="3" ${param.role == '3' ? 'selected' : ''}>Staff</option>
+=======
+                                    <option value="1" ${param.role == '1' ? 'selected' : ''}>Quản trị viên</option>
+                                    <option value="2" ${param.role == '2' ? 'selected' : ''}>Khách hàng</option>
+                                    <option value="3" ${param.role == '3' ? 'selected' : ''}>Nhân viên</option>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                 </select>
                             </div>
                             <div class="col-md-3">
@@ -137,6 +155,7 @@
                                             <td>
                                                 <c:choose>
                                                     <c:when test="${user.roleId == 1}">
+<<<<<<< HEAD
                                                         <span class="badge badge-primary">Admin</span>
                                                     </c:when>
                                                     <c:when test="${user.roleId == 2}">
@@ -144,6 +163,15 @@
                                                     </c:when>
                                                     <c:when test="${user.roleId == 3}">
                                                         <span class="badge badge-info">Staff</span>
+=======
+                                                        <span class="badge badge-primary">Quản trị viên</span>
+                                                    </c:when>
+                                                    <c:when test="${user.roleId == 2}">
+                                                        <span class="badge badge-secondary">Khách hàng</span>
+                                                    </c:when>
+                                                    <c:when test="${user.roleId == 3}">
+                                                        <span class="badge badge-info">Nhân viên</span>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                                     </c:when>
                                                     <c:otherwise>
                                                         <span class="badge bg-secondary">${user.roleId}</span>
@@ -251,9 +279,15 @@
                                         <div class="mb-3">
                                             <label class="form-label">Vai trò <span class="text-danger">*</span></label>
                                             <select class="form-select" name="roleId" id="userRole" required>
+<<<<<<< HEAD
                                                 <option value="1">Admin</option>
                                                 <option value="2">Customer</option>
                                                 <option value="3">Staff</option>
+=======
+                                                <option value="1">Quản trị viên</option>
+                                                <option value="2">Khách hàng</option>
+                                                <option value="3">Nhân viên</option>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                             </select>
                                         </div>
                     </div>

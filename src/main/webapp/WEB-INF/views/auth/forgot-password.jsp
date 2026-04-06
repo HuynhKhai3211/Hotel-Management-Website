@@ -18,6 +18,7 @@
         <div class="auth-hero d-none d-lg-flex">
             <div class="auth-hero-content">
                 <div class="auth-hero-logo">Luxury<span>Hotel</span></div>
+<<<<<<< HEAD
                 <h2 class="mb-4" style="font-family: var(--font-display);">Khoi phuc tai khoan</h2>
                 <p class="auth-hero-text">Nhap email da dang ky de nhan ma xac thuc OTP va dat lai mat khau cua ban.</p>
                 <div class="mt-5">
@@ -32,6 +33,22 @@
                     <div class="d-flex align-items-center gap-3">
                         <i class="bi bi-3-circle" style="color: var(--secondary); opacity: 0.5;"></i>
                         <span style="opacity: 0.5;">Dat mat khau moi</span>
+=======
+                <h2 class="mb-4" style="font-family: var(--font-display);">Khôi phục tài khoản</h2>
+                <p class="auth-hero-text">Nhập email đã đăng ký để nhận mã xác thực OTP và đặt lại mật khẩu của bạn.</p>
+                <div class="mt-5">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <i class="bi bi-1-circle-fill" style="color: var(--secondary);"></i>
+                        <span>Nhập email của bạn</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <i class="bi bi-2-circle" style="color: var(--secondary); opacity: 0.5;"></i>
+                        <span style="opacity: 0.5;">Xác thực mã OTP</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="bi bi-3-circle" style="color: var(--secondary); opacity: 0.5;"></i>
+                        <span style="opacity: 0.5;">Đặt mật khẩu mới</span>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                     </div>
                 </div>
             </div>
@@ -45,8 +62,13 @@
                     <div class="auth-hero-logo" style="color: var(--primary);">Luxury<span>Hotel</span></div>
                 </div>
 
+<<<<<<< HEAD
                 <h2 class="auth-form-title">Quen mat khau</h2>
                 <p class="auth-form-subtitle">Nhap email de nhan ma xac thuc OTP</p>
+=======
+                <h2 class="auth-form-title">Quên mật khẩu</h2>
+                <p class="auth-form-subtitle">Nhập email để nhận mã xác thực OTP</p>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 
                 <c:if test="${not empty error}">
                     <div class="alert alert-danger">
@@ -62,23 +84,39 @@
 
                 <form method="post" action="${pageContext.request.contextPath}/auth/forgot-password">
                     <div class="mb-4">
+<<<<<<< HEAD
                         <label for="email" class="form-label">Dia chi Email</label>
+=======
+                        <label for="email" class="form-label">Địa chỉ Email</label>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                             <input type="email" class="form-control" id="email" name="email"
                                    value="${email}" placeholder="email@example.com" required>
                         </div>
+<<<<<<< HEAD
                         <div class="form-text">Chung toi se gui ma OTP den email nay</div>
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">
                         <i class="bi bi-send me-2"></i>Gui ma OTP
+=======
+                        <div class="form-text">Chúng tôi sẽ gửi mã OTP đến email này</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">
+                        <i class="bi bi-send me-2"></i>Gửi mã OTP
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                     </button>
                 </form>
 
                 <div class="text-center mt-4">
                     <a href="${pageContext.request.contextPath}/auth/login" style="color: var(--secondary-dark); font-weight: 500;">
+<<<<<<< HEAD
                         <i class="bi bi-arrow-left me-1"></i>Quay lai dang nhap
+=======
+                        <i class="bi bi-arrow-left me-1"></i>Quay lại đăng nhập
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                     </a>
                 </div>
             </div>

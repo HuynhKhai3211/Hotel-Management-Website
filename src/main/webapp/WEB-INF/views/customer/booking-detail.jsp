@@ -115,10 +115,31 @@
                     <div class="card-body">
                         <div class="row mb-4">
                             <div class="col-md-8">
+<<<<<<< HEAD
                                 <h3 style="font-family: var(--font-display); color: var(--primary);">${booking.room.roomType.typeName}</h3>
                                 <p class="text-muted mb-0">
                                     <i class="bi bi-door-open me-1"></i>Phòng ${booking.room.roomNumber}
                                 </p>
+=======
+                                <c:choose>
+                                    <c:when test="${isMultiRoom && not empty bookingRooms}">
+                                        <h3 style="font-family: var(--font-display); color: var(--primary);">
+                                            <i class="bi bi-door-open me-2"></i>${bookingRooms.size()} Phòng
+                                        </h3>
+                                        <p class="text-muted mb-0">
+                                            <c:forEach var="br" items="${bookingRooms}" varStatus="loop">
+                                                ${br.roomType.typeName}${loop.last ? '' : ', '}
+                                            </c:forEach>
+                                        </p>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <h3 style="font-family: var(--font-display); color: var(--primary);">${booking.room.roomType.typeName}</h3>
+                                        <p class="text-muted mb-0">
+                                            <i class="bi bi-door-open me-1"></i>Phòng ${booking.room.roomNumber}
+                                        </p>
+                                    </c:otherwise>
+                                </c:choose>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                             </div>
                             <div class="col-md-4 text-md-end">
                                 <small class="text-muted">Mã đặt phòng</small>
@@ -135,7 +156,11 @@
                                         </div>
                                         <div>
                                             <small class="text-muted">Nhận phòng</small>
+<<<<<<< HEAD
                                             <p class="mb-0 fw-semibold">${booking.checkInExpectedDateOnly} - 14:00</p>
+=======
+                                            <p class="mb-0 fw-semibold">${booking.checkInExpectedFormatted}</p>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                         </div>
                                     </div>
                                 </div>
@@ -148,13 +173,73 @@
                                         </div>
                                         <div>
                                             <small class="text-muted">Trả phòng</small>
+<<<<<<< HEAD
                                             <p class="mb-0 fw-semibold">${booking.checkOutExpectedDateOnly} - 12:00</p>
+=======
+                                            <p class="mb-0 fw-semibold">${booking.checkOutExpectedFormatted}</p>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
+<<<<<<< HEAD
+=======
+                        <!-- Multi-Room BookingRoom List -->
+                        <c:if test="${isMultiRoom && not empty bookingRooms}">
+                            <h5 class="mb-3" style="font-family: var(--font-display); color: var(--primary);">
+                                <i class="bi bi-list-ul me-2"></i>Danh sách phòng
+                            </h5>
+                            <div class="table-responsive mb-4">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Loại phòng</th>
+                                            <th>Phòng được gán</th>
+                                            <th>Trạng thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="br" items="${bookingRooms}" varStatus="loop">
+                                            <tr>
+                                                <td><span class="badge bg-secondary">#${loop.index + 1}</span></td>
+                                                <td>${br.roomType.typeName}</td>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${not empty br.room}">
+                                                            <strong>${br.room.roomNumber}</strong>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="text-muted">Chưa gán</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${br.status == 'Pending'}">
+                                                            <span class="badge bg-warning text-dark">Chờ</span>
+                                                        </c:when>
+                                                        <c:when test="${br.status == 'Assigned'}">
+                                                            <span class="badge bg-info">Đã gán</span>
+                                                        </c:when>
+                                                        <c:when test="${br.status == 'CheckedIn'}">
+                                                            <span class="badge bg-success">Đã nhận</span>
+                                                        </c:when>
+                                                        <c:when test="${br.status == 'CheckedOut'}">
+                                                            <span class="badge bg-secondary">Đã trả</span>
+                                                        </c:when>
+                                                    </c:choose>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </c:if>
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                         <table class="table table-borderless mb-0">
                             <tr>
                                 <td class="text-muted ps-0">Ngày đặt:</td>
@@ -166,6 +251,21 @@
                                     <fmt:formatNumber value="${booking.totalPrice}" type="number" groupingUsed="true"/>đ
                                 </td>
                             </tr>
+<<<<<<< HEAD
+=======
+                            <c:if test="${earlySurcharge != null && earlySurcharge > 0}">
+                                <tr>
+                                    <td class="text-muted ps-0"><i class="bi bi-alarm me-1"></i>Phu thu check-in som:</td>
+                                    <td><fmt:formatNumber value="${earlySurcharge}" type="number" groupingUsed="true"/>d</td>
+                                </tr>
+                            </c:if>
+                            <c:if test="${lateSurcharge != null && lateSurcharge > 0}">
+                                <tr>
+                                    <td class="text-muted ps-0"><i class="bi bi-alarm-fill me-1"></i>Phu thu check-out muon:</td>
+                                    <td><fmt:formatNumber value="${lateSurcharge}" type="number" groupingUsed="true"/>d</td>
+                                </tr>
+                            </c:if>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                             <c:if test="${not empty booking.note}">
                                 <tr>
                                     <td class="text-muted ps-0">Ghi chú:</td>

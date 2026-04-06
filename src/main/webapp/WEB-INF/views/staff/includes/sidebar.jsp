@@ -5,14 +5,22 @@
         <a href="${pageContext.request.contextPath}/staff/dashboard" class="sidebar-logo">
             Luxury<span>Hotel</span>
         </a>
+<<<<<<< HEAD
         <span class="sidebar-badge">Staff</span>
+=======
+        <span class="sidebar-badge">Nhân viên</span>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     </div>
 
     <nav class="sidebar-nav">
         <a href="${pageContext.request.contextPath}/staff/dashboard"
            class="sidebar-nav-item ${activePage == 'dashboard' ? 'active' : ''}">
             <i class="bi bi-speedometer2"></i>
+<<<<<<< HEAD
             <span>Dashboard</span>
+=======
+            <span>Bảng điều khiển</span>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         </a>
 
         <div class="sidebar-section">Quản lý phòng</div>
@@ -23,6 +31,14 @@
         </a>
 
         <div class="sidebar-section">Đặt phòng</div>
+<<<<<<< HEAD
+=======
+        <a href="${pageContext.request.contextPath}/staff/bookings/walkin"
+           class="sidebar-nav-item ${activePage == 'walkin' ? 'active' : ''}">
+            <i class="bi bi-person-plus"></i>
+            <span>Đặt phòng tại quầy</span>
+        </a>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         <a href="${pageContext.request.contextPath}/staff/bookings"
            class="sidebar-nav-item ${activePage == 'bookings' ? 'active' : ''}">
             <i class="bi bi-calendar-check"></i>
@@ -45,21 +61,41 @@
             <i class="bi bi-stars"></i>
             <span>Dọn phòng</span>
         </a>
+<<<<<<< HEAD
+=======
+        <a href="${pageContext.request.contextPath}/staff/service-requests"
+           class="sidebar-nav-item ${activePage == 'service-requests' ? 'active' : ''}">
+            <i class="bi bi-bell"></i>
+            <span>Yêu cầu dịch vụ</span>
+        </a>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     </nav>
 
     <div class="sidebar-footer">
         <div class="sidebar-user">
             <div class="sidebar-user-avatar">
+<<<<<<< HEAD
                 ${sessionScope.loggedInAccount.fullName.substring(0, 1)}
+=======
+                <c:choose>
+                    <c:when test="${not empty sessionScope.loggedInAccount.fullName}">
+                        ${sessionScope.loggedInAccount.fullName.substring(0, 1)}
+                    </c:when>
+                    <c:otherwise>S</c:otherwise>
+                </c:choose>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             </div>
             <div class="sidebar-user-info">
                 <div class="sidebar-user-name">${sessionScope.loggedInAccount.fullName}</div>
                 <div class="sidebar-user-role">Nhân viên</div>
             </div>
         </div>
+<<<<<<< HEAD
         <a href="${pageContext.request.contextPath}/auth/logout" class="sidebar-nav-item" style="color: var(--danger);">
             <i class="bi bi-box-arrow-left"></i>
             <span>Đăng xuất</span>
         </a>
+=======
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     </div>
 </aside>

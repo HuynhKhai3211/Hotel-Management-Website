@@ -11,7 +11,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+<<<<<<< HEAD
 @WebServlet(urlPatterns = {"/staff/rooms", "/staff/rooms/detail", "/staff/rooms/history"})
+=======
+@WebServlet(urlPatterns = {"/staff/rooms", "/staff/rooms/detail", "/staff/rooms/history", "/staff/rooms/reconcile"})
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 public class StaffRoomController extends HttpServlet {
     private StaffRoomService staffRoomService;
 
@@ -29,10 +33,25 @@ public class StaffRoomController extends HttpServlet {
             case "/staff/rooms" -> handleRoomMap(request, response);
             case "/staff/rooms/detail" -> handleRoomDetail(request, response);
             case "/staff/rooms/history" -> handleRoomHistory(request, response);
+<<<<<<< HEAD
+=======
+            case "/staff/rooms/reconcile" -> handleReconcile(request, response);
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             default -> response.sendError(404);
         }
     }
 
+<<<<<<< HEAD
+=======
+    private void handleReconcile(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        int reconciled = staffRoomService.reconcileRoomStatuses();
+        request.getSession().setAttribute("successMessage",
+                "Đã đồng bộ " + reconciled + " phòng bị lỗi trạng thái");
+        response.sendRedirect(request.getContextPath() + "/staff/rooms");
+    }
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     private void handleRoomMap(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         List<Room> rooms = staffRoomService.getAllRoomsWithType();

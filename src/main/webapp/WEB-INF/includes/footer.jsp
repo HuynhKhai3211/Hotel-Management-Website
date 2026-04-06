@@ -41,7 +41,11 @@
             </div>
         </div>
         <div class="public-footer-bottom">
+<<<<<<< HEAD
             <p>&copy; 2026 Luxury Hotel. All rights reserved.</p>
+=======
+            <p>&copy; 2026 Luxury Hotel. Bảo lưu mọi quyền.</p>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         </div>
     </div>
 </footer>
