@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+=======
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
@@ -6,7 +10,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<<<<<<< HEAD
     <title>Thanh toán thành công - Staff Portal</title>
+=======
+    <title>Thanh toán thành công - Cổng Nhân Viên</title>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -57,8 +65,13 @@
                                                         <c:when test="${payment.paymentMethod == 'Cash'}">
                                                             <span class="badge bg-success">Tiền mặt</span>
                                                         </c:when>
+<<<<<<< HEAD
                                                         <c:when test="${payment.paymentMethod == 'Momo'}">
                                                             <span class="badge" style="background: #d82d8b;">Momo</span>
+=======
+                                                        <c:when test="${payment.paymentMethod == 'VNPay'}">
+                                                            <span class="badge bg-primary">VNPay</span>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                                         </c:when>
                                                         <c:otherwise>
                                                             <span class="badge bg-secondary">${payment.paymentMethod}</span>
@@ -90,11 +103,29 @@
                                 </div>
 
                                 <div class="d-grid gap-2">
+<<<<<<< HEAD
                                     <a href="${pageContext.request.contextPath}/staff/dashboard" class="btn btn-staff-primary btn-lg">
                                         <i class="bi bi-house me-2"></i>Về Dashboard
                                     </a>
                                     <a href="${pageContext.request.contextPath}/staff/bookings" class="btn btn-outline-secondary">
                                         <i class="bi bi-list me-2"></i>Danh sách Booking
+=======
+                                    <c:if test="${isPostPaymentCheckout}">
+                                        <a href="${pageContext.request.contextPath}/staff/bookings/complete-checkout" class="btn btn-success btn-lg">
+                                            <i class="bi bi-check-circle me-2"></i>Hoàn tất check-out
+                                        </a>
+                                    </c:if>
+                                    <c:if test="${not empty pendingCheckoutForPayment && pendingCheckoutForPayment > 0}">
+                                        <a href="${pageContext.request.contextPath}/staff/bookings/complete-multi-checkout?bookingId=${pendingCheckoutForPayment}" class="btn btn-success btn-lg">
+                                            <i class="bi bi-check-circle me-2"></i>Hoàn tất check-out
+                                        </a>
+                                    </c:if>
+                                    <a href="${pageContext.request.contextPath}/staff/dashboard" class="btn btn-staff-primary btn-lg">
+                                        <i class="bi bi-house me-2"></i>Về trang chủ
+                                    </a>
+                                    <a href="${pageContext.request.contextPath}/staff/bookings" class="btn btn-outline-secondary">
+                                        <i class="bi bi-list me-2"></i>Danh sách đặt phòng
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                     </a>
                                 </div>
                             </div>

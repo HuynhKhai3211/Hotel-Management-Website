@@ -1,7 +1,12 @@
 package com.mycompany.hotelmanagementsystem.controller.admin;
 
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.entity.Account;
 import com.mycompany.hotelmanagementsystem.dal.AccountRepository;
+=======
+import com.mycompany.hotelmanagementsystem.model.Account;
+import com.mycompany.hotelmanagementsystem.dao.AccountRepository;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

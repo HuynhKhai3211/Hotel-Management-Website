@@ -1,11 +1,20 @@
 package com.mycompany.hotelmanagementsystem.service;
 
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.entity.Room;
 import com.mycompany.hotelmanagementsystem.entity.RoomType;
 import com.mycompany.hotelmanagementsystem.dal.RoomTypeRepository;
 import com.mycompany.hotelmanagementsystem.dal.RoomRepository;
 import com.mycompany.hotelmanagementsystem.dal.AmenityRepository;
 import com.mycompany.hotelmanagementsystem.dal.RoomImageRepository;
+=======
+import com.mycompany.hotelmanagementsystem.model.Room;
+import com.mycompany.hotelmanagementsystem.model.RoomType;
+import com.mycompany.hotelmanagementsystem.dao.RoomTypeRepository;
+import com.mycompany.hotelmanagementsystem.dao.RoomRepository;
+import com.mycompany.hotelmanagementsystem.dao.AmenityRepository;
+import com.mycompany.hotelmanagementsystem.dao.RoomImageRepository;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import java.time.LocalDateTime;
 import java.util.List;
 

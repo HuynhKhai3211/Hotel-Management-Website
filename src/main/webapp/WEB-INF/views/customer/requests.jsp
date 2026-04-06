@@ -84,6 +84,66 @@
                     </div>
                 </c:if>
 
+<<<<<<< HEAD
+=======
+                <!-- Create Request Form -->
+                <c:if test="${not empty checkedInBookings}">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="bi bi-plus-circle me-2"></i>Tạo yêu cầu mới
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="${pageContext.request.contextPath}/customer/requests/create">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Đặt phòng</label>
+                                        <select name="bookingId" class="form-select" required>
+                                            <option value="">-- Chọn đặt phòng --</option>
+                                            <c:forEach var="b" items="${checkedInBookings}">
+                                                <option value="${b.bookingId}">
+                                                    #${b.bookingId}
+                                                    <c:if test="${not empty b.room}"> - Phòng ${b.room.roomNumber}</c:if>
+                                                    <c:if test="${not empty b.roomType}"> (${b.roomType.typeName})</c:if>
+                                                </option>
+                                            </c:forEach>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Loại dịch vụ</label>
+                                        <select name="serviceType" class="form-select" required>
+                                            <option value="">-- Chọn loại --</option>
+                                            <option value="Cleaning">Dọn phòng</option>
+                                            <option value="Maintenance">Bảo trì</option>
+                                            <option value="Food & Beverage">Đồ ăn & Nước uống</option>
+                                            <option value="Supplies">Vật dụng</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Mức độ</label>
+                                        <select name="priority" class="form-select">
+                                            <option value="Normal">Bình thường</option>
+                                            <option value="Low">Thấp</option>
+                                            <option value="High">Cao</option>
+                                            <option value="Urgent">Khẩn cấp</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Mô tả (không bắt buộc)</label>
+                                        <textarea name="description" class="form-control" rows="2"
+                                                  placeholder="Mô tả chi tiết yêu cầu của bạn..." maxlength="500"></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-send me-1"></i>Gửi yêu cầu
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </c:if>
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                 <c:if test="${empty serviceRequests}">
                     <div class="card">
                         <div class="card-body">
@@ -108,6 +168,11 @@
                                         <tr>
                                             <th class="ps-4">Đặt phòng</th>
                                             <th>Loại dịch vụ</th>
+<<<<<<< HEAD
+=======
+                                            <th>Mô tả</th>
+                                            <th>Ưu tiên</th>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                             <th>Thời gian gửi</th>
                                             <th>Trạng thái</th>
                                             <th class="text-end pe-4">Thao tác</th>
@@ -121,15 +186,70 @@
                                                        class="text-decoration-none fw-semibold">
                                                         #${sr.bookingId}
                                                     </a>
+<<<<<<< HEAD
                                                     <c:if test="${not empty sr.booking}">
+=======
+                                                    <c:if test="${not empty sr.roomNumber}">
+                                                        <br><small class="text-muted">Phòng ${sr.roomNumber}</small>
+                                                    </c:if>
+                                                    <c:if test="${empty sr.roomNumber && not empty sr.booking}">
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                                         <br><small class="text-muted">${sr.booking.room.roomType.typeName}</small>
                                                     </c:if>
                                                 </td>
                                                 <td>
+<<<<<<< HEAD
                                                     <i class="bi bi-brush me-1 text-primary"></i>${sr.serviceType}
                                                 </td>
                                                 <td>
                                                     <small>${sr.requestTime}</small>
+=======
+                                                    <c:choose>
+                                                        <c:when test="${sr.serviceType == 'Cleaning'}">
+                                                            <i class="bi bi-stars text-warning me-1"></i>
+                                                        </c:when>
+                                                        <c:when test="${sr.serviceType == 'Maintenance'}">
+                                                            <i class="bi bi-wrench text-info me-1"></i>
+                                                        </c:when>
+                                                        <c:when test="${sr.serviceType == 'Food & Beverage'}">
+                                                            <i class="bi bi-cup-hot text-danger me-1"></i>
+                                                        </c:when>
+                                                        <c:when test="${sr.serviceType == 'Supplies'}">
+                                                            <i class="bi bi-box-seam text-success me-1"></i>
+                                                        </c:when>
+                                                    </c:choose>
+                                                    ${sr.serviceType}
+                                                </td>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${not empty sr.description}">
+                                                            <small>${sr.description}</small>
+                                                        </c:when>
+                                                        <c:otherwise><small class="text-muted">--</small></c:otherwise>
+                                                    </c:choose>
+                                                </td>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${sr.priority == 'Urgent'}">
+                                                            <span class="badge bg-danger">Khẩn cấp</span>
+                                                        </c:when>
+                                                        <c:when test="${sr.priority == 'High'}">
+                                                            <span class="badge bg-warning text-dark">Cao</span>
+                                                        </c:when>
+                                                        <c:when test="${sr.priority == 'Normal'}">
+                                                            <span class="badge bg-info">Bình thường</span>
+                                                        </c:when>
+                                                        <c:when test="${sr.priority == 'Low'}">
+                                                            <span class="badge bg-secondary">Thấp</span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="badge bg-info">Bình thường</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
+                                                <td>
+                                                    <small>${sr.requestTimeFormatted}</small>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                                 </td>
                                                 <td>
                                                     <c:choose>
@@ -145,10 +265,24 @@
                                                         <c:when test="${sr.status == 'Cancelled'}">
                                                             <span class="badge badge-cancelled">Đã hủy</span>
                                                         </c:when>
+<<<<<<< HEAD
+=======
+                                                        <c:when test="${sr.status == 'Rejected'}">
+                                                            <span class="badge bg-dark">Từ chối</span>
+                                                        </c:when>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                                         <c:otherwise>
                                                             <span class="badge bg-secondary">${sr.status}</span>
                                                         </c:otherwise>
                                                     </c:choose>
+<<<<<<< HEAD
+=======
+                                                    <c:if test="${not empty sr.notes && (sr.status == 'Completed' || sr.status == 'Rejected')}">
+                                                        <br><small class="text-muted" title="${sr.notes}">
+                                                            <i class="bi bi-chat-left-text me-1"></i>${sr.notes}
+                                                        </small>
+                                                    </c:if>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                                 </td>
                                                 <td class="text-end pe-4">
                                                     <c:if test="${sr.status == 'Pending'}">

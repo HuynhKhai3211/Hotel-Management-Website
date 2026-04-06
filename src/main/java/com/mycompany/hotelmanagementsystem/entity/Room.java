@@ -2,6 +2,8 @@ package com.mycompany.hotelmanagementsystem.entity;
 
 import java.util.List;
 
+import java.util.List;
+
 public class Room {
     private int roomId;
     private String roomNumber;

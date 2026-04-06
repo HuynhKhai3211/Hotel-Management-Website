@@ -13,10 +13,26 @@ import java.util.*;
 public class VNPayService {
 
     /**
+<<<<<<< HEAD
      * Generate VNPay payment URL
      */
     public static String createPaymentUrl(String baseUrl, String txnRef, long amount,
             String orderInfo, String ipAddress) {
+=======
+     * Generate VNPay payment URL (default return URL)
+     */
+    public static String createPaymentUrl(String baseUrl, String txnRef, long amount,
+            String orderInfo, String ipAddress) {
+        return createPaymentUrl(baseUrl, txnRef, amount, orderInfo, ipAddress,
+                baseUrl + "/payment/vnpay-return");
+    }
+
+    /**
+     * Generate VNPay payment URL with custom return URL
+     */
+    public static String createPaymentUrl(String baseUrl, String txnRef, long amount,
+            String orderInfo, String ipAddress, String returnUrl) {
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 
         Map<String, String> vnp_Params = new HashMap<>();
 
@@ -35,7 +51,11 @@ public class VNPayService {
         vnp_Params.put("vnp_OrderInfo", orderInfo);
         vnp_Params.put("vnp_OrderType", VNPayConfig.VNP_ORDER_TYPE);
         vnp_Params.put("vnp_Locale", VNPayConfig.VNP_LOCALE);
+<<<<<<< HEAD
         vnp_Params.put("vnp_ReturnUrl", baseUrl + "/payment/vnpay-return");
+=======
+        vnp_Params.put("vnp_ReturnUrl", returnUrl);
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         vnp_Params.put("vnp_IpAddr", ipAddress);
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);

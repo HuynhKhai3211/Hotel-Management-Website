@@ -1,12 +1,21 @@
 package com.mycompany.hotelmanagementsystem.service;
 
 import com.mycompany.hotelmanagementsystem.constant.BookingStatus;
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.util.ServiceResult;
 import com.mycompany.hotelmanagementsystem.util.ValidationHelper;
 import com.mycompany.hotelmanagementsystem.entity.Booking;
 import com.mycompany.hotelmanagementsystem.entity.Feedback;
 import com.mycompany.hotelmanagementsystem.dal.BookingRepository;
 import com.mycompany.hotelmanagementsystem.dal.FeedbackRepository;
+=======
+import com.mycompany.hotelmanagementsystem.utils.ServiceResult;
+import com.mycompany.hotelmanagementsystem.utils.ValidationHelper;
+import com.mycompany.hotelmanagementsystem.model.Booking;
+import com.mycompany.hotelmanagementsystem.model.Feedback;
+import com.mycompany.hotelmanagementsystem.dao.BookingRepository;
+import com.mycompany.hotelmanagementsystem.dao.FeedbackRepository;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 
 public class FeedbackService {
     private final FeedbackRepository feedbackRepository;

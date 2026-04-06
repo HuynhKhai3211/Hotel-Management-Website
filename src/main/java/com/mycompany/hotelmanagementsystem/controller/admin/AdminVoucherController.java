@@ -1,7 +1,11 @@
 package com.mycompany.hotelmanagementsystem.controller.admin;
 
 import com.mycompany.hotelmanagementsystem.service.AdminVoucherService;
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.entity.Voucher;
+=======
+import com.mycompany.hotelmanagementsystem.model.Voucher;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

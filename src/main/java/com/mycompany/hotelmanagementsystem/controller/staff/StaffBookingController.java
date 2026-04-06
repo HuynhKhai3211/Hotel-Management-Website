@@ -4,6 +4,7 @@ import com.mycompany.hotelmanagementsystem.service.StaffBookingService;
 import com.mycompany.hotelmanagementsystem.service.BookingService;
 import com.mycompany.hotelmanagementsystem.service.RoomSuggestionService;
 import com.mycompany.hotelmanagementsystem.constant.PaymentType;
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.entity.Booking;
 import com.mycompany.hotelmanagementsystem.entity.Occupant;
 import com.mycompany.hotelmanagementsystem.entity.BookingExtension;
@@ -20,6 +21,24 @@ import com.mycompany.hotelmanagementsystem.util.WalkInCustomerResult;
 import com.mycompany.hotelmanagementsystem.util.EmailHelper;
 import com.mycompany.hotelmanagementsystem.util.RoomSelectionItem;
 import com.mycompany.hotelmanagementsystem.util.MultiRoomCalcResponse;
+=======
+import com.mycompany.hotelmanagementsystem.model.Booking;
+import com.mycompany.hotelmanagementsystem.model.Occupant;
+import com.mycompany.hotelmanagementsystem.model.BookingExtension;
+import com.mycompany.hotelmanagementsystem.model.BookingRoom;
+import com.mycompany.hotelmanagementsystem.model.Room;
+import com.mycompany.hotelmanagementsystem.model.RoomType;
+import com.mycompany.hotelmanagementsystem.model.RoomSuggestionItem;
+import com.mycompany.hotelmanagementsystem.model.UnassignedRoomInfo;
+import com.mycompany.hotelmanagementsystem.dao.BookingRoomRepository;
+import com.mycompany.hotelmanagementsystem.dao.RoomRepository;
+import com.mycompany.hotelmanagementsystem.utils.BookingCalcResponse;
+import com.mycompany.hotelmanagementsystem.utils.BookingResult;
+import com.mycompany.hotelmanagementsystem.utils.WalkInCustomerResult;
+import com.mycompany.hotelmanagementsystem.utils.EmailHelper;
+import com.mycompany.hotelmanagementsystem.utils.RoomSelectionItem;
+import com.mycompany.hotelmanagementsystem.utils.MultiRoomCalcResponse;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -79,6 +98,10 @@ public class StaffBookingController extends HttpServlet {
             case "/staff/bookings/checkout" -> handleCheckoutGet(request, response);
             case "/staff/bookings/checkout-room" -> handleCheckoutBookingRoom(request, response);
             case "/staff/bookings/complete-checkout" -> handleCompleteCheckout(request, response);
+<<<<<<< HEAD
+=======
+            case "/staff/bookings/complete-multi-checkout" -> handleCompleteMultiCheckout(request, response);
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             case "/staff/bookings/walkin" -> handleWalkInStep1Get(request, response);
             case "/staff/bookings/walkin-room" -> handleWalkInStep2Get(request, response);
             case "/staff/bookings/walkin-multi" -> handleWalkInMultiGet(request, response);
@@ -357,6 +380,12 @@ public class StaffBookingController extends HttpServlet {
             request.setAttribute("checkoutPaymentAmount", staffBookingService.getCheckoutPaymentAmount(bookingId));
         }
 
+<<<<<<< HEAD
+=======
+        // Get actual surcharge for display
+        request.setAttribute("surcharge", staffBookingService.getActualSurcharge(bookingId));
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         request.setAttribute("booking", booking);
         request.setAttribute("occupants", occupants);
         request.setAttribute("extensions", extensions);
@@ -373,6 +402,7 @@ public class StaffBookingController extends HttpServlet {
             return;
         }
 
+<<<<<<< HEAD
         boolean success = staffBookingService.processCheckout(bookingId);
 
         if (success) {
@@ -384,6 +414,26 @@ public class StaffBookingController extends HttpServlet {
             } else {
                 response.sendRedirect(request.getContextPath() + "/staff/bookings/detail?id=" + bookingId + "&success=checkedout");
             }
+=======
+        // Check if payment is needed BEFORE marking as checked out
+        boolean needsPayment = staffBookingService.needsCheckoutPayment(bookingId);
+
+        if (needsPayment) {
+            // Redirect to payment first - booking stays in current status
+            Booking booking = staffBookingService.getBookingDetail(bookingId);
+            String invoiceType = PaymentType.DEPOSIT.equals(booking.getPaymentType()) ? "Remaining" : "Booking";
+            // Store in session to know to complete checkout after payment
+            request.getSession().setAttribute("pendingCheckoutForPayment", bookingId);
+            response.sendRedirect(request.getContextPath() + "/staff/payments/process?bookingId=" + bookingId + "&invoiceType=" + invoiceType);
+            return;
+        }
+
+        // No payment needed - proceed with checkout
+        boolean success = staffBookingService.processCheckout(bookingId);
+
+        if (success) {
+            response.sendRedirect(request.getContextPath() + "/staff/bookings/detail?id=" + bookingId + "&success=checkedout");
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         } else {
             request.setAttribute("error", "Không thể xử lý check-out. Vui lòng thử lại.");
             handleCheckoutGet(request, response);
@@ -1108,6 +1158,31 @@ public class StaffBookingController extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/staff/bookings/detail?id=" + fallbackBookingId);
     }
 
+<<<<<<< HEAD
+=======
+    // Handle multi-room checkout completion after payment
+    private void handleCompleteMultiCheckout(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int bookingId = parseIntParam(request, "bookingId");
+
+        if (bookingId > 0) {
+            // Perform checkout
+            boolean success = staffBookingService.processCheckout(bookingId);
+
+            // Clear session attribute
+            request.getSession().removeAttribute("pendingCheckoutForPayment");
+
+            if (success) {
+                response.sendRedirect(request.getContextPath() + "/staff/bookings/detail?id=" + bookingId + "&success=checkedout");
+                return;
+            }
+        }
+
+        // Fallback redirect
+        response.sendRedirect(request.getContextPath() + "/staff/bookings");
+    }
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     private int parseIntParam(HttpServletRequest request, String name) {
         String value = request.getParameter(name);
         if (value == null || value.isEmpty()) return 0;

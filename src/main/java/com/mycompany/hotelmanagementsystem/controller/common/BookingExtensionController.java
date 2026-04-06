@@ -1,5 +1,6 @@
 package com.mycompany.hotelmanagementsystem.controller.common;
 
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.util.ExtensionCalcResponse;
 import com.mycompany.hotelmanagementsystem.util.ServiceResult;
 import com.mycompany.hotelmanagementsystem.util.SessionHelper;
@@ -7,6 +8,17 @@ import com.mycompany.hotelmanagementsystem.service.BookingExtensionService;
 import com.mycompany.hotelmanagementsystem.service.BookingService;
 import com.mycompany.hotelmanagementsystem.entity.*;
 import com.mycompany.hotelmanagementsystem.dal.BookingRoomRepository;
+=======
+import com.mycompany.hotelmanagementsystem.model.Booking;
+import com.mycompany.hotelmanagementsystem.model.Account;
+import com.mycompany.hotelmanagementsystem.model.BookingRoom;
+import com.mycompany.hotelmanagementsystem.utils.ExtensionCalcResponse;
+import com.mycompany.hotelmanagementsystem.utils.ServiceResult;
+import com.mycompany.hotelmanagementsystem.utils.SessionHelper;
+import com.mycompany.hotelmanagementsystem.service.BookingExtensionService;
+import com.mycompany.hotelmanagementsystem.service.BookingService;
+import com.mycompany.hotelmanagementsystem.dao.BookingRoomRepository;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;

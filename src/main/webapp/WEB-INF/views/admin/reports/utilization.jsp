@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+=======
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
@@ -6,7 +10,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<<<<<<< HEAD
     <title>Báo cáo công suất phòng - Admin Portal</title>
+=======
+    <title>Báo cáo công suất phòng - Cổng Quản Trị</title>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -26,7 +34,11 @@
             <div class="app-content">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
+<<<<<<< HEAD
                         <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin/dashboard">Dashboard</a></li>
+=======
+                        <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin/dashboard">Bảng điều khiển</a></li>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                         <li class="breadcrumb-item active">Công suất phòng</li>
                     </ol>
                 </nav>

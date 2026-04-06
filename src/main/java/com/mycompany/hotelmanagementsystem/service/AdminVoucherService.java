@@ -1,7 +1,12 @@
 package com.mycompany.hotelmanagementsystem.service;
 
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.entity.Voucher;
 import com.mycompany.hotelmanagementsystem.dal.VoucherRepository;
+=======
+import com.mycompany.hotelmanagementsystem.model.Voucher;
+import com.mycompany.hotelmanagementsystem.dao.VoucherRepository;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import java.math.BigDecimal;
 import java.util.List;
 

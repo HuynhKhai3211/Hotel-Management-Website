@@ -1,5 +1,6 @@
 package com.mycompany.hotelmanagementsystem.controller.common;
 
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.util.AuthResult;
 import com.mycompany.hotelmanagementsystem.constant.RoleConstant;
 import com.mycompany.hotelmanagementsystem.util.SessionHelper;
@@ -7,6 +8,15 @@ import com.mycompany.hotelmanagementsystem.util.OtpHelper;
 import com.mycompany.hotelmanagementsystem.util.GoogleOAuthHelper;
 import com.mycompany.hotelmanagementsystem.service.AuthService;
 import com.mycompany.hotelmanagementsystem.entity.Account;
+=======
+import com.mycompany.hotelmanagementsystem.utils.AuthResult;
+import com.mycompany.hotelmanagementsystem.constant.RoleConstant;
+import com.mycompany.hotelmanagementsystem.utils.SessionHelper;
+import com.mycompany.hotelmanagementsystem.utils.OtpHelper;
+import com.mycompany.hotelmanagementsystem.utils.GoogleOAuthHelper;
+import com.mycompany.hotelmanagementsystem.service.AuthService;
+import com.mycompany.hotelmanagementsystem.model.Account;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -167,7 +177,11 @@ public class AuthController extends HttpServlet {
     private void handleLogout(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         SessionHelper.logout(request);
+<<<<<<< HEAD
         response.sendRedirect(request.getContextPath() + "/");
+=======
+        response.sendRedirect(request.getContextPath() + "/auth/login");
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     }
 
     private void handleChangePasswordGet(HttpServletRequest request, HttpServletResponse response)

@@ -1,10 +1,17 @@
 package com.mycompany.hotelmanagementsystem.controller.staff;
 
 import com.mycompany.hotelmanagementsystem.constant.RoleConstant;
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.util.AuthResult;
 import com.mycompany.hotelmanagementsystem.util.SessionHelper;
 import com.mycompany.hotelmanagementsystem.service.AuthService;
 import com.mycompany.hotelmanagementsystem.entity.Account;
+=======
+import com.mycompany.hotelmanagementsystem.utils.AuthResult;
+import com.mycompany.hotelmanagementsystem.utils.SessionHelper;
+import com.mycompany.hotelmanagementsystem.service.AuthService;
+import com.mycompany.hotelmanagementsystem.model.Account;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

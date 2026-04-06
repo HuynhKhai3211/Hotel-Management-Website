@@ -1,8 +1,13 @@
 package com.mycompany.hotelmanagementsystem.service;
 
 import com.mycompany.hotelmanagementsystem.constant.BookingStatus;
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.dal.BookingRepository;
 import com.mycompany.hotelmanagementsystem.entity.Booking;
+=======
+import com.mycompany.hotelmanagementsystem.dao.BookingRepository;
+import com.mycompany.hotelmanagementsystem.model.Booking;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

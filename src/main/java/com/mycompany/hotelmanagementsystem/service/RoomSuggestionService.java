@@ -1,7 +1,12 @@
 package com.mycompany.hotelmanagementsystem.service;
 
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.dal.RoomRepository;
 import com.mycompany.hotelmanagementsystem.entity.Room;
+=======
+import com.mycompany.hotelmanagementsystem.dao.RoomRepository;
+import com.mycompany.hotelmanagementsystem.model.Room;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import java.time.LocalDateTime;
 import java.util.*;
 

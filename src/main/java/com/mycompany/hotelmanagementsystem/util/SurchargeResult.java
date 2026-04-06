@@ -1,4 +1,8 @@
+<<<<<<< HEAD:src/main/java/com/mycompany/hotelmanagementsystem/util/SurchargeResult.java
 package com.mycompany.hotelmanagementsystem.util;
+=======
+package com.mycompany.hotelmanagementsystem.utils;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b:src/main/java/com/mycompany/hotelmanagementsystem/utils/SurchargeResult.java
 
 import java.math.BigDecimal;
 

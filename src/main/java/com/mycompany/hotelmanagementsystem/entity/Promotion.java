@@ -1,4 +1,8 @@
+<<<<<<< HEAD:src/main/java/com/mycompany/hotelmanagementsystem/entity/Promotion.java
 package com.mycompany.hotelmanagementsystem.entity;
+=======
+package com.mycompany.hotelmanagementsystem.model;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b:src/main/java/com/mycompany/hotelmanagementsystem/model/Promotion.java
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

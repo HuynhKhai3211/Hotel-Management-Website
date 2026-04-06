@@ -1,5 +1,6 @@
 package com.mycompany.hotelmanagementsystem.controller.common;
 
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.util.BookingCalcResponse;
 import com.mycompany.hotelmanagementsystem.util.MultiRoomCalcResponse;
 import com.mycompany.hotelmanagementsystem.util.RoomSelectionItem;
@@ -11,6 +12,23 @@ import com.mycompany.hotelmanagementsystem.service.BookingService;
 import com.mycompany.hotelmanagementsystem.service.RoomService;
 import com.mycompany.hotelmanagementsystem.dal.RoomRepository;
 import com.mycompany.hotelmanagementsystem.entity.*;
+=======
+import com.mycompany.hotelmanagementsystem.model.Booking;
+import com.mycompany.hotelmanagementsystem.model.Room;
+import com.mycompany.hotelmanagementsystem.model.Account;
+import com.mycompany.hotelmanagementsystem.model.RoomType;
+import com.mycompany.hotelmanagementsystem.model.Occupant;
+import com.mycompany.hotelmanagementsystem.utils.BookingCalcResponse;
+import com.mycompany.hotelmanagementsystem.utils.MultiRoomCalcResponse;
+import com.mycompany.hotelmanagementsystem.utils.RoomSelectionItem;
+import com.mycompany.hotelmanagementsystem.utils.DateHelper;
+import com.mycompany.hotelmanagementsystem.utils.SessionHelper;
+import com.mycompany.hotelmanagementsystem.utils.EmailHelper;
+import com.mycompany.hotelmanagementsystem.constant.PaymentType;
+import com.mycompany.hotelmanagementsystem.service.BookingService;
+import com.mycompany.hotelmanagementsystem.service.RoomService;
+import com.mycompany.hotelmanagementsystem.dao.RoomRepository;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -104,6 +122,14 @@ public class BookingController extends HttpServlet {
         LocalDateTime checkOut = DateHelper.toCheckOutTime(
             DateHelper.parseDate(checkOutDate), checkOutTime);
 
+<<<<<<< HEAD
+=======
+        System.out.println("[DEBUG] handleStartPost - checkInDate: " + checkInDate + ", checkInTime: " + checkInTime);
+        System.out.println("[DEBUG] handleStartPost - checkOutDate: " + checkOutDate + ", checkOutTime: " + checkOutTime);
+        System.out.println("[DEBUG] handleStartPost - checkIn: " + checkIn);
+        System.out.println("[DEBUG] handleStartPost - checkOut: " + checkOut);
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         if (checkIn == null || checkOut == null) {
             request.setAttribute("error", "Ngay khong hop le");
             handleStartGet(request, response);
@@ -149,12 +175,21 @@ public class BookingController extends HttpServlet {
 
         long nights = DateHelper.calculateNights(checkIn, checkOut);
         Integer preSelectedTypeId = parseIntParam(request, "typeId");
+<<<<<<< HEAD
+=======
+        DateTimeFormatter displayFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 
         request.setAttribute("allRoomTypes", allTypes);
         request.setAttribute("availability", availability);
         request.setAttribute("nights", nights);
         request.setAttribute("checkIn", checkIn);
         request.setAttribute("checkOut", checkOut);
+<<<<<<< HEAD
+=======
+        request.setAttribute("checkInFormatted", checkIn.format(displayFmt));
+        request.setAttribute("checkOutFormatted", checkOut.format(displayFmt));
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         request.setAttribute("preSelectedTypeId", preSelectedTypeId);
         request.getRequestDispatcher("/WEB-INF/views/booking/select-rooms.jsp").forward(request, response);
     }
@@ -164,6 +199,11 @@ public class BookingController extends HttpServlet {
         HttpSession session = request.getSession();
         LocalDateTime checkIn = (LocalDateTime) session.getAttribute("bookingCheckIn");
         LocalDateTime checkOut = (LocalDateTime) session.getAttribute("bookingCheckOut");
+<<<<<<< HEAD
+=======
+        System.out.println("[DEBUG] handleSelectRoomsPost - checkIn from session: " + checkIn);
+        System.out.println("[DEBUG] handleSelectRoomsPost - checkOut from session: " + checkOut);
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         Account account = SessionHelper.getLoggedInAccount(request);
 
         String[] typeIds = request.getParameterValues("typeId");
@@ -209,6 +249,7 @@ public class BookingController extends HttpServlet {
 
     private void handleCreateGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+<<<<<<< HEAD
         Integer typeId = parseIntParam(request, "typeId");
         HttpSession session = request.getSession();
 
@@ -217,6 +258,9 @@ public class BookingController extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/booking/select-rooms?typeId=" + typeId);
             return;
         }
+=======
+        
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 
         // Redirect to step 1
         response.sendRedirect(request.getContextPath() + "/booking/start");
@@ -334,6 +378,10 @@ public class BookingController extends HttpServlet {
                 depositAmount = multiCalc.getTotal();
             }
 
+<<<<<<< HEAD
+=======
+            System.out.println("[DEBUG] handleConfirmPost - creating multi-room booking with checkIn: " + multiCalc.getCheckIn() + ", checkOut: " + multiCalc.getCheckOut());
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             var result = bookingService.createMultiRoomBooking(
                 customerId, selections, multiCalc.getCheckIn(), multiCalc.getCheckOut(),
                 multiCalc.getTotal(), multiCalc.getTotalEarlySurcharge(),

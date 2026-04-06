@@ -1,11 +1,19 @@
+<<<<<<< HEAD
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+=======
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<<<<<<< HEAD
     <title>Quản lý phòng - Admin Portal</title>
+=======
+    <title>Quản lý phòng - Cổng Quản Trị</title>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -26,7 +34,11 @@
                 <!-- Breadcrumb -->
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
+<<<<<<< HEAD
                         <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin/dashboard">Dashboard</a></li>
+=======
+                        <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin/dashboard">Bảng điều khiển</a></li>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                         <li class="breadcrumb-item active">Phòng</li>
                     </ol>
                 </nav>
@@ -109,6 +121,10 @@
                         <table class="table-modern table-striped table-hover" id="roomsTable">
                             <thead>
                                 <tr>
+<<<<<<< HEAD
+=======
+                                    <th style="width:70px;">Ảnh</th>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                     <th>Số phòng</th>
                                     <th>Loại phòng</th>
                                     <th>Trạng thái</th>
@@ -119,7 +135,11 @@
                                 <c:choose>
                                     <c:when test="${empty rooms}">
                                         <tr>
+<<<<<<< HEAD
                                             <td colspan="4">
+=======
+                                            <td colspan="5">
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                                 <div class="empty-state">
                                                     <div class="empty-state-icon">
                                                         <i class="bi bi-door-open"></i>
@@ -136,6 +156,23 @@
                                     <c:otherwise>
                                         <c:forEach var="room" items="${rooms}">
                                             <tr data-row>
+<<<<<<< HEAD
+=======
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${not empty room.roomType.images}">
+                                                            <img src="${pageContext.request.contextPath}${room.roomType.images[0].imageUrl}"
+                                                                 alt="${room.roomType.typeName}"
+                                                                 style="width:60px;height:45px;object-fit:cover;border-radius:6px;">
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <div style="width:60px;height:45px;background:var(--surface-hover);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);">
+                                                                <i class="bi bi-image"></i>
+                                                            </div>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                                 <td data-field="search" class="fw-semibold">${room.roomNumber}</td>
                                                 <td data-field="typeId">${room.roomType != null ? room.roomType.typeName : '-'}</td>
                                                 <td data-field="status" data-value="${room.status}">
@@ -155,6 +192,13 @@
                                                     </c:choose>
                                                 </td>
                                                 <td class="text-end">
+<<<<<<< HEAD
+=======
+                                                    <a href="${pageContext.request.contextPath}/admin/rooms/history?id=${room.roomId}"
+                                                       class="btn btn-sm btn-outline-info me-1" title="Lịch sử">
+                                                        <i class="bi bi-clock-history"></i>
+                                                    </a>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                                     <a href="${pageContext.request.contextPath}/admin/rooms/edit?id=${room.roomId}"
                                                        class="btn btn-sm btn-outline-secondary me-1">
                                                         <i class="bi bi-pencil"></i>

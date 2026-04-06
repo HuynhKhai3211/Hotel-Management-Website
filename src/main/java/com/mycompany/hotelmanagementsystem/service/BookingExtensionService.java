@@ -1,5 +1,6 @@
 package com.mycompany.hotelmanagementsystem.service;
 
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.constant.BookingStatus;
 import com.mycompany.hotelmanagementsystem.constant.InvoiceType;
 import com.mycompany.hotelmanagementsystem.entity.*;
@@ -8,6 +9,22 @@ import com.mycompany.hotelmanagementsystem.dal.BookingRoomRepository;
 import com.mycompany.hotelmanagementsystem.entity.BookingRoom;
 import com.mycompany.hotelmanagementsystem.util.ExtensionCalcResponse;
 import com.mycompany.hotelmanagementsystem.util.ServiceResult;
+=======
+import com.mycompany.hotelmanagementsystem.model.Booking;
+import com.mycompany.hotelmanagementsystem.model.BookingExtension;
+import com.mycompany.hotelmanagementsystem.model.RoomType;
+import com.mycompany.hotelmanagementsystem.model.Invoice;
+import com.mycompany.hotelmanagementsystem.dao.InvoiceRepository;
+import com.mycompany.hotelmanagementsystem.dao.RoomTypeRepository;
+import com.mycompany.hotelmanagementsystem.dao.BookingExtensionRepository;
+import com.mycompany.hotelmanagementsystem.dao.BookingRepository;
+import com.mycompany.hotelmanagementsystem.constant.BookingStatus;
+import com.mycompany.hotelmanagementsystem.constant.InvoiceType;
+import com.mycompany.hotelmanagementsystem.dao.BookingRoomRepository;
+import com.mycompany.hotelmanagementsystem.model.BookingRoom;
+import com.mycompany.hotelmanagementsystem.utils.ExtensionCalcResponse;
+import com.mycompany.hotelmanagementsystem.utils.ServiceResult;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;

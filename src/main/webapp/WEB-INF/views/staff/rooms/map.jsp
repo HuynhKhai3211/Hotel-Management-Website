@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+=======
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
@@ -6,7 +10,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<<<<<<< HEAD
     <title>Sơ đồ phòng - Staff Portal</title>
+=======
+    <title>Sơ đồ phòng - Cổng Nhân Viên</title>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -24,6 +32,7 @@
             <jsp:include page="../includes/header.jsp" />
 
             <div class="app-content">
+<<<<<<< HEAD
                 <!-- Legend -->
                 <div class="card mb-4">
                     <div class="card-body py-2">
@@ -33,6 +42,40 @@
                             <span><span class="badge bg-danger me-1">&nbsp;</span> Đang sử dụng</span>
                             <span><span class="badge bg-warning me-1">&nbsp;</span> Đang dọn</span>
                             <span><span class="badge bg-secondary me-1">&nbsp;</span> Bảo trì</span>
+=======
+                <!-- Flash Messages -->
+                <c:if test="${not empty sessionScope.successMessage}">
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <i class="bi bi-check-circle me-2"></i>${sessionScope.successMessage}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <c:remove var="successMessage" scope="session"/>
+                </c:if>
+                <c:if test="${not empty sessionScope.errorMessage}">
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <i class="bi bi-exclamation-circle me-2"></i>${sessionScope.errorMessage}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <c:remove var="errorMessage" scope="session"/>
+                </c:if>
+
+                <!-- Legend -->
+                <div class="card mb-4">
+                    <div class="card-body py-2">
+                        <div class="d-flex flex-wrap gap-4 align-items-center justify-content-between">
+                            <div class="d-flex flex-wrap gap-4 align-items-center">
+                                <span class="fw-bold">Chú thích:</span>
+                                <span><span class="badge bg-success me-1">&nbsp;</span> Trống</span>
+                                <span><span class="badge bg-danger me-1">&nbsp;</span> Đang sử dụng</span>
+                                <span><span class="badge bg-warning me-1">&nbsp;</span> Đang dọn</span>
+                                <span><span class="badge bg-secondary me-1">&nbsp;</span> Bảo trì</span>
+                            </div>
+                            <a href="${pageContext.request.contextPath}/staff/rooms/reconcile"
+                               class="btn btn-sm btn-outline-primary"
+                               onclick="return confirm('Đồng bộ trạng thái phòng? Phòng nào đang ở nhưng không có khách sẽ được chuyển sang trạng thái dọn dẹp.')">
+                                <i class="bi bi-arrow-repeat me-1"></i>Đồng bộ trạng thái
+                            </a>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                         </div>
                     </div>
                 </div>

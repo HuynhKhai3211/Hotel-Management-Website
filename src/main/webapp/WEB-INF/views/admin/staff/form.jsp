@@ -1,12 +1,22 @@
+<<<<<<< HEAD
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ page import="com.mycompany.hotelmanagementsystem.application.constant.RoleConstant" %>
+=======
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ page import="com.mycompany.hotelmanagementsystem.constant.RoleConstant" %>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<<<<<<< HEAD
     <title>${isEdit ? 'Sửa' : 'Thêm'} nhân viên - Admin Portal</title>
+=======
+    <title>${isEdit ? 'Sửa' : 'Thêm'} nhân viên - Cổng Quản Trị</title>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -26,7 +36,11 @@
             <div class="app-content">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
+<<<<<<< HEAD
                         <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin/dashboard">Dashboard</a></li>
+=======
+                        <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin/dashboard">Bảng điều khiển</a></li>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                         <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin/staff">Nhân viên</a></li>
                         <li class="breadcrumb-item active">${isEdit ? 'Sửa' : 'Thêm'}</li>
                     </ol>
@@ -52,7 +66,12 @@
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label class="form-label">Email <span class="text-danger">*</span></label>
+<<<<<<< HEAD
                                         <input type="email" class="form-control" name="email" required>
+=======
+                                        <input type="email" class="form-control" name="email"
+                                               value="${staff.email}" required>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Mật khẩu <span class="text-danger">*</span></label>
@@ -84,8 +103,13 @@
                                 <div class="mb-3">
                                     <label class="form-label">Vai trò <span class="text-danger">*</span></label>
                                     <select name="roleId" class="form-select" required>
+<<<<<<< HEAD
                                         <option value="3" ${staff.roleId == 3 ? 'selected' : ''}>Nhân viên (Staff)</option>
                                         <option value="1" ${staff.roleId == 1 ? 'selected' : ''}>Quản trị viên (Admin)</option>
+=======
+                                        <option value="3" ${staff.roleId == 3 ? 'selected' : ''}>Nhân viên</option>
+                                        <option value="1" ${staff.roleId == 1 ? 'selected' : ''}>Quản trị viên</option>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                     </select>
                                     <div class="form-text text-warning">
                                         <i class="bi bi-exclamation-triangle me-1"></i>

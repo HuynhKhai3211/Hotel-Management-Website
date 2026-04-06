@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+=======
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -30,6 +34,11 @@
     <div class="auth-container">
         <!-- Hero Section - Left -->
         <div class="auth-hero d-none d-lg-flex">
+<<<<<<< HEAD
+=======
+            <img src="https://images.unsplash.com/photo-1582719508461-905c673771eb?w=1200&q=80" alt="Hotel Staff"
+                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.25;">
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             <div class="auth-hero-overlay"></div>
             <div class="auth-hero-content">
                 <h1>Cổng Nhân Viên</h1>
@@ -45,7 +54,11 @@
                 </div>
 
                 <div class="auth-card">
+<<<<<<< HEAD
                     <div class="staff-badge">Staff Portal</div>
+=======
+                    <div class="staff-badge">Cổng Nhân Viên</div>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                     <h2>Đăng nhập Nhân viên</h2>
                     <p class="auth-subtitle">Đăng nhập để truy cập hệ thống quản lý</p>
 
@@ -56,19 +69,34 @@
                     <form method="post" action="${pageContext.request.contextPath}/staff/login" class="auth-form">
                         <input type="hidden" name="returnUrl" value="${returnUrl}">
 
+<<<<<<< HEAD
                         <div class="mb-3">
                             <label for="email" class="form-label">Email nhân viên</label>
                             <input type="email" class="form-control" id="email" name="email"
+=======
+                        <div class="mb-4">
+                            <label for="email" class="form-label fw-bold">Email nhân viên</label>
+                            <input type="email" class="form-control form-control-lg" id="email" name="email"
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                    value="${email}" placeholder="nhanvien@luxuryhotel.com" required>
                         </div>
 
                         <div class="mb-4">
+<<<<<<< HEAD
                             <label for="password" class="form-label">Mật khẩu</label>
                             <input type="password" class="form-control" id="password"
                                    name="password" placeholder="Nhập mật khẩu" required>
                         </div>
 
                         <button type="submit" class="btn btn-hotel-primary w-100">Đăng nhập</button>
+=======
+                            <label for="password" class="form-label fw-bold">Mật khẩu</label>
+                            <input type="password" class="form-control form-control-lg" id="password"
+                                   name="password" placeholder="Nhập mật khẩu" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-hotel-primary btn-lg w-100 py-3">Đăng nhập</button>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                     </form>
 
                     <div class="auth-footer mt-4">

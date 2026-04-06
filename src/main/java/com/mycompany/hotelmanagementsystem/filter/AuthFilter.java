@@ -1,6 +1,10 @@
 package com.mycompany.hotelmanagementsystem.filter;
 
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.util.SessionHelper;
+=======
+import com.mycompany.hotelmanagementsystem.utils.SessionHelper;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;

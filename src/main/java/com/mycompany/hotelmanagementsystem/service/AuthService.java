@@ -2,6 +2,7 @@ package com.mycompany.hotelmanagementsystem.service;
 
 import com.mycompany.hotelmanagementsystem.constant.ErrorMessage;
 import com.mycompany.hotelmanagementsystem.constant.RoleConstant;
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.util.AuthResult;
 import com.mycompany.hotelmanagementsystem.util.PasswordHelper;
 import com.mycompany.hotelmanagementsystem.util.ValidationHelper;
@@ -12,6 +13,18 @@ import com.mycompany.hotelmanagementsystem.entity.Account;
 import com.mycompany.hotelmanagementsystem.entity.Customer;
 import com.mycompany.hotelmanagementsystem.dal.AccountRepository;
 import com.mycompany.hotelmanagementsystem.dal.CustomerRepository;
+=======
+import com.mycompany.hotelmanagementsystem.utils.AuthResult;
+import com.mycompany.hotelmanagementsystem.utils.PasswordHelper;
+import com.mycompany.hotelmanagementsystem.utils.ValidationHelper;
+import com.mycompany.hotelmanagementsystem.utils.OtpHelper;
+import com.mycompany.hotelmanagementsystem.utils.EmailHelper;
+import com.mycompany.hotelmanagementsystem.utils.GoogleOAuthHelper;
+import com.mycompany.hotelmanagementsystem.model.Account;
+import com.mycompany.hotelmanagementsystem.model.Customer;
+import com.mycompany.hotelmanagementsystem.dao.AccountRepository;
+import com.mycompany.hotelmanagementsystem.dao.CustomerRepository;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 
 public class AuthService {
     private final AccountRepository accountRepository;
@@ -32,7 +45,14 @@ public class AuthService {
             return AuthResult.failure(ErrorMessage.INVALID_PASSWORD);
         }
         if (!ValidationHelper.isNotEmpty(account.getFullName())) {
+<<<<<<< HEAD
             return AuthResult.failure("Ho ten khong duoc de trong");
+=======
+            return AuthResult.failure("Họ tên không được để trống");
+        }
+        if (!ValidationHelper.isValidPhone(account.getPhone())) {
+            return AuthResult.failure(ErrorMessage.INVALID_PHONE);
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         }
         if (!account.getPassword().equals(confirmPassword)) {
             return AuthResult.failure(ErrorMessage.PASSWORDS_NOT_MATCH);
@@ -108,6 +128,14 @@ public class AuthService {
             return AuthResult.failure("Mat khau hien tai khong dung");
         }
 
+<<<<<<< HEAD
+=======
+        // Kiểm tra mật khẩu mới không được giống hoặc gần giống mật khẩu cũ
+        if (PasswordHelper.isTooSimilar(currentPassword, newPassword)) {
+            return AuthResult.failure("Mat khau moi phai khac biet dang ke so voi mat khau cu (khong duoc giong hoac gan giong)");
+        }
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         String newHash = PasswordHelper.hash(newPassword);
         int updated = accountRepository.updatePassword(accountId, newHash);
 

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+=======
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
@@ -6,7 +10,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<<<<<<< HEAD
     <title>Thanh toán - Staff Portal</title>
+=======
+    <title>Thanh toán - Cổng Nhân Viên</title>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -52,7 +60,20 @@
                                     </tr>
                                     <tr>
                                         <td>Phòng:</td>
+<<<<<<< HEAD
                                         <td class="text-end">${booking.room.roomNumber} - ${booking.room.roomType.typeName}</td>
+=======
+                                        <td class="text-end">
+                                            <c:choose>
+                                                <c:when test="${not empty booking.room}">
+                                                    ${booking.room.roomNumber} - ${booking.room.roomType.typeName}
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="text-muted">Nhiều phòng</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                     </tr>
                                     <tr>
                                         <td>Ngày lập:</td>
@@ -94,12 +115,22 @@
                                             </a>
                                         </div>
                                         <div class="col-md-6">
+<<<<<<< HEAD
                                             <a href="${pageContext.request.contextPath}/staff/payments/momo?invoiceId=${invoice.invoiceId}"
                                                class="card h-100 text-decoration-none border-2 payment-method-card">
                                                 <div class="card-body text-center py-4">
                                                     <i class="bi bi-qr-code fs-1 text-danger mb-3 d-block"></i>
                                                     <h5 class="card-title">Momo QR</h5>
                                                     <p class="card-text text-muted small">Quét mã QR thanh toán qua Momo</p>
+=======
+                                            <a href="${pageContext.request.contextPath}/staff/payments/vnpay?invoiceId=${invoice.invoiceId}"
+                                               class="card h-100 text-decoration-none border-2 payment-method-card">
+                                                <div class="card-body text-center py-4">
+                                                    <img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/6/0oxhzjmxbksr1686814746087.png"
+                                                         alt="VNPay" style="height: 48px;" class="mb-3">
+                                                    <h5 class="card-title">VNPay</h5>
+                                                    <p class="card-text text-muted small">Thanh toán qua cổng VNPay - ATM/Visa/QR</p>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                                 </div>
                                             </a>
                                         </div>

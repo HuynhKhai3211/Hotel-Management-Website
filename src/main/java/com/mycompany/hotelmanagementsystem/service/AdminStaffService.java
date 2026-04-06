@@ -1,8 +1,13 @@
 package com.mycompany.hotelmanagementsystem.service;
 
 import com.mycompany.hotelmanagementsystem.constant.RoleConstant;
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.entity.Account;
 import com.mycompany.hotelmanagementsystem.dal.AccountRepository;
+=======
+import com.mycompany.hotelmanagementsystem.model.Account;
+import com.mycompany.hotelmanagementsystem.dao.AccountRepository;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import org.mindrot.jbcrypt.BCrypt;
 import java.util.List;
 

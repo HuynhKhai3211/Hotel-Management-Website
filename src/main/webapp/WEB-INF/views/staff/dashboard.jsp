@@ -1,11 +1,19 @@
+<<<<<<< HEAD
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+=======
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<<<<<<< HEAD
     <title>Dashboard - Staff Portal</title>
+=======
+    <title>Bảng điều khiển - Cổng Nhân Viên</title>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -19,14 +27,22 @@
         <jsp:include page="includes/sidebar.jsp" />
 
         <main class="app-main">
+<<<<<<< HEAD
             <c:set var="pageTitle" value="Dashboard" scope="request"/>
+=======
+            <c:set var="pageTitle" value="Bảng điều khiển" scope="request"/>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             <jsp:include page="includes/header.jsp" />
 
             <div class="app-content">
                 <!-- Breadcrumb -->
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
+<<<<<<< HEAD
                         <li class="breadcrumb-item active">Dashboard</li>
+=======
+                        <li class="breadcrumb-item active">Bảng điều khiển</li>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                     </ol>
                 </nav>
 
@@ -131,6 +147,18 @@
                                             <small class="text-muted">${roomsCleaning} phòng cần dọn</small>
                                         </div>
                                     </a>
+<<<<<<< HEAD
+=======
+                                    <a href="${pageContext.request.contextPath}/staff/service-requests" class="d-flex align-items-center gap-3 p-3 rounded text-decoration-none" style="background: var(--surface-hover);">
+                                        <div class="card-stat-icon" style="width: 48px; height: 48px; font-size: 1.25rem; background: linear-gradient(135deg, #ffc107, #ff9800);">
+                                            <i class="bi bi-bell"></i>
+                                        </div>
+                                        <div>
+                                            <strong class="d-block text-primary">Yêu cầu dịch vụ</strong>
+                                            <small class="text-muted">${pendingServiceRequests} yêu cầu chờ xử lý</small>
+                                        </div>
+                                    </a>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                 </div>
                             </div>
                         </div>

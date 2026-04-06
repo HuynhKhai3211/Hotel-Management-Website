@@ -1,5 +1,6 @@
 package com.mycompany.hotelmanagementsystem.service;
 
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.constant.BookingStatus;
 import com.mycompany.hotelmanagementsystem.constant.PaymentType;
 import com.mycompany.hotelmanagementsystem.util.BookingCalcResponse;
@@ -8,16 +9,44 @@ import com.mycompany.hotelmanagementsystem.util.ServiceResult;
 import com.mycompany.hotelmanagementsystem.util.DateHelper;
 import com.mycompany.hotelmanagementsystem.entity.*;
 import com.mycompany.hotelmanagementsystem.dal.*;
+=======
+import com.mycompany.hotelmanagementsystem.model.Voucher;
+import com.mycompany.hotelmanagementsystem.model.Booking;
+import com.mycompany.hotelmanagementsystem.model.Room;
+import com.mycompany.hotelmanagementsystem.model.RoomType;
+import com.mycompany.hotelmanagementsystem.model.Occupant;
+import com.mycompany.hotelmanagementsystem.model.Promotion;
+import com.mycompany.hotelmanagementsystem.dao.RoomTypeRepository;
+import com.mycompany.hotelmanagementsystem.dao.OccupantRepository;
+import com.mycompany.hotelmanagementsystem.dao.RoomRepository;
+import com.mycompany.hotelmanagementsystem.dao.BookingRepository;
+import com.mycompany.hotelmanagementsystem.dao.VoucherRepository;
+import com.mycompany.hotelmanagementsystem.dao.PromotionRepository;
+import com.mycompany.hotelmanagementsystem.constant.BookingStatus;
+import com.mycompany.hotelmanagementsystem.constant.PaymentType;
+import com.mycompany.hotelmanagementsystem.utils.BookingCalcResponse;
+import com.mycompany.hotelmanagementsystem.utils.BookingResult;
+import com.mycompany.hotelmanagementsystem.utils.ServiceResult;
+import com.mycompany.hotelmanagementsystem.utils.DateHelper;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.dal.BookingRoomRepository;
 import com.mycompany.hotelmanagementsystem.entity.BookingRoom;
 import com.mycompany.hotelmanagementsystem.util.MultiRoomCalcResponse;
 import com.mycompany.hotelmanagementsystem.util.RoomSelectionItem;
 import com.mycompany.hotelmanagementsystem.util.SurchargeResult;
+=======
+import com.mycompany.hotelmanagementsystem.dao.BookingRoomRepository;
+import com.mycompany.hotelmanagementsystem.model.BookingRoom;
+import com.mycompany.hotelmanagementsystem.utils.MultiRoomCalcResponse;
+import com.mycompany.hotelmanagementsystem.utils.RoomSelectionItem;
+import com.mycompany.hotelmanagementsystem.utils.SurchargeResult;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import java.util.ArrayList;
 
 public class BookingService {
@@ -409,6 +438,11 @@ public class BookingService {
         }
 
         // Create parent Booking (room_id=NULL for multi-room)
+<<<<<<< HEAD
+=======
+        System.out.println("[DEBUG] createMultiRoomBooking - checkIn: " + checkIn);
+        System.out.println("[DEBUG] createMultiRoomBooking - checkOut: " + checkOut);
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         Booking booking = new Booking();
         booking.setCustomerId(customerId);
         booking.setRoomId(null); // multi-room: no single room

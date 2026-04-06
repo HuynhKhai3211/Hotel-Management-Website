@@ -6,6 +6,7 @@ import com.mycompany.hotelmanagementsystem.constant.RoleConstant;
 import com.mycompany.hotelmanagementsystem.constant.RoomStatus;
 import com.mycompany.hotelmanagementsystem.constant.ServiceRequestStatusConstant;
 import com.mycompany.hotelmanagementsystem.constant.ServiceTypeConstant;
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.entity.Account;
 import com.mycompany.hotelmanagementsystem.entity.Booking;
 import com.mycompany.hotelmanagementsystem.entity.BookingExtension;
@@ -33,6 +34,35 @@ import com.mycompany.hotelmanagementsystem.util.WalkInCustomerResult;
 import com.mycompany.hotelmanagementsystem.util.RoomSelectionItem;
 import com.mycompany.hotelmanagementsystem.util.SurchargeResult;
 import com.mycompany.hotelmanagementsystem.util.DateHelper;
+=======
+import com.mycompany.hotelmanagementsystem.model.Account;
+import com.mycompany.hotelmanagementsystem.model.Booking;
+import com.mycompany.hotelmanagementsystem.model.BookingExtension;
+import com.mycompany.hotelmanagementsystem.model.Invoice;
+import com.mycompany.hotelmanagementsystem.model.Occupant;
+import com.mycompany.hotelmanagementsystem.model.Room;
+import com.mycompany.hotelmanagementsystem.model.RoomType;
+import com.mycompany.hotelmanagementsystem.model.ServiceRequest;
+import com.mycompany.hotelmanagementsystem.dao.AccountRepository;
+import com.mycompany.hotelmanagementsystem.dao.BookingRepository;
+import com.mycompany.hotelmanagementsystem.dao.BookingExtensionRepository;
+import com.mycompany.hotelmanagementsystem.dao.BookingRoomRepository;
+import com.mycompany.hotelmanagementsystem.dao.CustomerRepository;
+import com.mycompany.hotelmanagementsystem.dao.InvoiceRepository;
+import com.mycompany.hotelmanagementsystem.dao.OccupantRepository;
+import com.mycompany.hotelmanagementsystem.dao.PaymentRepository;
+import com.mycompany.hotelmanagementsystem.dao.RoomRepository;
+import com.mycompany.hotelmanagementsystem.dao.RoomTypeRepository;
+import com.mycompany.hotelmanagementsystem.dao.ServiceRequestRepository;
+import com.mycompany.hotelmanagementsystem.model.BookingRoom;
+import com.mycompany.hotelmanagementsystem.model.RoomSuggestionItem;
+import com.mycompany.hotelmanagementsystem.model.UnassignedRoomInfo;
+import com.mycompany.hotelmanagementsystem.utils.BookingResult;
+import com.mycompany.hotelmanagementsystem.utils.WalkInCustomerResult;
+import com.mycompany.hotelmanagementsystem.utils.RoomSelectionItem;
+import com.mycompany.hotelmanagementsystem.utils.SurchargeResult;
+import com.mycompany.hotelmanagementsystem.utils.DateHelper;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -169,13 +199,18 @@ public class StaffBookingService {
         return true;
     }
 
+<<<<<<< HEAD
     // Check if booking needs payment at checkout
     // Deposit: remaining = total - deposit > 0
     // Full/Standard: check if any successful payment exists for Booking invoice
+=======
+    // Check if booking needs payment at checkout (including surcharges)
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     public boolean needsCheckoutPayment(int bookingId) {
         Booking booking = bookingRepository.findById(bookingId);
         if (booking == null) return false;
 
+<<<<<<< HEAD
         if (PaymentType.DEPOSIT.equals(booking.getPaymentType())) {
             BigDecimal deposit = booking.getDepositAmount() != null ? booking.getDepositAmount() : BigDecimal.ZERO;
             return booking.getTotalPrice().compareTo(deposit) > 0;
@@ -191,10 +226,38 @@ public class StaffBookingService {
     }
 
     // Get the amount to collect at checkout
+=======
+        BigDecimal baseAmount;
+        if (PaymentType.DEPOSIT.equals(booking.getPaymentType())) {
+            BigDecimal deposit = booking.getDepositAmount() != null ? booking.getDepositAmount() : BigDecimal.ZERO;
+            baseAmount = booking.getTotalPrice().subtract(deposit);
+        } else {
+            // Full/Standard: check if already paid
+            Invoice bookingInvoice = invoiceRepository.findByBookingId(bookingId);
+            if (bookingInvoice != null && paymentRepository.hasSuccessfulPayment(bookingInvoice.getInvoiceId())) {
+                baseAmount = BigDecimal.ZERO; // already paid
+            } else {
+                baseAmount = booking.getTotalPrice();
+            }
+        }
+
+        // Add surcharges from BookingRooms
+        SurchargeResult surcharge = getActualSurcharge(bookingId);
+        BigDecimal surchargeTotal = surcharge.getSurchargeTotal();
+
+        System.out.println("[DEBUG] needsCheckoutPayment - bookingId: " + bookingId + ", baseAmount: " + baseAmount + ", surcharge: " + surchargeTotal);
+
+        // Need payment if base amount > 0 OR surcharge > 0
+        return baseAmount.compareTo(BigDecimal.ZERO) > 0 || surchargeTotal.compareTo(BigDecimal.ZERO) > 0;
+    }
+
+    // Get the amount to collect at checkout (including surcharges)
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     public BigDecimal getCheckoutPaymentAmount(int bookingId) {
         Booking booking = bookingRepository.findById(bookingId);
         if (booking == null) return BigDecimal.ZERO;
 
+<<<<<<< HEAD
         if (PaymentType.DEPOSIT.equals(booking.getPaymentType())) {
             BigDecimal deposit = booking.getDepositAmount() != null ? booking.getDepositAmount() : BigDecimal.ZERO;
             BigDecimal remaining = booking.getTotalPrice().subtract(deposit);
@@ -203,6 +266,76 @@ public class StaffBookingService {
 
         // Full/Standard: collect full totalPrice
         return booking.getTotalPrice();
+=======
+        BigDecimal baseAmount;
+        if (PaymentType.DEPOSIT.equals(booking.getPaymentType())) {
+            BigDecimal deposit = booking.getDepositAmount() != null ? booking.getDepositAmount() : BigDecimal.ZERO;
+            baseAmount = booking.getTotalPrice().subtract(deposit);
+        } else {
+            // Full/Standard: check if already paid
+            Invoice bookingInvoice = invoiceRepository.findByBookingId(bookingId);
+            if (bookingInvoice != null && paymentRepository.hasSuccessfulPayment(bookingInvoice.getInvoiceId())) {
+                baseAmount = BigDecimal.ZERO; // already paid
+            } else {
+                baseAmount = booking.getTotalPrice();
+            }
+        }
+
+        // Add surcharges from BookingRooms
+        SurchargeResult surcharge = getActualSurcharge(bookingId);
+        BigDecimal surchargeTotal = surcharge.getSurchargeTotal();
+
+        return baseAmount.add(surchargeTotal);
+    }
+
+    /**
+     * Get actual surcharge based on real check-in/check-out times.
+     * For multi-room: sums surcharges from all BookingRooms.
+     * Used for displaying surcharge at checkout.
+     */
+    public SurchargeResult getActualSurcharge(int bookingId) {
+        SurchargeResult total = new SurchargeResult();
+        List<BookingRoom> rooms = bookingRoomRepository.findByBookingId(bookingId);
+        System.out.println("[DEBUG] getActualSurcharge - bookingId: " + bookingId + ", rooms found: " + (rooms != null ? rooms.size() : 0));
+
+        // Multi-room: sum surcharges from all BookingRooms
+        if (rooms != null && !rooms.isEmpty()) {
+            BigDecimal totalEarly = BigDecimal.ZERO;
+            BigDecimal totalLate = BigDecimal.ZERO;
+            for (BookingRoom br : rooms) {
+                System.out.println("[DEBUG] getActualSurcharge - bookingRoomId: " + br.getBookingRoomId() + ", earlySurcharge: " + br.getEarlySurcharge() + ", lateSurcharge: " + br.getLateSurcharge());
+                if (br.getEarlySurcharge() != null) {
+                    totalEarly = totalEarly.add(br.getEarlySurcharge());
+                }
+                if (br.getLateSurcharge() != null) {
+                    totalLate = totalLate.add(br.getLateSurcharge());
+                }
+            }
+            total.setEarlySurcharge(totalEarly);
+            total.setLateSurcharge(totalLate);
+            System.out.println("[DEBUG] getActualSurcharge - totalEarly: " + totalEarly + ", totalLate: " + totalLate);
+            return total;
+        }
+
+        // Single room: calculate from booking
+        Booking booking = bookingRepository.findById(bookingId);
+        if (booking == null || booking.getRoomType() == null) {
+            return total;
+        }
+        RoomType rt = booking.getRoomType();
+        if (rt.getPricePerHour() == null || rt.getPricePerHour().compareTo(BigDecimal.ZERO) <= 0) {
+            return total;
+        }
+        LocalDateTime checkIn = booking.getCheckInActual() != null
+            ? booking.getCheckInActual()
+            : booking.getCheckInExpected();
+        LocalDateTime checkOut = booking.getCheckOutActual() != null
+            ? booking.getCheckOutActual()
+            : booking.getCheckOutExpected();
+        return DateHelper.calculateSurcharges(checkIn, checkOut,
+            booking.getCheckInExpected(), booking.getCheckOutExpected(),
+            rt.getPricePerHour());
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     }
 
     // Get extensions for a booking
@@ -376,6 +509,7 @@ public class StaffBookingService {
 
             bookingRoomRepository.updateRoomId(bookingRoomId, roomId);
             bookingRoomRepository.updateStatus(bookingRoomId, BookingStatus.CHECKED_IN);
+<<<<<<< HEAD
             bookingRoomRepository.updateCheckInActual(bookingRoomId, LocalDateTime.now());
             roomRepository.updateStatus(roomId, RoomStatus.OCCUPIED);
 
@@ -383,6 +517,41 @@ public class StaffBookingService {
             if (bookingRoomRepository.allRoomsInStatus(br.getBookingId(), BookingStatus.CHECKED_IN)) {
                 bookingRepository.updateStatus(br.getBookingId(), BookingStatus.CHECKED_IN);
                 bookingRepository.updateCheckInActual(br.getBookingId(), LocalDateTime.now());
+=======
+            LocalDateTime checkInActual = LocalDateTime.now();
+            bookingRoomRepository.updateCheckInActual(bookingRoomId, checkInActual);
+            roomRepository.updateStatus(roomId, RoomStatus.OCCUPIED);
+
+            // Calculate early surcharge if check-in before expected
+            Room room = roomRepository.findWithRoomType(roomId);
+            if (room != null && room.getRoomType() != null) {
+                RoomType rt = room.getRoomType();
+                System.out.println("[DEBUG] assignRoomToBookingRoom - pricePerHour: " + rt.getPricePerHour());
+                if (rt.getPricePerHour() != null && rt.getPricePerHour().compareTo(BigDecimal.ZERO) > 0) {
+                    Booking booking = bookingRepository.findById(br.getBookingId());
+                    if (booking != null) {
+                        System.out.println("[DEBUG] assignRoomToBookingRoom - checkInActual: " + checkInActual);
+                        System.out.println("[DEBUG] assignRoomToBookingRoom - checkInExpected: " + booking.getCheckInExpected());
+                        System.out.println("[DEBUG] assignRoomToBookingRoom - checkOutExpected: " + booking.getCheckOutExpected());
+                        SurchargeResult surcharge = DateHelper.calculateSurcharges(
+                            checkInActual, booking.getCheckOutExpected(),
+                            booking.getCheckInExpected(), booking.getCheckOutExpected(),
+                            rt.getPricePerHour());
+                        System.out.println("[DEBUG] assignRoomToBookingRoom - earlySurcharge: " + surcharge.getEarlySurcharge());
+                        if (surcharge.getEarlySurcharge().compareTo(BigDecimal.ZERO) > 0) {
+                            bookingRoomRepository.updateEarlySurcharge(bookingRoomId, surcharge.getEarlySurcharge());
+                        }
+                    }
+                }
+            }
+
+            // If all rooms in this booking are now CheckedIn, update parent Booking
+            if (bookingRoomRepository.allRoomsInStatus(br.getBookingId(), BookingStatus.CHECKED_IN)) {
+                bookingRepository.updateStatus(br.getBookingId(), BookingStatus.CHECKED_IN);
+                bookingRepository.updateCheckInActual(br.getBookingId(), checkInActual);
+                // Update booking-level surcharge from all rooms
+                updateBookingSurchargeFromRooms(br.getBookingId());
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             }
             return true;
         } catch (Exception e) {
@@ -395,6 +564,10 @@ public class StaffBookingService {
      * Checkout a specific BookingRoom.
      * Creates cleaning service request for the room.
      * If all rooms checked out, updates parent Booking status too.
+<<<<<<< HEAD
+=======
+     * For multi-room bookings, checkout all rooms at once.
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
      */
     public boolean checkoutBookingRoom(int bookingRoomId) {
         try {
@@ -404,6 +577,18 @@ public class StaffBookingService {
                 return false;
             }
 
+<<<<<<< HEAD
+=======
+            // Get booking to check if multi-room
+            Booking booking = bookingRepository.findByIdWithDetails(br.getBookingId());
+
+            // Check if this is a multi-room booking - if so, checkout all rooms
+            if (booking != null && booking.isMultiRoom()) {
+                System.out.println("Multi-room booking detected, calling bulkCheckout for bookingId: " + br.getBookingId());
+                return bulkCheckout(br.getBookingId());
+            }
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             System.out.println("Checkout BookingRoom: " + bookingRoomId + ", roomId: " + br.getRoomId() + ", bookingId: " + br.getBookingId());
 
             int updated = bookingRoomRepository.updateStatus(bookingRoomId, BookingStatus.CHECKED_OUT);
@@ -414,6 +599,38 @@ public class StaffBookingService {
 
             bookingRoomRepository.updateCheckOutActual(bookingRoomId, LocalDateTime.now());
 
+<<<<<<< HEAD
+=======
+            // Calculate late surcharge if check-out after expected
+            if (br.getRoomId() != null) {
+                Room room = roomRepository.findWithRoomType(br.getRoomId());
+                if (room != null && room.getRoomType() != null) {
+                    RoomType rt = room.getRoomType();
+                    if (rt.getPricePerHour() != null && rt.getPricePerHour().compareTo(BigDecimal.ZERO) > 0) {
+                        if (booking != null) {
+                            LocalDateTime checkInActual = br.getCheckInActual() != null
+                                ? br.getCheckInActual()
+                                : booking.getCheckInExpected();
+                            LocalDateTime checkOutActual = LocalDateTime.now();
+                            System.out.println("[DEBUG] checkoutBookingRoom - checkInActual: " + checkInActual);
+                            System.out.println("[DEBUG] checkoutBookingRoom - checkOutActual: " + checkOutActual);
+                            System.out.println("[DEBUG] checkoutBookingRoom - checkInExpected: " + booking.getCheckInExpected());
+                            System.out.println("[DEBUG] checkoutBookingRoom - checkOutExpected: " + booking.getCheckOutExpected());
+                            System.out.println("[DEBUG] checkoutBookingRoom - pricePerHour: " + rt.getPricePerHour());
+                            SurchargeResult surcharge = DateHelper.calculateSurcharges(
+                                checkInActual, checkOutActual,
+                                booking.getCheckInExpected(), booking.getCheckOutExpected(),
+                                rt.getPricePerHour());
+                            System.out.println("[DEBUG] checkoutBookingRoom - lateSurcharge: " + surcharge.getLateSurcharge());
+                            if (surcharge.getLateSurcharge().compareTo(BigDecimal.ZERO) > 0) {
+                                bookingRoomRepository.updateLateSurcharge(bookingRoomId, surcharge.getLateSurcharge());
+                            }
+                        }
+                    }
+                }
+            }
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             // Set room to Cleaning
             if (br.getRoomId() != null) {
                 int roomUpdated = roomRepository.updateStatus(br.getRoomId(), RoomStatus.CLEANING);
@@ -446,6 +663,11 @@ public class StaffBookingService {
                 if (allCheckedOut) {
                     bookingRepository.updateStatus(br.getBookingId(), BookingStatus.CHECKED_OUT);
                     bookingRepository.updateCheckOutActual(br.getBookingId(), LocalDateTime.now());
+<<<<<<< HEAD
+=======
+                    // Update booking-level surcharge from all rooms
+                    updateBookingSurchargeFromRooms(br.getBookingId());
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                 }
             } catch (Exception e) {
                 System.err.println("Warning: Error checking all rooms status: " + e.getMessage());
@@ -576,12 +798,18 @@ public class StaffBookingService {
     /**
      * Check if a specific BookingRoom needs payment at checkout.
      * Returns true if there are unpaid extension invoices for this room,
+<<<<<<< HEAD
      * or if the room's portion of the booking total hasn't been fully paid.
+=======
+     * or if the room's portion of the booking total hasn't been fully paid,
+     * OR if there are surcharges that need to be collected.
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
      */
     public boolean needsCheckoutPaymentForRoom(int bookingRoomId) {
         BookingRoom br = bookingRoomRepository.findById(bookingRoomId);
         if (br == null) return false;
 
+<<<<<<< HEAD
         // For multi-room bookings, check if the booking has been paid in full
         Booking booking = bookingRepository.findById(br.getBookingId());
         if (booking == null) return false;
@@ -591,6 +819,10 @@ public class StaffBookingService {
         if (invoice == null) return false;
 
         return !paymentRepository.hasSuccessfulPayment(invoice.getInvoiceId());
+=======
+        // Delegate to needsCheckoutPayment which handles base amount + surcharge
+        return needsCheckoutPayment(br.getBookingId());
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     }
 
     /**
@@ -708,4 +940,33 @@ public class StaffBookingService {
             return BookingResult.failure("Loi khi tao booking: " + e.getMessage());
         }
     }
+<<<<<<< HEAD
+=======
+
+    /**
+     * Recalculate and update booking-level surcharges from all booking rooms.
+     * Call this after all rooms are checked in/out.
+     */
+    private void updateBookingSurchargeFromRooms(int bookingId) {
+        List<BookingRoom> rooms = bookingRoomRepository.findByBookingId(bookingId);
+        if (rooms == null || rooms.isEmpty()) return;
+
+        BigDecimal totalEarly = BigDecimal.ZERO;
+        BigDecimal totalLate = BigDecimal.ZERO;
+        for (BookingRoom br : rooms) {
+            if (br.getEarlySurcharge() != null) {
+                totalEarly = totalEarly.add(br.getEarlySurcharge());
+            }
+            if (br.getLateSurcharge() != null) {
+                totalLate = totalLate.add(br.getLateSurcharge());
+            }
+        }
+        if (totalEarly.compareTo(BigDecimal.ZERO) > 0) {
+            bookingRepository.updateEarlySurcharge(bookingId, totalEarly);
+        }
+        if (totalLate.compareTo(BigDecimal.ZERO) > 0) {
+            bookingRepository.updateLateSurcharge(bookingId, totalLate);
+        }
+    }
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 }

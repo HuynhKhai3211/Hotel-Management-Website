@@ -6,7 +6,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<<<<<<< HEAD
     <title>Chi tiết đặt phòng #${booking.bookingId} - Luxury Hotel</title>
+=======
+    <title>Trạng thái đặt phòng - Luxury Hotel</title>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -62,10 +66,17 @@
                 <ol class="breadcrumb mb-2" style="--bs-breadcrumb-divider-color: rgba(255,255,255,0.5);">
                     <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/" style="color: rgba(255,255,255,0.7);">Trang chủ</a></li>
                     <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/customer/bookings" style="color: rgba(255,255,255,0.7);">Đặt phòng của tôi</a></li>
+<<<<<<< HEAD
                     <li class="breadcrumb-item text-white">Đơn #${booking.bookingId}</li>
                 </ol>
             </nav>
             <h1 class="public-hero-title"><i class="bi bi-receipt me-2"></i>Đơn đặt phòng #${booking.bookingId}</h1>
+=======
+                    <li class="breadcrumb-item text-white">Trạng thái</li>
+                </ol>
+            </nav>
+            <h1 class="public-hero-title"><i class="bi bi-check-circle me-2"></i>Trạng thái đặt phòng</h1>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         </div>
     </section>
 
@@ -100,10 +111,31 @@
                     <div class="card-body">
                         <div class="row mb-4">
                             <div class="col-md-8">
+<<<<<<< HEAD
                                 <h3 style="font-family: var(--font-display); color: var(--primary);">${booking.room.roomType.typeName}</h3>
                                 <p class="text-muted mb-0">
                                     <i class="bi bi-door-open me-1"></i>Phòng ${booking.room.roomNumber}
                                 </p>
+=======
+                                <c:choose>
+                                    <c:when test="${isMultiRoom && not empty bookingRooms}">
+                                        <h3 style="font-family: var(--font-display); color: var(--primary);">
+                                            <i class="bi bi-door-open me-2"></i>${bookingRooms.size()} Phòng
+                                        </h3>
+                                        <p class="text-muted mb-0">
+                                            <c:forEach var="br" items="${bookingRooms}" varStatus="loop">
+                                                ${br.roomType.typeName}${loop.last ? '' : ', '}
+                                            </c:forEach>
+                                        </p>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <h3 style="font-family: var(--font-display); color: var(--primary);">${booking.room.roomType.typeName}</h3>
+                                        <p class="text-muted mb-0">
+                                            <i class="bi bi-door-open me-1"></i>Phòng ${booking.room.roomNumber}
+                                        </p>
+                                    </c:otherwise>
+                                </c:choose>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                             </div>
                             <div class="col-md-4 text-md-end">
                                 <small class="text-muted">Mã đặt phòng</small>
@@ -140,6 +172,62 @@
                             </div>
                         </div>
 
+<<<<<<< HEAD
+=======
+                        <!-- Multi-Room BookingRoom List -->
+                        <c:if test="${isMultiRoom && not empty bookingRooms}">
+                            <h5 class="mb-3" style="font-family: var(--font-display); color: var(--primary);">
+                                <i class="bi bi-list-ul me-2"></i>Danh sách phòng
+                            </h5>
+                            <div class="table-responsive mb-4">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Loại phòng</th>
+                                            <th>Phòng được gán</th>
+                                            <th>Trạng thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="br" items="${bookingRooms}" varStatus="loop">
+                                            <tr>
+                                                <td><span class="badge bg-secondary">#${loop.index + 1}</span></td>
+                                                <td>${br.roomType.typeName}</td>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${not empty br.room}">
+                                                            <strong>${br.room.roomNumber}</strong>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="text-muted">Chưa gán</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${br.status == 'Pending'}">
+                                                            <span class="badge bg-warning text-dark">Chờ</span>
+                                                        </c:when>
+                                                        <c:when test="${br.status == 'Assigned'}">
+                                                            <span class="badge bg-info">Đã gán</span>
+                                                        </c:when>
+                                                        <c:when test="${br.status == 'CheckedIn'}">
+                                                            <span class="badge bg-success">Đã nhận</span>
+                                                        </c:when>
+                                                        <c:when test="${br.status == 'CheckedOut'}">
+                                                            <span class="badge bg-secondary">Đã trả</span>
+                                                        </c:when>
+                                                    </c:choose>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </c:if>
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                         <c:if test="${not empty occupants}">
                             <h5 class="mb-3" style="font-family: var(--font-display); color: var(--primary);">
                                 <i class="bi bi-people me-2"></i>Khách lưu trú
@@ -184,15 +272,55 @@
                         <i class="bi bi-credit-card me-2"></i>Thanh toán
                     </div>
                     <div class="card-body">
+<<<<<<< HEAD
                         <div class="d-flex justify-content-between align-items-center">
+=======
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                             <span>Tổng tiền</span>
                             <span class="h4 mb-0" style="color: var(--secondary);">
                                 <fmt:formatNumber value="${booking.totalPrice}" type="number" groupingUsed="true"/>đ
                             </span>
                         </div>
+<<<<<<< HEAD
                     </div>
                 </div>
 
+=======
+                        <c:if test="${earlySurcharge != null && earlySurcharge > 0}">
+                            <div class="d-flex justify-content-between py-1" style="opacity: 0.85;">
+                                <span><i class="bi bi-alarm me-1"></i>Phu thu check-in som</span>
+                                <span><fmt:formatNumber value="${earlySurcharge}" type="number" groupingUsed="true"/>d</span>
+                            </div>
+                        </c:if>
+                        <c:if test="${lateSurcharge != null && lateSurcharge > 0}">
+                            <div class="d-flex justify-content-between py-1" style="opacity: 0.85;">
+                                <span><i class="bi bi-alarm-fill me-1"></i>Phu thu check-out muon</span>
+                                <span><fmt:formatNumber value="${lateSurcharge}" type="number" groupingUsed="true"/>d</span>
+                            </div>
+                        </c:if>
+                        <c:if test="${booking.paymentType == 'Deposit'}">
+                            <div class="d-flex justify-content-between py-1" style="opacity: 0.85;">
+                                <span>Đã cọc</span>
+                                <span><fmt:formatNumber value="${booking.depositAmount}" type="number" groupingUsed="true"/>đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between py-1" style="opacity: 0.85;">
+                                <span>Còn lại</span>
+                                <span><fmt:formatNumber value="${booking.totalPrice - booking.depositAmount}" type="number" groupingUsed="true"/>đ</span>
+                            </div>
+                        </c:if>
+                    </div>
+                </div>
+
+                <!-- Extension Button (only for CheckedIn bookings) -->
+                <c:if test="${booking.status == 'CheckedIn'}">
+                    <a href="${pageContext.request.contextPath}/booking/extend?bookingId=${booking.bookingId}"
+                       class="btn btn-warning w-100 mb-4">
+                        <i class="bi bi-clock-history me-2"></i>Gia hạn thời gian
+                    </a>
+                </c:if>
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                 <!-- Status Timeline -->
                 <div class="card mb-4">
                     <div class="card-header">

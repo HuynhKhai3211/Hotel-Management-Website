@@ -64,7 +64,11 @@
                                 <div class="carousel-inner">
                                     <c:forEach var="img" items="${roomType.images}" varStatus="status">
                                         <div class="carousel-item ${status.first ? 'active' : ''}">
+<<<<<<< HEAD
                                             <img src="${img.imageUrl}" class="d-block w-100" alt="${roomType.typeName}">
+=======
+                                            <img src="${pageContext.request.contextPath}${img.imageUrl}" class="d-block w-100" alt="${roomType.typeName}">
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                         </div>
                                     </c:forEach>
                                 </div>
@@ -98,10 +102,38 @@
                             ${roomType.typeName}
                         </h1>
 
+<<<<<<< HEAD
                         <div class="h2 mb-4" style="color: var(--secondary-dark); font-family: var(--font-display);">
                             <fmt:formatNumber value="${roomType.basePrice}" type="number" groupingUsed="true"/>đ
                             <span class="fs-6 text-muted fw-normal">/đêm</span>
                         </div>
+=======
+                        <c:choose>
+                            <c:when test="${not empty activePromo}">
+                                <div class="mb-1">
+                                    <span style="text-decoration:line-through;color:var(--text-muted);font-size:1.2rem;">
+                                        <fmt:formatNumber value="${roomType.basePrice}" type="number" groupingUsed="true"/>đ
+                                    </span>
+                                </div>
+                                <div class="h2 mb-2" style="color:var(--danger);font-family:var(--font-display);">
+                                    <fmt:formatNumber value="${discountedPrice}" type="number" groupingUsed="true"/>đ
+                                    <span class="fs-6 text-muted fw-normal">/đêm</span>
+                                </div>
+                                <div class="alert alert-success py-2 px-3 mb-4" style="font-size:0.9rem;">
+                                    <i class="bi bi-tag me-1"></i>
+                                    Khuyến mãi <strong>${activePromo.promoCode}</strong>:
+                                    Giảm <strong>${activePromo.discountPercent}%</strong>
+                                    - Đến ${activePromo.endDate}
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="h2 mb-4" style="color:var(--secondary-dark);font-family:var(--font-display);">
+                                    <fmt:formatNumber value="${roomType.basePrice}" type="number" groupingUsed="true"/>đ
+                                    <span class="fs-6 text-muted fw-normal">/đêm</span>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 
                         <div class="d-flex gap-2 mb-4">
                             <span class="badge bg-secondary fs-6 px-3 py-2">

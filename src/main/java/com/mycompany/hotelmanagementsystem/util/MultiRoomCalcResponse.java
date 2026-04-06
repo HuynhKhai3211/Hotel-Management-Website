@@ -1,6 +1,12 @@
+<<<<<<< HEAD:src/main/java/com/mycompany/hotelmanagementsystem/util/MultiRoomCalcResponse.java
 package com.mycompany.hotelmanagementsystem.util;
 
 import com.mycompany.hotelmanagementsystem.entity.Voucher;
+=======
+package com.mycompany.hotelmanagementsystem.utils;
+
+import com.mycompany.hotelmanagementsystem.model.Voucher;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b:src/main/java/com/mycompany/hotelmanagementsystem/utils/MultiRoomCalcResponse.java
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,7 +17,11 @@ import java.util.List;
  * Aggregates individual room calculations into one booking total.
  */
 public class MultiRoomCalcResponse {
+<<<<<<< HEAD:src/main/java/com/mycompany/hotelmanagementsystem/util/MultiRoomCalcResponse.java
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+=======
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b:src/main/java/com/mycompany/hotelmanagementsystem/utils/MultiRoomCalcResponse.java
 
     private LocalDateTime checkIn;
     private LocalDateTime checkOut;

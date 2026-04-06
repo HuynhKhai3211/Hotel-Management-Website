@@ -34,6 +34,11 @@
     <div class="auth-container">
         <!-- Hero Section - Left -->
         <div class="auth-hero d-none d-lg-flex">
+<<<<<<< HEAD
+=======
+            <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=1200&q=80" alt="Hotel Management"
+                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.25;">
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             <div class="auth-hero-overlay"></div>
             <div class="auth-hero-content">
                 <h1>Cổng Quản Trị</h1>
@@ -49,7 +54,11 @@
                 </div>
 
                 <div class="auth-card">
+<<<<<<< HEAD
                     <div class="admin-badge">Admin Portal</div>
+=======
+                    <div class="admin-badge">Cổng Quản Trị</div>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                     <h2>Đăng nhập Quản trị</h2>
                     <p class="auth-subtitle">Đăng nhập để truy cập hệ thống quản trị</p>
 

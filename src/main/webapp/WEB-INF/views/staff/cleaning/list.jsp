@@ -1,11 +1,19 @@
+<<<<<<< HEAD
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+=======
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<<<<<<< HEAD
     <title>Quản lý dọn phòng - Staff Portal</title>
+=======
+    <title>Quản lý dọn phòng - Cổng Nhân Viên</title>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -65,11 +73,23 @@
                                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                                         <div>
                                                             <h4 class="mb-1">${room.roomNumber}</h4>
+<<<<<<< HEAD
                                                             <span class="badge bg-warning text-dark">Cần dọn dẹp</span>
+=======
+                                                            <c:choose>
+                                                                <c:when test="${room.isAssigned()}">
+                                                                    <span class="badge bg-info">Đã nhận</span>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <span class="badge bg-warning text-dark">Chưa nhận</span>
+                                                                </c:otherwise>
+                                                            </c:choose>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                                         </div>
                                                         <i class="bi bi-door-open fs-2 text-warning"></i>
                                                     </div>
 
+<<<<<<< HEAD
                                                     <c:if test="${not empty room.roomType}">
                                                         <p class="text-muted mb-3">
                                                             <i class="bi bi-building me-1"></i>${room.roomType.typeName}
@@ -83,6 +103,54 @@
                                                             <i class="bi bi-check-circle me-1"></i>Đánh dấu đã dọn xong
                                                         </button>
                                                     </form>
+=======
+                                                    <c:if test="${not empty room.room.roomType}">
+                                                        <p class="text-muted mb-1">
+                                                            <i class="bi bi-building me-1"></i>${room.room.roomType.typeName}
+                                                        </p>
+                                                    </c:if>
+
+                                                    <c:if test="${not empty room.bookingId}">
+                                                        <p class="text-muted mb-1">
+                                                            <i class="bi bi-hash me-1"></i>Booking #${room.bookingId}
+                                                        </p>
+                                                    </c:if>
+
+                                                    <c:if test="${room.isAssigned()}">
+                                                        <p class="text-muted mb-1">
+                                                            <i class="bi bi-person me-1"></i>Nhân viên: ${room.staffName}
+                                                        </p>
+                                                    </c:if>
+
+                                                    <c:if test="${not empty room.cleaningDescription}">
+                                                        <div class="alert alert-light border mb-3">
+                                                            <small class="text-muted d-block mb-1">
+                                                                <i class="bi bi-info-circle me-1"></i>Mô tả:
+                                                            </small>
+                                                            <span>${room.cleaningDescription}</span>
+                                                        </div>
+                                                    </c:if>
+
+                                                    <c:choose>
+                                                        <c:when test="${room.isAssigned()}">
+                                                            <form action="${pageContext.request.contextPath}/staff/cleaning/update" method="post">
+                                                                <input type="hidden" name="roomId" value="${room.room.roomId}">
+                                                                <input type="hidden" name="status" value="Available">
+                                                                <button type="submit" class="btn btn-success w-100">
+                                                                    <i class="bi bi-check-circle me-1"></i>Đánh dấu đã dọn xong
+                                                                </button>
+                                                            </form>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <form action="${pageContext.request.contextPath}/staff/cleaning/accept" method="post">
+                                                                <input type="hidden" name="roomId" value="${room.room.roomId}">
+                                                                <button type="submit" class="btn btn-primary w-100">
+                                                                    <i class="bi bi-hand-index me-1"></i>Nhận yêu cầu
+                                                                </button>
+                                                            </form>
+                                                        </c:otherwise>
+                                                    </c:choose>
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                                 </div>
                                             </div>
                                         </div>
