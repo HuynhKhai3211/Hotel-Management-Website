@@ -351,7 +351,43 @@ public class AdminReportService {
         return revenue;
     }
 
-  
+    private double[] getRevenueForRange(LocalDateTime start, LocalDateTime end) {
+        long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(start.toLocalDate(), end.toLocalDate());
+        if (daysBetween <= 14) {
+            double[] revenue = new double[(int) daysBetween + 1];
+            for (int i = 0; i <= daysBetween; i++) {
+                LocalDate day = start.toLocalDate().plusDays(i);
+                BigDecimal r = paymentRepository.sumByDateRange(day.atStartOfDay(), day.atTime(23, 59, 59));
+                revenue[i] = r != null ? r.doubleValue() : 0;
+            }
+            return revenue;
+        } else if (daysBetween <= 90) {
+            long weeks = daysBetween / 7 + 1;
+            double[] revenue = new double[(int) weeks];
+            for (int i = 0; i < weeks; i++) {
+                LocalDate weekStart = start.toLocalDate().plusWeeks(i);
+                LocalDate weekEnd = weekStart.plusDays(6);
+                if (weekEnd.isAfter(end.toLocalDate())) weekEnd = end.toLocalDate();
+                BigDecimal r = paymentRepository.sumByDateRange(weekStart.atStartOfDay(), weekEnd.atTime(23, 59, 59));
+                revenue[i] = r != null ? r.doubleValue() : 0;
+            }
+            return revenue;
+        } else {
+            long months = java.time.temporal.ChronoUnit.MONTHS.between(start.toLocalDate(), end.toLocalDate()) + 1;
+            double[] revenue = new double[(int) months];
+            for (int i = 0; i < months; i++) {
+                LocalDate month = start.toLocalDate().plusMonths(i);
+                LocalDate firstDay = month.withDayOfMonth(1);
+                LocalDate lastDay = month.withDayOfMonth(month.lengthOfMonth());
+                if (firstDay.isBefore(start.toLocalDate())) firstDay = start.toLocalDate();
+                if (lastDay.isAfter(end.toLocalDate())) lastDay = end.toLocalDate();
+                BigDecimal r = paymentRepository.sumByDateRange(firstDay.atStartOfDay(), lastDay.atTime(23, 59, 59));
+                revenue[i] = r != null ? r.doubleValue() : 0;
+            }
+            return revenue;
+        }
+    }
+
     public Map<String, Object> getRoomUtilizationStats() {
         Map<String, Object> stats = new HashMap<>();
         int totalRooms = roomRepository.countAll();
