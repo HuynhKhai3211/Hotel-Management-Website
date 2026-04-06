@@ -325,6 +325,21 @@ public class AdminReportService {
         return revenue;
     }
 
+    private double[] getMonthlyRevenueQuarter() {
+        double[] revenue = new double[3];
+        LocalDate now = LocalDate.now();
+        int currentQuarter = (now.getMonthValue() - 1) / 3;
+        for (int i = 0; i < 3; i++) {
+            int month = currentQuarter * 3 + i + 1;
+            LocalDate firstDay = LocalDate.of(now.getYear(), month, 1);
+            LocalDate lastDay = firstDay.withDayOfMonth(firstDay.lengthOfMonth());
+            BigDecimal r = paymentRepository.sumByDateRange(firstDay.atStartOfDay(), lastDay.atTime(23, 59, 59));
+            revenue[i] = r != null ? r.doubleValue() : 0;
+        }
+        return revenue;
+    }
+
+   
   
     public Map<String, Object> getRoomUtilizationStats() {
         Map<String, Object> stats = new HashMap<>();
