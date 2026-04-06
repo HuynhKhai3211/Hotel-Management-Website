@@ -339,7 +339,18 @@ public class AdminReportService {
         return revenue;
     }
 
-   
+    private double[] getMonthlyRevenueYear() {
+        double[] revenue = new double[12];
+        LocalDate now = LocalDate.now();
+        for (int month = 1; month <= 12; month++) {
+            LocalDate firstDay = LocalDate.of(now.getYear(), month, 1);
+            LocalDate lastDay = firstDay.withDayOfMonth(firstDay.lengthOfMonth());
+            BigDecimal r = paymentRepository.sumByDateRange(firstDay.atStartOfDay(), lastDay.atTime(23, 59, 59));
+            revenue[month - 1] = r != null ? r.doubleValue() : 0;
+        }
+        return revenue;
+    }
+
   
     public Map<String, Object> getRoomUtilizationStats() {
         Map<String, Object> stats = new HashMap<>();
