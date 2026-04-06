@@ -1,3 +1,16 @@
+/*Nhiệm vụ chính:
+
+tạo hoặc lấy hóa đơn
+tạo payment VNPay
+xử lý khi VNPay trả kết quả về
+xử lý IPN
+cập nhật booking / extension sau khi thanh toán
+
+Nói đơn giản:
+
+Controller hỏi → PaymentService xử lý nghiệp vụ thật*/
+
+
 package com.mycompany.hotelmanagementsystem.service;
 import com.mycompany.hotelmanagementsystem.constant.BookingStatus;
 import com.mycompany.hotelmanagementsystem.constant.InvoiceType;
@@ -56,7 +69,7 @@ public class PaymentService {
     }
 
     // Hàm tiện ích: khi chỉ truyền bookingId
-    // thì mặc định sẽ tạo/lấy invoice loại BOOKING
+    // thì mặc định sẽ tạo/lấy hóa đơn loại BOOKING
     public Invoice getOrCreateInvoice(int bookingId) {
 
         // Gọi sang hàm overload bên dưới với loại invoice mặc định là BOOKING

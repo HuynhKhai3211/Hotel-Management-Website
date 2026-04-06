@@ -17,8 +17,8 @@ import java.util.Map;
 // Đăng ký servlet với nhiều URL khác nhau liên quan đến payment
 @WebServlet(urlPatterns = {
     "/payment/process",       // Trang xử lý thông tin thanh toán
-    "/payment/vnpay",         // URL submit để tạo thanh toán VNPay
-    "/payment/vnpay-return",  // URL VNPay redirect về sau khi thanh toán
+    "/payment/vnpay",         //Khi người dùng bấm nút thanh toán VNPay.
+    "/payment/vnpay-return",  // Sau khi user thanh toán bên VNPay xong, VNPay redirect về đây.
     "/payment/result"         // Trang hiển thị kết quả thanh toán
 })
 public class PaymentController extends HttpServlet {
@@ -47,7 +47,7 @@ public class PaymentController extends HttpServlet {
         // Lấy phần đường dẫn servlet hiện tại, ví dụ: /payment/process
         String path = request.getServletPath();
 
-        // Dùng switch để điều hướng theo từng URL
+        // Sau đó dùng switch để biết phải gọi hàm nào.
         switch (path) {
 
             // Nếu vào /payment/process thì gọi hàm hiển thị trang xử lý payment
@@ -78,6 +78,10 @@ public class PaymentController extends HttpServlet {
     }
 
     // Xử lý GET cho trang /payment/process
+    //kiểm tra booking hợp lệ không
+    //kiểm tra user có quyền không
+    //tìm đúng invoice
+    //đẩy dữ liệu sang JSP để hiển thị
     private void handleProcessGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -91,10 +95,10 @@ public class PaymentController extends HttpServlet {
             return;
         }
 
-        // Lấy account đang đăng nhập từ session
+        // Lấy account đang đăng nhập từ session -> Tức là xem ai đang login.
         Account account = SessionHelper.getLoggedInAccount(request);
 
-        // Lấy booking theo bookingId
+        // Lấy booking theo bookingId ->Gọi service để lấy booking từ DB.
         Booking booking = bookingService.getBookingById(bookingId);
 
         // Nếu không tìm thấy booking
@@ -121,13 +125,13 @@ public class PaymentController extends HttpServlet {
             // Thường dùng trong flow staff hoặc extension flow
             invoice = paymentService.getInvoice(invoiceId);
 
-        // Nếu invoiceType là Extension
+        // Nếu invoiceType là Extension -> Là hóa đơn phát sinh thêm khi khách dùng dịch vụ, ở thêm đêm
         } else if ("Extension".equals(invoiceType)) {
 
             // Tìm invoice mới nhất chưa thanh toán thuộc loại Extension của booking này
             invoice = paymentService.findLatestInvoiceByType(bookingId, "Extension");
 
-        // Nếu invoiceType là Remaining
+        // Nếu invoiceType là Remaining -> Là hóa đơn trả phần còn lại.(trường hợp cọc trước 50%)
         } else if ("Remaining".equals(invoiceType)) {
 
             // Tìm invoice mới nhất chưa thanh toán thuộc loại Remaining
@@ -304,7 +308,7 @@ public class PaymentController extends HttpServlet {
         // Lấy mã transaction code từ URL
         String txnCode = request.getParameter("txnCode");
 
-        // Nếu không có txnCode
+        // Nếu không có txnCode : mã giao dịch
         if (txnCode == null) {
             // Quay về trang bookings
             response.sendRedirect(request.getContextPath() + "/customer/bookings");

@@ -1,5 +1,8 @@
 package com.mycompany.hotelmanagementsystem.model;
 
+import com.mycompany.hotelmanagementsystem.model.Customer;
+import com.mycompany.hotelmanagementsystem.model.Room;
+import com.mycompany.hotelmanagementsystem.model.RoomType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -9,7 +12,8 @@ public class Booking {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private int bookingId;
     private int customerId;
-    private int roomId;
+    private Integer roomId;       // nullable - staff assigns room at check-in
+    private int typeId;            // room type selected by customer
     private Integer voucherId;
     private LocalDateTime bookingDate;
     private LocalDateTime checkInExpected;
@@ -17,9 +21,12 @@ public class Booking {
     private LocalDateTime checkInActual;
     private LocalDateTime checkOutActual;
     private BigDecimal totalPrice;
+    private String paymentType;
+    private BigDecimal depositAmount;
     private String status;
     private String note;
     private Room room;
+    private RoomType roomType;     // for display when room is not yet assigned
     private Customer customer;
 
     public Booking() {}
@@ -28,8 +35,12 @@ public class Booking {
     public void setBookingId(int bookingId) { this.bookingId = bookingId; }
     public int getCustomerId() { return customerId; }
     public void setCustomerId(int customerId) { this.customerId = customerId; }
-    public int getRoomId() { return roomId; }
-    public void setRoomId(int roomId) { this.roomId = roomId; }
+    public Integer getRoomId() { return roomId; }
+    public void setRoomId(Integer roomId) { this.roomId = roomId; }
+    public int getTypeId() { return typeId; }
+    public void setTypeId(int typeId) { this.typeId = typeId; }
+    public RoomType getRoomType() { return roomType; }
+    public void setRoomType(RoomType roomType) { this.roomType = roomType; }
     public Integer getVoucherId() { return voucherId; }
     public void setVoucherId(Integer voucherId) { this.voucherId = voucherId; }
     public LocalDateTime getBookingDate() { return bookingDate; }
@@ -44,6 +55,10 @@ public class Booking {
     public void setCheckOutActual(LocalDateTime checkOut) { this.checkOutActual = checkOut; }
     public BigDecimal getTotalPrice() { return totalPrice; }
     public void setTotalPrice(BigDecimal totalPrice) { this.totalPrice = totalPrice; }
+    public String getPaymentType() { return paymentType; }
+    public void setPaymentType(String paymentType) { this.paymentType = paymentType; }
+    public BigDecimal getDepositAmount() { return depositAmount; }
+    public void setDepositAmount(BigDecimal depositAmount) { this.depositAmount = depositAmount; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
     public String getNote() { return note; }
