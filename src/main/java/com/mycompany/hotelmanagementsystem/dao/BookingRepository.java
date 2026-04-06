@@ -1,10 +1,10 @@
 package com.mycompany.hotelmanagementsystem.dao;
 
-import com.mycompany.hotelmanagementsystem.model.RoomType;
-import com.mycompany.hotelmanagementsystem.model.Room;
 import com.mycompany.hotelmanagementsystem.model.Customer;
-import com.mycompany.hotelmanagementsystem.model.Account;
 import com.mycompany.hotelmanagementsystem.model.Booking;
+import com.mycompany.hotelmanagementsystem.model.Account;
+import com.mycompany.hotelmanagementsystem.model.Room;
+import com.mycompany.hotelmanagementsystem.model.RoomType;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -262,6 +262,16 @@ public class BookingRepository extends BaseRepository<Booking> {
     public int updateDepositAmount(int bookingId, java.math.BigDecimal amount) {
         return executeUpdate("UPDATE Booking SET deposit_amount = ? WHERE booking_id = ?",
             amount, bookingId);
+    }
+
+    public int updateEarlySurcharge(int bookingId, java.math.BigDecimal earlySurcharge) {
+        return executeUpdate("UPDATE Booking SET early_surcharge = ? WHERE booking_id = ?",
+            earlySurcharge, bookingId);
+    }
+
+    public int updateLateSurcharge(int bookingId, java.math.BigDecimal lateSurcharge) {
+        return executeUpdate("UPDATE Booking SET late_surcharge = ? WHERE booking_id = ?",
+            lateSurcharge, bookingId);
     }
 
     public int countAll() {
