@@ -62,4 +62,18 @@ public class PaymentRepository extends BaseRepository<Payment> {
         }
         return false;
     }
+
+    public java.math.BigDecimal sumByDateRange(java.time.LocalDateTime start, java.time.LocalDateTime end) {
+        String sql = "SELECT COALESCE(SUM(amount), 0) FROM Payment WHERE status = 'Success' AND payment_time BETWEEN ? AND ?";
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setTimestamp(1, Timestamp.valueOf(start));
+            ps.setTimestamp(2, Timestamp.valueOf(end));
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getBigDecimal(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Sum payment failed", e);
+        }
+        return java.math.BigDecimal.ZERO;
+    }
 }
