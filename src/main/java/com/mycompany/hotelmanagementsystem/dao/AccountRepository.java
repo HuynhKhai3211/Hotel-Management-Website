@@ -30,6 +30,14 @@ public class AccountRepository extends BaseRepository<Account> {
         return queryOne(sql, email);
     }
 
+<<<<<<< HEAD
+=======
+    public Account findByPhone(String phone) {
+        String sql = "SELECT * FROM Account WHERE phone = ?";
+        return queryOne(sql, phone);
+    }
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     public Account findById(int accountId) {
         String sql = "SELECT * FROM Account WHERE account_id = ?";
         return queryOne(sql, accountId);

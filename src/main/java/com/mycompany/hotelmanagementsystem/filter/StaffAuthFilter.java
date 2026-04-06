@@ -22,11 +22,14 @@ public class StaffAuthFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         String servletPath = httpRequest.getServletPath();
+<<<<<<< HEAD
         if ("/staff/login".equals(servletPath)) {
             chain.doFilter(request, response);
             return;
         }
 
+=======
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         // Check if logged in
         if (!SessionHelper.isLoggedIn(httpRequest)) {
             redirectToLogin(httpRequest, httpResponse);
@@ -45,7 +48,11 @@ public class StaffAuthFilter implements Filter {
 
     private void redirectToLogin(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
+<<<<<<< HEAD
         String loginUrl = request.getContextPath() + "/staff/login";
+=======
+        String loginUrl = request.getContextPath() + "/auth/login";
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         String returnUrl = request.getRequestURI();
         if (request.getQueryString() != null) {
             returnUrl += "?" + request.getQueryString();

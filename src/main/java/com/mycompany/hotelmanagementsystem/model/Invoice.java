@@ -9,6 +9,7 @@ public class Invoice {
     private LocalDateTime issuedDate;
     private BigDecimal totalAmount;
     private BigDecimal taxAmount;
+    private String invoiceType;
     private Booking booking;
 
     public Invoice() {}
@@ -23,6 +24,8 @@ public class Invoice {
     public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
     public BigDecimal getTaxAmount() { return taxAmount; }
     public void setTaxAmount(BigDecimal taxAmount) { this.taxAmount = taxAmount; }
+    public String getInvoiceType() { return invoiceType; }
+    public void setInvoiceType(String invoiceType) { this.invoiceType = invoiceType; }
     public Booking getBooking() { return booking; }
     public void setBooking(Booking booking) { this.booking = booking; }
 }
