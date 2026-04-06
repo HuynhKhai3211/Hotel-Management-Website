@@ -15,6 +15,13 @@ public class OccupantRepository extends BaseRepository<Occupant> {
         o.setFullName(rs.getString("full_name"));
         o.setIdCardNumber(rs.getString("id_card_number"));
         o.setPhoneNumber(rs.getString("phone_number"));
+<<<<<<< HEAD
+=======
+        try {
+            int brId = rs.getInt("booking_room_id");
+            o.setBookingRoomId(rs.wasNull() ? null : brId);
+        } catch (SQLException ignored) {}
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         return o;
     }
 
@@ -37,4 +44,17 @@ public class OccupantRepository extends BaseRepository<Occupant> {
     public int deleteByBookingId(int bookingId) {
         return executeUpdate("DELETE FROM Occupant WHERE booking_id = ?", bookingId);
     }
+<<<<<<< HEAD
+=======
+
+    public int insertWithRoom(Occupant occupant) {
+        String sql = "INSERT INTO Occupant (booking_id, booking_room_id, full_name, id_card_number, phone_number) VALUES (?, ?, ?, ?, ?)";
+        return executeInsert(sql, occupant.getBookingId(), occupant.getBookingRoomId(),
+            occupant.getFullName(), occupant.getIdCardNumber(), occupant.getPhoneNumber());
+    }
+
+    public List<Occupant> findByBookingRoomId(int bookingRoomId) {
+        return queryList("SELECT * FROM Occupant WHERE booking_room_id = ?", bookingRoomId);
+    }
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 }

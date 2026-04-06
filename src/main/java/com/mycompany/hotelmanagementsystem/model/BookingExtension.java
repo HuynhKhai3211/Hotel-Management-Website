@@ -15,6 +15,10 @@ public class BookingExtension {
     private BigDecimal extensionPrice;
     private String status;
     private LocalDateTime createdAt;
+<<<<<<< HEAD
+=======
+    private Integer bookingRoomId;  // nullable for backward compat with single-room
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 
     public BookingExtension() {}
 
@@ -34,6 +38,11 @@ public class BookingExtension {
     public void setStatus(String status) { this.status = status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+<<<<<<< HEAD
+=======
+    public Integer getBookingRoomId() { return bookingRoomId; }
+    public void setBookingRoomId(Integer bookingRoomId) { this.bookingRoomId = bookingRoomId; }
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 
     // Formatted date getters for JSP
     public String getOriginalCheckOutFormatted() {

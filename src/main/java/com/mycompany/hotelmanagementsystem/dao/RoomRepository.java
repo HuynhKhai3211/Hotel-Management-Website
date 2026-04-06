@@ -27,7 +27,11 @@ public class RoomRepository extends BaseRepository<Room> {
 
     public Room findWithRoomType(int roomId) {
         String sql = """
+<<<<<<< HEAD
             SELECT r.*, rt.type_name, rt.base_price, rt.capacity, rt.description
+=======
+            SELECT r.*, rt.type_name, rt.base_price, rt.price_per_hour, rt.capacity, rt.description
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             FROM Room r
             JOIN RoomType rt ON r.type_id = rt.type_id
             WHERE r.room_id = ?
@@ -42,6 +46,10 @@ public class RoomRepository extends BaseRepository<Room> {
                     rt.setTypeId(rs.getInt("type_id"));
                     rt.setTypeName(rs.getString("type_name"));
                     rt.setBasePrice(rs.getBigDecimal("base_price"));
+<<<<<<< HEAD
+=======
+                    rt.setPricePerHour(rs.getBigDecimal("price_per_hour"));
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                     rt.setCapacity(rs.getInt("capacity"));
                     rt.setDescription(rs.getString("description"));
                     room.setRoomType(rt);
@@ -65,18 +73,51 @@ public class RoomRepository extends BaseRepository<Room> {
     }
 
     public List<Room> findAvailableForDates(int typeId, LocalDateTime checkIn, LocalDateTime checkOut) {
+<<<<<<< HEAD
+=======
+        return findAvailableForDates(typeId, checkIn, checkOut, 0);
+    }
+
+    /**
+     * Find available rooms for a date range, optionally excluding a specific booking
+     * from the conflict check (to prevent a booking from blocking its own pre-assigned room).
+     */
+    public List<Room> findAvailableForDates(int typeId, LocalDateTime checkIn, LocalDateTime checkOut, int excludeBookingId) {
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         String sql = """
             SELECT r.* FROM Room r
             WHERE r.type_id = ?
             AND r.status = 'Available'
             AND r.room_id NOT IN (
+<<<<<<< HEAD
                 SELECT b.room_id FROM Booking b
                 WHERE b.status IN ('Pending', 'Confirmed', 'CheckedIn')
+=======
+                -- Single-room bookings
+                SELECT b.room_id FROM Booking b
+                WHERE b.booking_id != ?
+                AND b.room_id IS NOT NULL
+                AND b.status IN ('Pending', 'Confirmed', 'CheckedIn')
+                AND NOT (b.check_out_expected <= ? OR b.check_in_expected >= ?)
+            )
+            AND r.room_id NOT IN (
+                -- Multi-room bookings (BookingRoom table)
+                SELECT br.room_id FROM BookingRoom br
+                JOIN Booking b ON br.booking_id = b.booking_id
+                WHERE br.room_id IS NOT NULL
+                AND br.booking_id != ?
+                AND br.status IN ('Pending', 'Assigned', 'CheckedIn')
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                 AND NOT (b.check_out_expected <= ? OR b.check_in_expected >= ?)
             )
             ORDER BY r.room_number
             """;
+<<<<<<< HEAD
         return queryList(sql, typeId, Timestamp.valueOf(checkIn), Timestamp.valueOf(checkOut));
+=======
+        return queryList(sql, typeId, excludeBookingId, Timestamp.valueOf(checkIn), Timestamp.valueOf(checkOut),
+                excludeBookingId, Timestamp.valueOf(checkIn), Timestamp.valueOf(checkOut));
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     }
 
     public int countAvailableByTypeId(int typeId) {
@@ -95,6 +136,78 @@ public class RoomRepository extends BaseRepository<Room> {
         return 0;
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Count available rooms for a specific type within a date range.
+     * Used by multi-room booking to check if enough rooms are available.
+     */
+    public int countAvailableForDates(int typeId, LocalDateTime checkIn, LocalDateTime checkOut) {
+        String sql = """
+            SELECT COUNT(*) FROM Room r
+            WHERE r.type_id = ?
+            AND r.status = 'Available'
+            AND r.room_id NOT IN (
+                -- Single-room bookings
+                SELECT b.room_id FROM Booking b
+                WHERE b.status IN ('Pending', 'Confirmed', 'CheckedIn')
+                AND b.room_id IS NOT NULL
+                AND NOT (b.check_out_expected <= ? OR b.check_in_expected >= ?)
+            )
+            AND r.room_id NOT IN (
+                -- Multi-room bookings (BookingRoom table)
+                SELECT br.room_id FROM BookingRoom br
+                JOIN Booking b ON br.booking_id = b.booking_id
+                WHERE br.room_id IS NOT NULL
+                AND br.status IN ('Pending', 'Assigned', 'CheckedIn')
+                AND NOT (b.check_out_expected <= ? OR b.check_in_expected >= ?)
+            )
+            """;
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, typeId);
+            ps.setTimestamp(2, Timestamp.valueOf(checkIn));
+            ps.setTimestamp(3, Timestamp.valueOf(checkOut));
+            ps.setTimestamp(4, Timestamp.valueOf(checkIn));
+            ps.setTimestamp(5, Timestamp.valueOf(checkOut));
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Count available rooms for dates failed", e);
+        }
+        return 0;
+    }
+
+    /**
+     * Find available rooms for dates, sorted by room_number for floor grouping.
+     */
+    public List<Room> findAvailableForDatesSorted(int typeId, LocalDateTime checkIn, LocalDateTime checkOut) {
+        String sql = """
+            SELECT r.* FROM Room r
+            WHERE r.type_id = ?
+            AND r.status = 'Available'
+            AND r.room_id NOT IN (
+                -- Single-room bookings
+                SELECT b.room_id FROM Booking b
+                WHERE b.status IN ('Pending', 'Confirmed', 'CheckedIn')
+                AND b.room_id IS NOT NULL
+                AND NOT (b.check_out_expected <= ? OR b.check_in_expected >= ?)
+            )
+            AND r.room_id NOT IN (
+                -- Multi-room bookings (BookingRoom table)
+                SELECT br.room_id FROM BookingRoom br
+                JOIN Booking b ON br.booking_id = b.booking_id
+                WHERE br.room_id IS NOT NULL
+                AND br.status IN ('Pending', 'Assigned', 'CheckedIn')
+                AND NOT (b.check_out_expected <= ? OR b.check_in_expected >= ?)
+            )
+            ORDER BY r.room_number ASC
+            """;
+        return queryList(sql, typeId, Timestamp.valueOf(checkIn), Timestamp.valueOf(checkOut),
+                Timestamp.valueOf(checkIn), Timestamp.valueOf(checkOut));
+    }
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     public int updateStatus(int roomId, String status) {
         String sql = "UPDATE Room SET status = ? WHERE room_id = ?";
         return executeUpdate(sql, status, roomId);
@@ -160,6 +273,14 @@ public class RoomRepository extends BaseRepository<Room> {
         return 0;
     }
 
+<<<<<<< HEAD
+=======
+    public Room findByRoomNumber(String roomNumber) {
+        String sql = "SELECT * FROM Room WHERE room_number = ?";
+        return queryOne(sql, roomNumber);
+    }
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     public int insert(Room room) {
         String sql = "INSERT INTO Room (room_number, type_id, status) VALUES (?, ?, ?)";
         return executeInsert(sql, room.getRoomNumber(), room.getTypeId(), room.getStatus());

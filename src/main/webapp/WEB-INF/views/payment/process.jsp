@@ -81,10 +81,18 @@
                         <i class="bi bi-wallet2 me-2"></i>Phương thức thanh toán
                     </div>
                     <div class="card-body">
+<<<<<<< HEAD
                         <form method="post" action="${pageContext.request.contextPath}/payment/vnpay">
                             <input type="hidden" name="invoiceId" value="${invoice.invoiceId}">
 
                             <div class="p-3 mb-4 rounded" style="border: 2px solid var(--secondary); background: var(--surface-hover);">
+=======
+                        <!-- Payment Method: VNPay -->
+                        <form method="post" action="${pageContext.request.contextPath}/payment/vnpay">
+                            <input type="hidden" name="invoiceId" value="${invoice.invoiceId}">
+
+                            <div class="p-3 mb-3 rounded" style="border: 2px solid var(--secondary); background: var(--surface-hover);">
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                                 <div class="d-flex align-items-center">
                                     <input class="form-check-input me-3" type="radio" name="method" value="vnpay" checked>
                                     <img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/6/0oxhzjmxbksr1686814746087.png"
@@ -104,7 +112,11 @@
 
                             <button type="submit" class="btn btn-primary btn-lg w-100">
                                 <i class="bi bi-shield-lock me-2"></i>
+<<<<<<< HEAD
                                 Thanh toán <fmt:formatNumber value="${invoice.totalAmount}" type="number" groupingUsed="true"/>đ
+=======
+                                Thanh toán VNPay <fmt:formatNumber value="${invoice.totalAmount}" type="number" groupingUsed="true"/>đ
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                             </button>
                         </form>
                     </div>

@@ -167,7 +167,11 @@ public class AuthController extends HttpServlet {
     private void handleLogout(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         SessionHelper.logout(request);
+<<<<<<< HEAD
         response.sendRedirect(request.getContextPath() + "/");
+=======
+        response.sendRedirect(request.getContextPath() + "/auth/login");
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     }
 
     private void handleChangePasswordGet(HttpServletRequest request, HttpServletResponse response)

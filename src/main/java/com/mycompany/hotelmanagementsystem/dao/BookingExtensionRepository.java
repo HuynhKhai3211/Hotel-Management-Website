@@ -22,6 +22,13 @@ public class BookingExtensionRepository extends BaseRepository<BookingExtension>
         ext.setStatus(rs.getString("status"));
         ts = rs.getTimestamp("created_at");
         if (ts != null) ext.setCreatedAt(ts.toLocalDateTime());
+<<<<<<< HEAD
+=======
+        try {
+            int brId = rs.getInt("booking_room_id");
+            ext.setBookingRoomId(rs.wasNull() ? null : brId);
+        } catch (SQLException ignored) {}
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         return ext;
     }
 
@@ -62,4 +69,26 @@ public class BookingExtensionRepository extends BaseRepository<BookingExtension>
             "SELECT TOP 1 * FROM BookingExtension WHERE booking_id = ? AND status = 'Pending' ORDER BY extension_id DESC",
             bookingId);
     }
+<<<<<<< HEAD
+=======
+
+    public int insertForRoom(BookingExtension ext) {
+        String sql = """
+            INSERT INTO BookingExtension (booking_id, booking_room_id, original_check_out, new_check_out,
+                extension_hours, extension_price, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """;
+        return executeInsert(sql,
+            ext.getBookingId(), ext.getBookingRoomId(),
+            Timestamp.valueOf(ext.getOriginalCheckOut()),
+            Timestamp.valueOf(ext.getNewCheckOut()),
+            ext.getExtensionHours(), ext.getExtensionPrice(), ext.getStatus());
+    }
+
+    public List<BookingExtension> findByBookingRoomId(int bookingRoomId) {
+        return queryList(
+            "SELECT * FROM BookingExtension WHERE booking_room_id = ? ORDER BY created_at",
+            bookingRoomId);
+    }
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 }

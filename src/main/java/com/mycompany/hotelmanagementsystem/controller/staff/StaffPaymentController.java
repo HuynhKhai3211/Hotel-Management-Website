@@ -1,9 +1,18 @@
 package com.mycompany.hotelmanagementsystem.controller.staff;
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.service.StaffPaymentService;
 import com.mycompany.hotelmanagementsystem.service.VNPayService;
 import com.mycompany.hotelmanagementsystem.model.Booking;
 import com.mycompany.hotelmanagementsystem.model.Invoice;
 import com.mycompany.hotelmanagementsystem.utils.PaymentResult;
+=======
+
+import com.mycompany.hotelmanagementsystem.service.StaffPaymentService;
+import com.mycompany.hotelmanagementsystem.service.VNPayService;
+import com.mycompany.hotelmanagementsystem.utils.PaymentResult;
+import com.mycompany.hotelmanagementsystem.model.Booking;
+import com.mycompany.hotelmanagementsystem.model.Invoice;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -14,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+<<<<<<< HEAD
 // Đăng ký servlet với các URL liên quan đến payment của staff
 @WebServlet(urlPatterns = {
     "/staff/payments/process",      // Trang chọn phương thức thanh toán
@@ -62,10 +72,39 @@ public class StaffPaymentController extends HttpServlet {
             case "/staff/payments/success" -> handleSuccessGet(request, response);
 
             // Nếu URL không hợp lệ thì báo 404
+=======
+@WebServlet(urlPatterns = {
+    "/staff/payments/process",
+    "/staff/payments/cash",
+    "/staff/payments/vnpay",
+    "/staff/payments/vnpay-return",
+    "/staff/payments/success"
+})
+public class StaffPaymentController extends HttpServlet {
+    private StaffPaymentService staffPaymentService;
+
+    @Override
+    public void init() {
+        staffPaymentService = new StaffPaymentService();
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String path = request.getServletPath();
+
+        switch (path) {
+            case "/staff/payments/process" -> handleProcessGet(request, response);
+            case "/staff/payments/cash" -> handleCashGet(request, response);
+            case "/staff/payments/vnpay" -> handleVNPayGet(request, response);
+            case "/staff/payments/vnpay-return" -> handleVNPayReturn(request, response);
+            case "/staff/payments/success" -> handleSuccessGet(request, response);
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             default -> response.sendError(404);
         }
     }
 
+<<<<<<< HEAD
     // Xử lý request POST
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -81,11 +120,21 @@ public class StaffPaymentController extends HttpServlet {
             case "/staff/payments/cash" -> handleCashPost(request, response);
 
             // URL không hợp lệ
+=======
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String path = request.getServletPath();
+
+        switch (path) {
+            case "/staff/payments/cash" -> handleCashPost(request, response);
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             default -> response.sendError(404);
         }
     }
 
     // UC-19.6: Process Payment - Select Method
+<<<<<<< HEAD
     // Hiển thị trang chọn phương thức thanh toán
     private void handleProcessGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -94,11 +143,17 @@ public class StaffPaymentController extends HttpServlet {
         int bookingId = parseIntParam(request, "bookingId");
 
         // Nếu bookingId không hợp lệ
+=======
+    private void handleProcessGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int bookingId = parseIntParam(request, "bookingId");
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         if (bookingId <= 0) {
             response.sendError(400, "Invalid booking ID");
             return;
         }
 
+<<<<<<< HEAD
         // Lấy loại hóa đơn từ request
         // Có thể là Booking, Remaining, Extension
         String invoiceType = request.getParameter("invoiceType");
@@ -126,11 +181,25 @@ public class StaffPaymentController extends HttpServlet {
 
         // Nếu không có invoice
         // Có thể booking không tồn tại hoặc không còn số dư cần thanh toán
+=======
+        // Support different invoice types (Booking, Remaining, Extension)
+        String invoiceType = request.getParameter("invoiceType");
+        Invoice invoice;
+        if ("Remaining".equals(invoiceType)) {
+            invoice = staffPaymentService.createRemainingInvoice(bookingId);
+        } else if (invoiceType != null && !invoiceType.isEmpty()) {
+            invoice = staffPaymentService.getOrCreateInvoice(bookingId, invoiceType);
+        } else {
+            invoice = staffPaymentService.getOrCreateInvoice(bookingId);
+        }
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         if (invoice == null) {
             response.sendError(404, "Booking not found or no balance");
             return;
         }
 
+<<<<<<< HEAD
         // Lấy chi tiết booking để hiển thị
         Booking booking = staffPaymentService.getBookingDetail(bookingId);
 
@@ -153,10 +222,23 @@ public class StaffPaymentController extends HttpServlet {
         request.setAttribute("pageTitle", "Thanh toan - Booking #" + bookingId);
 
         // Forward sang trang process.jsp
+=======
+        Booking booking = staffPaymentService.getBookingDetail(bookingId);
+
+        // Check if already paid
+        boolean isPaid = staffPaymentService.hasSuccessfulPayment(invoice.getInvoiceId());
+
+        request.setAttribute("booking", booking);
+        request.setAttribute("invoice", invoice);
+        request.setAttribute("isPaid", isPaid);
+        request.setAttribute("activePage", "bookings");
+        request.setAttribute("pageTitle", "Thanh toan - Booking #" + bookingId);
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         request.getRequestDispatcher("/WEB-INF/views/staff/payments/process.jsp").forward(request, response);
     }
 
     // UC-19.7: Cash Payment
+<<<<<<< HEAD
     // Hiển thị trang thanh toán tiền mặt
     private void handleCashGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -165,20 +247,30 @@ public class StaffPaymentController extends HttpServlet {
         int invoiceId = parseIntParam(request, "invoiceId");
 
         // Nếu invoiceId không hợp lệ
+=======
+    private void handleCashGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int invoiceId = parseIntParam(request, "invoiceId");
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         if (invoiceId <= 0) {
             response.sendError(400, "Invalid invoice ID");
             return;
         }
 
+<<<<<<< HEAD
         // Lấy invoice theo id
         Invoice invoice = staffPaymentService.getInvoiceById(invoiceId);
 
         // Nếu không tìm thấy invoice
+=======
+        Invoice invoice = staffPaymentService.getInvoiceById(invoiceId);
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         if (invoice == null) {
             response.sendError(404, "Invoice not found");
             return;
         }
 
+<<<<<<< HEAD
         // Lấy booking tương ứng với invoice
         Booking booking = staffPaymentService.getBookingDetail(invoice.getBookingId());
 
@@ -212,11 +304,29 @@ public class StaffPaymentController extends HttpServlet {
         String amountStr = request.getParameter("amount");
 
         // Nếu invoiceId không hợp lệ hoặc amount rỗng
+=======
+        Booking booking = staffPaymentService.getBookingDetail(invoice.getBookingId());
+
+        request.setAttribute("booking", booking);
+        request.setAttribute("invoice", invoice);
+        request.setAttribute("activePage", "bookings");
+        request.setAttribute("pageTitle", "Thanh toan tien mat");
+        request.getRequestDispatcher("/WEB-INF/views/staff/payments/cash.jsp").forward(request, response);
+    }
+
+    private void handleCashPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int invoiceId = parseIntParam(request, "invoiceId");
+        int customerId = parseIntParam(request, "customerId");
+        String amountStr = request.getParameter("amount");
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         if (invoiceId <= 0 || amountStr == null) {
             response.sendError(400, "Invalid parameters");
             return;
         }
 
+<<<<<<< HEAD
         // Khai báo amount dạng BigDecimal
         BigDecimal amount;
 
@@ -246,11 +356,27 @@ public class StaffPaymentController extends HttpServlet {
             request.setAttribute("error", "Khong the ghi nhan thanh toan. Vui long thu lai.");
 
             // Gọi lại trang cash
+=======
+        BigDecimal amount;
+        try {
+            amount = new BigDecimal(amountStr);
+        } catch (NumberFormatException e) {
+            response.sendError(400, "Invalid amount format");
+            return;
+        }
+        boolean success = staffPaymentService.recordCashPayment(invoiceId, customerId, amount);
+
+        if (success) {
+            response.sendRedirect(request.getContextPath() + "/staff/payments/success?invoiceId=" + invoiceId);
+        } else {
+            request.setAttribute("error", "Khong the ghi nhan thanh toan. Vui long thu lai.");
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             handleCashGet(request, response);
         }
     }
 
     // UC-19.8: VNPay Payment - Initiate redirect to VNPay
+<<<<<<< HEAD
     // Khởi tạo thanh toán VNPay và redirect user sang cổng VNPay
     private void handleVNPayGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -259,20 +385,30 @@ public class StaffPaymentController extends HttpServlet {
         int invoiceId = parseIntParam(request, "invoiceId");
 
         // Nếu invoiceId không hợp lệ
+=======
+    private void handleVNPayGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int invoiceId = parseIntParam(request, "invoiceId");
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         if (invoiceId <= 0) {
             response.sendError(400, "Invalid invoice ID");
             return;
         }
 
+<<<<<<< HEAD
         // Lấy invoice theo id
         Invoice invoice = staffPaymentService.getInvoiceById(invoiceId);
 
         // Nếu không tìm thấy invoice
+=======
+        Invoice invoice = staffPaymentService.getInvoiceById(invoiceId);
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         if (invoice == null) {
             response.sendError(404, "Invoice not found");
             return;
         }
 
+<<<<<<< HEAD
         // Lấy booking của invoice
         Booking booking = staffPaymentService.getBookingDetail(invoice.getBookingId());
 
@@ -304,16 +440,38 @@ public class StaffPaymentController extends HttpServlet {
         } else {
 
             // Nếu thất bại thì trả lỗi lên trang process
+=======
+        Booking booking = staffPaymentService.getBookingDetail(invoice.getBookingId());
+        int customerId = booking != null ? booking.getCustomerId() : 0;
+
+        String baseUrl = request.getScheme() + "://" + request.getServerName()
+                + ":" + request.getServerPort() + request.getContextPath();
+        String ipAddress = VNPayService.getIpAddress(request);
+
+        PaymentResult result = staffPaymentService.initiateVNPayPayment(
+                invoiceId, customerId, baseUrl, ipAddress);
+
+        if (result.isSuccess() && result.getPaymentUrl() != null) {
+            // Store txnRef in session for verification on return
+            request.getSession().setAttribute("staffPendingPaymentTxn",
+                    result.getPayment().getTransactionCode());
+            response.sendRedirect(result.getPaymentUrl());
+        } else {
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             request.setAttribute("error", result.getMessage());
             request.setAttribute("booking", booking);
             request.setAttribute("invoice", invoice);
             request.setAttribute("activePage", "bookings");
+<<<<<<< HEAD
 
             // Forward lại process.jsp
+=======
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             request.getRequestDispatcher("/WEB-INF/views/staff/payments/process.jsp").forward(request, response);
         }
     }
 
+<<<<<<< HEAD
     // VNPay return handler
     // Xử lý khi VNPay redirect về sau khi thanh toán
     private void handleVNPayReturn(HttpServletRequest request, HttpServletResponse response)
@@ -326,10 +484,20 @@ public class StaffPaymentController extends HttpServlet {
         request.getParameterMap().forEach((key, values) -> {
             if (values != null && values.length > 0) {
                 // Lấy giá trị đầu tiên của từng parameter
+=======
+    // VNPay return handler (after customer pays on VNPay page)
+    private void handleVNPayReturn(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        // Extract params
+        Map<String, String> params = new HashMap<>();
+        request.getParameterMap().forEach((key, values) -> {
+            if (values != null && values.length > 0) {
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                 params.put(key, values[0]);
             }
         });
 
+<<<<<<< HEAD
         // Lấy mã giao dịch VNPay
         String txnRef = params.get("vnp_TxnRef");
 
@@ -337,21 +505,33 @@ public class StaffPaymentController extends HttpServlet {
         String responseCode = params.get("vnp_ResponseCode");
 
         // Kiểm tra chữ ký callback có hợp lệ không
+=======
+        String txnRef = params.get("vnp_TxnRef");
+        String responseCode = params.get("vnp_ResponseCode");
+
+        // Verify signature
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         if (!VNPayService.verifySignature(params)) {
             request.getSession().setAttribute("errorMessage", "Chu ky khong hop le");
             response.sendRedirect(request.getContextPath() + "/staff/bookings");
             return;
         }
 
+<<<<<<< HEAD
         // Lấy txnRef đang chờ xử lý trong session
         String sessionTxn = (String) request.getSession().getAttribute("staffPendingPaymentTxn");
 
         // Nếu session có txn nhưng không khớp txn trả về
+=======
+        // Verify session txnRef matches
+        String sessionTxn = (String) request.getSession().getAttribute("staffPendingPaymentTxn");
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         if (sessionTxn != null && !sessionTxn.equals(txnRef)) {
             request.getSession().setAttribute("errorMessage", "Giao dich khong hop le");
             response.sendRedirect(request.getContextPath() + "/staff/bookings");
             return;
         }
+<<<<<<< HEAD
 
         // Xóa txn pending khỏi session sau khi đã verify xong
         request.getSession().removeAttribute("staffPendingPaymentTxn");
@@ -377,6 +557,20 @@ public class StaffPaymentController extends HttpServlet {
                 } else {
 
                     // Nếu VNPay thất bại thì quay lại trang process
+=======
+        request.getSession().removeAttribute("staffPendingPaymentTxn");
+
+        // Process callback
+        PaymentResult result = staffPaymentService.processVNPayCallback(txnRef, responseCode);
+
+        if (result.isSuccess() && result.getPayment() != null) {
+            Invoice invoice = staffPaymentService.getInvoiceById(result.getPayment().getInvoiceId());
+            if (invoice != null) {
+                if ("Success".equals(result.getPayment().getStatus())) {
+                    response.sendRedirect(request.getContextPath()
+                            + "/staff/payments/success?invoiceId=" + invoice.getInvoiceId());
+                } else {
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                     request.getSession().setAttribute("errorMessage", "Thanh toan VNPay that bai");
                     response.sendRedirect(request.getContextPath()
                             + "/staff/payments/process?bookingId=" + invoice.getBookingId());
@@ -385,11 +579,15 @@ public class StaffPaymentController extends HttpServlet {
             }
         }
 
+<<<<<<< HEAD
         // Nếu có lỗi trong quá trình xử lý callback
+=======
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         request.getSession().setAttribute("errorMessage", "Loi xu ly thanh toan");
         response.sendRedirect(request.getContextPath() + "/staff/bookings");
     }
 
+<<<<<<< HEAD
     // Hiển thị trang thanh toán thành công
     private void handleSuccessGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -398,20 +596,30 @@ public class StaffPaymentController extends HttpServlet {
         int invoiceId = parseIntParam(request, "invoiceId");
 
         // Nếu invoiceId không hợp lệ thì quay về dashboard
+=======
+    private void handleSuccessGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int invoiceId = parseIntParam(request, "invoiceId");
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         if (invoiceId <= 0) {
             response.sendRedirect(request.getContextPath() + "/staff/dashboard");
             return;
         }
 
+<<<<<<< HEAD
         // Lấy invoice theo id
         Invoice invoice = staffPaymentService.getInvoiceById(invoiceId);
 
         // Nếu không có invoice thì quay về dashboard
+=======
+        Invoice invoice = staffPaymentService.getInvoiceById(invoiceId);
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         if (invoice == null) {
             response.sendRedirect(request.getContextPath() + "/staff/dashboard");
             return;
         }
 
+<<<<<<< HEAD
         // Lấy booking tương ứng
         Booking booking = staffPaymentService.getBookingDetail(invoice.getBookingId());
 
@@ -449,3 +657,36 @@ public class StaffPaymentController extends HttpServlet {
         }
     }
 }
+=======
+        Booking booking = staffPaymentService.getBookingDetail(invoice.getBookingId());
+        var payment = staffPaymentService.getPaymentByInvoiceId(invoiceId);
+
+        // Check if this is a post-payment checkout situation (single room)
+        Integer pendingCheckoutBookingRoomId = (Integer) request.getSession().getAttribute("pendingCheckoutBookingRoomId");
+        boolean isPostPaymentCheckout = pendingCheckoutBookingRoomId != null && pendingCheckoutBookingRoomId > 0;
+
+        // Check if this is a post-payment checkout for multi-room booking
+        Integer pendingCheckoutForPayment = (Integer) request.getSession().getAttribute("pendingCheckoutForPayment");
+        boolean isPostPaymentMultiRoomCheckout = pendingCheckoutForPayment != null && pendingCheckoutForPayment > 0;
+
+        request.setAttribute("booking", booking);
+        request.setAttribute("invoice", invoice);
+        request.setAttribute("payment", payment);
+        request.setAttribute("isPostPaymentCheckout", isPostPaymentCheckout || isPostPaymentMultiRoomCheckout);
+        request.setAttribute("pendingCheckoutForPayment", pendingCheckoutForPayment);
+        request.setAttribute("activePage", "bookings");
+        request.setAttribute("pageTitle", "Thanh toan thanh cong");
+        request.getRequestDispatcher("/WEB-INF/views/staff/payments/success.jsp").forward(request, response);
+    }
+
+    private int parseIntParam(HttpServletRequest request, String name) {
+        String value = request.getParameter(name);
+        if (value == null || value.isEmpty()) return 0;
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+}
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b

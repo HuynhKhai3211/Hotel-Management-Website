@@ -19,12 +19,39 @@ public class ServiceRequestRepository extends BaseRepository<ServiceRequest> {
         Timestamp ts = rs.getTimestamp("request_time");
         if (ts != null) sr.setRequestTime(ts.toLocalDateTime());
         sr.setStatus(rs.getString("status"));
+<<<<<<< HEAD
+=======
+        sr.setDescription(rs.getString("description"));
+        sr.setPriority(rs.getString("priority"));
+        sr.setNotes(rs.getString("notes"));
+        Timestamp ct = rs.getTimestamp("completed_time");
+        if (ct != null) sr.setCompletedTime(ct.toLocalDateTime());
+        sr.setRoomNumber(rs.getString("room_number"));
+        // Try to read staff_name from JOIN queries
+        try {
+            sr.setStaffName(rs.getString("staff_name"));
+        } catch (SQLException ignored) {
+            // staff_name column not present in simple queries
+        }
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         return sr;
     }
 
     public int insert(ServiceRequest request) {
+<<<<<<< HEAD
         String sql = "INSERT INTO ServiceRequest (booking_id, service_type, status) VALUES (?, ?, ?)";
         return executeInsert(sql, request.getBookingId(), request.getServiceType(), request.getStatus());
+=======
+        String sql = "INSERT INTO ServiceRequest (booking_id, service_type, status, description, priority, room_number) "
+                   + "VALUES (?, ?, ?, ?, ?, ?)";
+        return executeInsert(sql,
+                request.getBookingId(),
+                request.getServiceType(),
+                request.getStatus(),
+                request.getDescription(),
+                request.getPriority() != null ? request.getPriority() : "Normal",
+                request.getRoomNumber());
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     }
 
     public List<ServiceRequest> findByBookingId(int bookingId) {
@@ -52,4 +79,104 @@ public class ServiceRequestRepository extends BaseRepository<ServiceRequest> {
     public int updateStatus(int requestId, String status) {
         return executeUpdate("UPDATE ServiceRequest SET status = ? WHERE request_id = ?", status, requestId);
     }
+<<<<<<< HEAD
+=======
+
+    // --- New methods for expanded service request flow ---
+
+    public List<ServiceRequest> findAll() {
+        return queryList("SELECT sr.*, a.full_name AS staff_name FROM ServiceRequest sr "
+                + "LEFT JOIN Account a ON sr.staff_id = a.account_id "
+                + "ORDER BY sr.request_time DESC");
+    }
+
+    public List<ServiceRequest> findByStatus(String status) {
+        return queryList("SELECT sr.*, a.full_name AS staff_name FROM ServiceRequest sr "
+                + "LEFT JOIN Account a ON sr.staff_id = a.account_id "
+                + "WHERE sr.status = ? ORDER BY sr.request_time DESC", status);
+    }
+
+    public List<ServiceRequest> findPendingAndInProgress() {
+        return queryList("SELECT sr.*, a.full_name AS staff_name FROM ServiceRequest sr "
+                + "LEFT JOIN Account a ON sr.staff_id = a.account_id "
+                + "WHERE sr.status IN ('Pending', 'In Progress') "
+                + "ORDER BY CASE sr.priority "
+                + "  WHEN 'Urgent' THEN 1 WHEN 'High' THEN 2 "
+                + "  WHEN 'Normal' THEN 3 WHEN 'Low' THEN 4 ELSE 5 END, "
+                + "sr.request_time ASC");
+    }
+
+    public List<ServiceRequest> findByStaffId(int staffId) {
+        return queryList("SELECT sr.*, a.full_name AS staff_name FROM ServiceRequest sr "
+                + "LEFT JOIN Account a ON sr.staff_id = a.account_id "
+                + "WHERE sr.staff_id = ? ORDER BY sr.request_time DESC", staffId);
+    }
+
+    public int assignStaff(int requestId, int staffId) {
+        return executeUpdate(
+                "UPDATE ServiceRequest SET staff_id = ?, status = 'In Progress' WHERE request_id = ?",
+                staffId, requestId);
+    }
+
+    public int complete(int requestId, String notes) {
+        return executeUpdate(
+                "UPDATE ServiceRequest SET status = 'Completed', notes = ?, completed_time = GETDATE() WHERE request_id = ?",
+                notes, requestId);
+    }
+
+    public int reject(int requestId, String notes) {
+        return executeUpdate(
+                "UPDATE ServiceRequest SET status = 'Rejected', notes = ? WHERE request_id = ?",
+                notes, requestId);
+    }
+
+    public int countByStatus(String status) {
+        String sql = "SELECT COUNT(*) FROM ServiceRequest WHERE status = ?";
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Count by status failed", e);
+        }
+        return 0;
+    }
+
+    public int countTodayByStatus(String status) {
+        String sql = "SELECT COUNT(*) FROM ServiceRequest WHERE status = ? "
+                   + "AND CAST(request_time AS DATE) = CAST(GETDATE() AS DATE)";
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Count today by status failed", e);
+        }
+        return 0;
+    }
+
+    public int countToday() {
+        String sql = "SELECT COUNT(*) FROM ServiceRequest "
+                   + "WHERE CAST(request_time AS DATE) = CAST(GETDATE() AS DATE)";
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Count today failed", e);
+        }
+        return 0;
+    }
+
+    public ServiceRequest findPendingCleaningByRoomNumber(String roomNumber) {
+        String sql = "SELECT sr.*, a.full_name AS staff_name FROM ServiceRequest sr "
+                + "LEFT JOIN Account a ON sr.staff_id = a.account_id "
+                + "WHERE sr.room_number = ? AND sr.service_type = 'Cleaning' "
+                + "AND sr.status IN ('Pending', 'In Progress') "
+                + "ORDER BY sr.request_time DESC";
+        return queryOne(sql, roomNumber);
+    }
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 }

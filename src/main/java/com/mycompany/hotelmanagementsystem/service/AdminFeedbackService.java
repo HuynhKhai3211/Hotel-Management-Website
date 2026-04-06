@@ -15,6 +15,13 @@ public class AdminFeedbackService {
         return feedbackRepository.findAllWithDetails();
     }
 
+<<<<<<< HEAD
+=======
+    public List<Feedback> getVisibleFeedback(int limit) {
+        return feedbackRepository.findVisibleWithDetails(limit);
+    }
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     public boolean toggleVisibility(int feedbackId) {
         Feedback feedback = feedbackRepository.findById(feedbackId);
         if (feedback == null) return false;

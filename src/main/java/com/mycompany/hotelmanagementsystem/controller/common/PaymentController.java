@@ -1,4 +1,5 @@
 package com.mycompany.hotelmanagementsystem.controller.common;
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.service.BookingService;
 import com.mycompany.hotelmanagementsystem.service.PaymentService;
 import com.mycompany.hotelmanagementsystem.model.Account;
@@ -7,10 +8,23 @@ import com.mycompany.hotelmanagementsystem.model.Invoice;
 import com.mycompany.hotelmanagementsystem.model.Payment;
 import com.mycompany.hotelmanagementsystem.service.VNPayService;
 import com.mycompany.hotelmanagementsystem.utils.SessionHelper;
+=======
+
+import com.mycompany.hotelmanagementsystem.model.Booking;
+import com.mycompany.hotelmanagementsystem.model.Payment;
+import com.mycompany.hotelmanagementsystem.model.Account;
+import com.mycompany.hotelmanagementsystem.model.Invoice;
+import com.mycompany.hotelmanagementsystem.utils.SessionHelper;
+import com.mycompany.hotelmanagementsystem.utils.EmailHelper;
+import com.mycompany.hotelmanagementsystem.service.BookingService;
+import com.mycompany.hotelmanagementsystem.service.PaymentService;
+import com.mycompany.hotelmanagementsystem.service.VNPayService;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+<<<<<<< HEAD
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,10 +71,38 @@ public class PaymentController extends HttpServlet {
             case "/payment/vnpay-return" -> handleVNPayReturn(request, response);
 
             // Nếu vào trang kết quả payment
+=======
+import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@WebServlet(urlPatterns = {"/payment/process", "/payment/vnpay", "/payment/vnpay-return", "/payment/result"})
+public class PaymentController extends HttpServlet {
+    private PaymentService paymentService;
+    private BookingService bookingService;
+
+    @Override
+    public void init() {
+        paymentService = new PaymentService();
+        bookingService = new BookingService();
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String path = request.getServletPath();
+        switch (path) {
+            case "/payment/process" -> handleProcessGet(request, response);
+            case "/payment/vnpay-return" -> handleVNPayReturn(request, response);
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             case "/payment/result" -> handleResult(request, response);
         }
     }
 
+<<<<<<< HEAD
     // Xử lý các request POST
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -73,10 +115,18 @@ public class PaymentController extends HttpServlet {
         switch (path) {
 
             // Nếu submit tới /payment/vnpay thì tạo giao dịch VNPay
+=======
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String path = request.getServletPath();
+        switch (path) {
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             case "/payment/vnpay" -> handleVNPayPost(request, response);
         }
     }
 
+<<<<<<< HEAD
     // Xử lý GET cho trang /payment/process
     //kiểm tra booking hợp lệ không
     //kiểm tra user có quyền không
@@ -91,10 +141,17 @@ public class PaymentController extends HttpServlet {
         // Nếu bookingId không hợp lệ hoặc không tồn tại
         if (bookingId == null) {
             // Quay về trang danh sách booking của customer
+=======
+    private void handleProcessGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        Integer bookingId = parseIntParam(request, "bookingId");
+        if (bookingId == null) {
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             response.sendRedirect(request.getContextPath() + "/customer/bookings");
             return;
         }
 
+<<<<<<< HEAD
         // Lấy account đang đăng nhập từ session -> Tức là xem ai đang login.
         Account account = SessionHelper.getLoggedInAccount(request);
 
@@ -105,10 +162,17 @@ public class PaymentController extends HttpServlet {
         // hoặc booking không thuộc về customer đang đăng nhập
         if (booking == null || booking.getCustomerId() != account.getAccountId()) {
             // Trả về lỗi 403 Forbidden
+=======
+        Account account = SessionHelper.getLoggedInAccount(request);
+        Booking booking = bookingService.getBookingById(bookingId);
+
+        if (booking == null || booking.getCustomerId() != account.getAccountId()) {
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             response.sendError(403);
             return;
         }
 
+<<<<<<< HEAD
         // Lấy loại invoice từ parameter, có thể là Booking / Extension / Remaining
         String invoiceType = request.getParameter("invoiceType");
 
@@ -182,20 +246,66 @@ public class PaymentController extends HttpServlet {
             // Nếu không có invoiceId
             if (invoiceId == null) {
                 // Quay về trang bookings
+=======
+        // Check invoice type: Booking (default), Extension, Remaining
+        String invoiceType = request.getParameter("invoiceType");
+        Integer invoiceId = parseIntParam(request, "invoiceId");
+        Invoice invoice;
+
+        if (invoiceId != null) {
+            // Direct invoice ID provided (e.g., from staff or extension flow)
+            invoice = paymentService.getInvoice(invoiceId);
+        } else if ("Extension".equals(invoiceType)) {
+            // Find the latest unpaid extension invoice for this booking
+            invoice = paymentService.findLatestInvoiceByType(bookingId, "Extension");
+        } else if ("Remaining".equals(invoiceType)) {
+            // Find the remaining balance invoice for checkout
+            invoice = paymentService.findLatestInvoiceByType(bookingId, "Remaining");
+        } else {
+            // Default booking invoice
+            if ("Confirmed".equals(booking.getStatus()) && !"Deposit".equals(booking.getPaymentType())) {
+                response.sendRedirect(request.getContextPath() + "/booking/status?bookingId=" + bookingId);
+                return;
+            }
+            invoice = paymentService.getOrCreateInvoice(bookingId);
+        }
+
+        if (invoice == null) {
+            response.sendRedirect(request.getContextPath() + "/booking/status?bookingId=" + bookingId + "&error=invoice");
+            return;
+        }
+
+        request.setAttribute("booking", booking);
+        request.setAttribute("invoice", invoice);
+        request.getRequestDispatcher("/WEB-INF/views/payment/process.jsp").forward(request, response);
+    }
+
+    private void handleVNPayPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            Integer invoiceId = parseIntParam(request, "invoiceId");
+            if (invoiceId == null) {
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                 response.sendRedirect(request.getContextPath() + "/customer/bookings");
                 return;
             }
 
+<<<<<<< HEAD
             // Lấy account đang đăng nhập
             Account account = SessionHelper.getLoggedInAccount(request);
 
             // Nếu chưa đăng nhập
             if (account == null) {
                 // Chuyển tới trang login
+=======
+            Account account = SessionHelper.getLoggedInAccount(request);
+            if (account == null) {
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                 response.sendRedirect(request.getContextPath() + "/auth/login");
                 return;
             }
 
+<<<<<<< HEAD
             // Tạo baseUrl của hệ thống
             // Ví dụ: http://localhost:8080/HotelManagementSystem
             String baseUrl = request.getScheme() + "://" + request.getServerName() + ":"
@@ -223,11 +333,23 @@ public class PaymentController extends HttpServlet {
                 request.getSession().setAttribute("paymentError", result.getMessage());
 
                 // Redirect quay lại trang process của booking tương ứng
+=======
+            String baseUrl = request.getScheme() + "://" + request.getServerName() + ":"
+                           + request.getServerPort() + request.getContextPath();
+            String ipAddress = VNPayService.getIpAddress(request);
+
+            var result = paymentService.initiateVNPayPayment(invoiceId, account.getAccountId(), baseUrl, ipAddress);
+
+            if (!result.isSuccess()) {
+                Invoice invoice = paymentService.getInvoice(invoiceId);
+                request.getSession().setAttribute("paymentError", result.getMessage());
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                 response.sendRedirect(request.getContextPath() + "/payment/process?bookingId=" +
                     (invoice != null ? invoice.getBookingId() : ""));
                 return;
             }
 
+<<<<<<< HEAD
             // Lưu mã transaction reference vào session
             // Dùng để đối chiếu khi VNPay redirect về
             request.getSession().setAttribute(
@@ -246,10 +368,21 @@ public class PaymentController extends HttpServlet {
             request.getSession().setAttribute("paymentError", "Lỗi hệ thống: " + e.getMessage());
 
             // Redirect về trang bookings
+=======
+            // Store txnRef in session for verification
+            request.getSession().setAttribute("pendingPaymentTxn", result.getPayment().getTransactionCode());
+
+            // Redirect to VNPay
+            response.sendRedirect(result.getPaymentUrl());
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.getSession().setAttribute("paymentError", "Lỗi hệ thống: " + e.getMessage());
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             response.sendRedirect(request.getContextPath() + "/customer/bookings");
         }
     }
 
+<<<<<<< HEAD
     // Xử lý khi VNPay redirect người dùng quay lại hệ thống
     private void handleVNPayReturn(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
@@ -262,17 +395,31 @@ public class PaymentController extends HttpServlet {
             // Nếu parameter có dữ liệu
             if (values != null && values.length > 0) {
                 // Lấy giá trị đầu tiên và lưu vào map
+=======
+    private void handleVNPayReturn(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        // Extract all VNPay parameters
+        Map<String, String> params = new HashMap<>();
+        request.getParameterMap().forEach((key, values) -> {
+            if (values != null && values.length > 0) {
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
                 params.put(key, values[0]);
             }
         });
 
+<<<<<<< HEAD
         // Kiểm tra chữ ký bảo mật của VNPay
         if (!VNPayService.verifySignature(params)) {
             // Nếu chữ ký sai => có thể request bị giả mạo
+=======
+        // Verify signature
+        if (!VNPayService.verifySignature(params)) {
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             response.sendRedirect(request.getContextPath() + "/customer/bookings?error=invalid_signature");
             return;
         }
 
+<<<<<<< HEAD
         // Lấy mã giao dịch VNPay
         String txnRef = params.get("vnp_TxnRef");
 
@@ -286,10 +433,19 @@ public class PaymentController extends HttpServlet {
         // Nếu không có session hoặc transaction trả về không khớp transaction đang lưu
         if (sessionTxn == null || !sessionTxn.equals(txnRef)) {
             // Báo lỗi session mismatch
+=======
+        String txnRef = params.get("vnp_TxnRef");
+        String responseCode = params.get("vnp_ResponseCode");
+
+        // Verify session
+        String sessionTxn = (String) request.getSession().getAttribute("pendingPaymentTxn");
+        if (sessionTxn == null || !sessionTxn.equals(txnRef)) {
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             response.sendRedirect(request.getContextPath() + "/customer/bookings?error=session_mismatch");
             return;
         }
 
+<<<<<<< HEAD
         // Xóa transaction pending khỏi session vì đã return xong
         request.getSession().removeAttribute("pendingPaymentTxn");
 
@@ -311,20 +467,40 @@ public class PaymentController extends HttpServlet {
         // Nếu không có txnCode : mã giao dịch
         if (txnCode == null) {
             // Quay về trang bookings
+=======
+        request.getSession().removeAttribute("pendingPaymentTxn");
+
+        // Process callback
+        paymentService.processVNPayCallback(txnRef, responseCode);
+
+        response.sendRedirect(request.getContextPath() + "/payment/result?txnCode=" + txnRef);
+    }
+
+    private void handleResult(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String txnCode = request.getParameter("txnCode");
+        if (txnCode == null) {
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             response.sendRedirect(request.getContextPath() + "/customer/bookings");
             return;
         }
 
+<<<<<<< HEAD
         // Lấy payment theo transaction code
         Payment payment = paymentService.getPaymentByTransaction(txnCode);
 
         // Nếu không tìm thấy payment
         if (payment == null) {
             // Quay về trang bookings
+=======
+        Payment payment = paymentService.getPaymentByTransaction(txnCode);
+        if (payment == null) {
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
             response.sendRedirect(request.getContextPath() + "/customer/bookings");
             return;
         }
 
+<<<<<<< HEAD
         // Từ payment suy ra booking liên quan
         Booking booking = paymentService.getBookingFromPayment(payment);
 
@@ -336,10 +512,23 @@ public class PaymentController extends HttpServlet {
 
         // Nếu payment thành công thì dùng success.jsp
         // ngược lại dùng failed.jsp
+=======
+        Booking booking = paymentService.getBookingFromPayment(payment);
+
+        request.setAttribute("payment", payment);
+        request.setAttribute("booking", booking);
+
+        // Send confirmation email after successful payment
+        if ("Success".equals(payment.getStatus()) && booking != null) {
+            sendBookingConfirmationEmail(booking);
+        }
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         String viewPath = "Success".equals(payment.getStatus())
             ? "/WEB-INF/views/payment/success.jsp"
             : "/WEB-INF/views/payment/failed.jsp";
 
+<<<<<<< HEAD
         // Forward sang JSP tương ứng
         request.getRequestDispatcher(viewPath).forward(request, response);
     }
@@ -365,3 +554,95 @@ public class PaymentController extends HttpServlet {
         return null;
     }
 }
+=======
+        request.getRequestDispatcher(viewPath).forward(request, response);
+    }
+
+    private void sendBookingConfirmationEmail(Booking booking) {
+        try {
+            // Get customer account for email
+            Account account = null;
+            com.mycompany.hotelmanagementsystem.dao.AccountRepository accountRepo = new com.mycompany.hotelmanagementsystem.dao.AccountRepository();
+            if (booking.getCustomerId() > 0) {
+                account = accountRepo.findById(booking.getCustomerId());
+            }
+
+            if (account == null || account.getEmail() == null || account.getEmail().isEmpty()) {
+                System.out.println("Cannot send booking email: no account or email");
+                return;
+            }
+
+            // Get booking rooms for multi-room info
+            Booking bookingWithRooms = bookingService.getBookingWithRooms(booking.getBookingId());
+            List<String> roomDetails = new ArrayList<>();
+            BigDecimal totalSurcharge = BigDecimal.ZERO;
+            BigDecimal totalPromotion = BigDecimal.ZERO;
+
+            if (bookingWithRooms != null && bookingWithRooms.getBookingRooms() != null && !bookingWithRooms.getBookingRooms().isEmpty()) {
+                // Multi-room booking
+                for (var br : bookingWithRooms.getBookingRooms()) {
+                    String detail = br.getRoomType() != null
+                        ? br.getRoomType().getTypeName()
+                        : "Phong #" + br.getBookingRoomId();
+                    if (br.getUnitPrice() != null) {
+                        detail += " - " + formatCurrency(br.getUnitPrice());
+                    }
+                    roomDetails.add(detail);
+
+                    if (br.getEarlySurcharge() != null) totalSurcharge = totalSurcharge.add(br.getEarlySurcharge());
+                    if (br.getLateSurcharge() != null) totalSurcharge = totalSurcharge.add(br.getLateSurcharge());
+                    if (br.getPromotionDiscount() != null) totalPromotion = totalPromotion.add(br.getPromotionDiscount());
+                }
+            } else {
+                // Single-room booking
+                String detail = booking.getRoom() != null && booking.getRoom().getRoomType() != null
+                    ? booking.getRoom().getRoomType().getTypeName()
+                    : "Phong";
+                if (booking.getTotalPrice() != null) {
+                    detail += " - " + formatCurrency(booking.getTotalPrice());
+                }
+                roomDetails.add(detail);
+            }
+
+            String checkInFormatted = booking.getCheckInExpected() != null
+                ? booking.getCheckInExpected().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                : "";
+            String checkOutFormatted = booking.getCheckOutExpected() != null
+                ? booking.getCheckOutExpected().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                : "";
+
+            EmailHelper.sendBookingConfirmation(
+                account.getEmail(),
+                booking.getBookingId(),
+                account.getFullName(),
+                checkInFormatted,
+                checkOutFormatted,
+                roomDetails,
+                booking.getTotalPrice() != null ? booking.getTotalPrice() : BigDecimal.ZERO,
+                booking.getDepositAmount(),
+                "Da thanh toan",
+                booking.getEarlySurcharge() != null ? booking.getEarlySurcharge() : BigDecimal.ZERO,
+                booking.getLateSurcharge() != null ? booking.getLateSurcharge() : BigDecimal.ZERO,
+                totalPromotion,
+                null // voucher discount not stored on booking
+            );
+        } catch (Exception e) {
+            System.out.println("Failed to send booking confirmation email: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private String formatCurrency(BigDecimal amount) {
+        if (amount == null) return "0d";
+        return String.format("%,.0fd", amount);
+    }
+
+    private Integer parseIntParam(HttpServletRequest request, String name) {
+        String value = request.getParameter(name);
+        if (value != null && !value.isEmpty()) {
+            try { return Integer.parseInt(value); } catch (NumberFormatException e) { return null; }
+        }
+        return null;
+    }
+}
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b

@@ -12,8 +12,13 @@ import java.util.Random;
  */
 public final class VNPayConfig {
     public static final String VNP_PAY_URL = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+<<<<<<< HEAD
     public static final String VNP_TMN_CODE = "W1J069IZ";
     public static final String VNP_HASH_SECRET = "R7MEBMB850UYY0K6YCPA4LS1DJP9FH20";
+=======
+    public static final String VNP_TMN_CODE = "2S78OR72";
+    public static final String VNP_HASH_SECRET = "8FRDY5I7OT8Y82ZU7T8SZTWX8PENX6VK";
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     public static final String VNP_VERSION = "2.1.0";
     public static final String VNP_COMMAND = "pay";
     public static final String VNP_ORDER_TYPE = "other";

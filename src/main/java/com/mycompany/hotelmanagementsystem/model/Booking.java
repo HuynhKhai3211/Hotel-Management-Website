@@ -6,6 +6,7 @@ import com.mycompany.hotelmanagementsystem.model.RoomType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class Booking {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -28,6 +29,9 @@ public class Booking {
     private Room room;
     private RoomType roomType;     // for display when room is not yet assigned
     private Customer customer;
+    private List<BookingRoom> bookingRooms;  // multi-room list
+    private BigDecimal earlySurcharge;       // total early surcharge across all rooms
+    private BigDecimal lateSurcharge;        // total late surcharge across all rooms
 
     public Booking() {}
 
@@ -67,6 +71,20 @@ public class Booking {
     public void setRoom(Room room) { this.room = room; }
     public Customer getCustomer() { return customer; }
     public void setCustomer(Customer customer) { this.customer = customer; }
+    public List<BookingRoom> getBookingRooms() { return bookingRooms; }
+    public void setBookingRooms(List<BookingRoom> bookingRooms) { this.bookingRooms = bookingRooms; }
+    public BigDecimal getEarlySurcharge() { return earlySurcharge; }
+    public void setEarlySurcharge(BigDecimal earlySurcharge) { this.earlySurcharge = earlySurcharge; }
+    public BigDecimal getLateSurcharge() { return lateSurcharge; }
+    public void setLateSurcharge(BigDecimal lateSurcharge) { this.lateSurcharge = lateSurcharge; }
+
+    public boolean isMultiRoom() {
+        return bookingRooms != null && bookingRooms.size() > 1;
+    }
+
+    public int getRoomCount() {
+        return bookingRooms != null ? bookingRooms.size() : (roomId != null ? 1 : 0);
+    }
 
     // Formatted date getters for JSP
     public String getCheckInExpectedFormatted() {

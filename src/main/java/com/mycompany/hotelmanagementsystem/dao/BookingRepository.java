@@ -1,5 +1,6 @@
 package com.mycompany.hotelmanagementsystem.dao;
 
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.dao.BaseRepository;
 import com.mycompany.hotelmanagementsystem.model.Account;
 import com.mycompany.hotelmanagementsystem.model.Booking;
@@ -7,6 +8,13 @@ import com.mycompany.hotelmanagementsystem.model.Customer;
 import com.mycompany.hotelmanagementsystem.model.Room;
 import com.mycompany.hotelmanagementsystem.model.RoomType;
 import static com.mycompany.hotelmanagementsystem.utils.DbContext.getConnection;
+=======
+import com.mycompany.hotelmanagementsystem.model.Customer;
+import com.mycompany.hotelmanagementsystem.model.Booking;
+import com.mycompany.hotelmanagementsystem.model.Account;
+import com.mycompany.hotelmanagementsystem.model.Room;
+import com.mycompany.hotelmanagementsystem.model.RoomType;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,6 +44,16 @@ public class BookingRepository extends BaseRepository<Booking> {
         b.setDepositAmount(rs.getBigDecimal("deposit_amount"));
         b.setStatus(rs.getString("status"));
         b.setNote(rs.getString("note"));
+<<<<<<< HEAD
+=======
+        // Read surcharge columns (may not exist in all queries, use try-catch)
+        try {
+            b.setEarlySurcharge(rs.getBigDecimal("early_surcharge"));
+            b.setLateSurcharge(rs.getBigDecimal("late_surcharge"));
+        } catch (SQLException ignored) {
+            // Columns may not exist in some older queries
+        }
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         ts = rs.getTimestamp("check_in_actual");
         if (ts != null) b.setCheckInActual(ts.toLocalDateTime());
         ts = rs.getTimestamp("check_out_actual");
@@ -141,6 +159,22 @@ public class BookingRepository extends BaseRepository<Booking> {
         return executeUpdate("UPDATE Booking SET status = ? WHERE booking_id = ?", status, bookingId);
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Cancel all Pending/Confirmed bookings where check-in time + 1 minute has passed.
+     * Returns number of cancelled bookings.
+     */
+    public int cancelOverdueBookings() {
+        String sql = """
+            UPDATE Booking SET status = 'Cancelled'
+            WHERE status IN ('Pending', 'Confirmed')
+            AND DATEADD(MINUTE, 1, check_in_expected) < GETDATE()
+            """;
+        return executeUpdate(sql);
+    }
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     public boolean isRoomAvailable(int roomId, LocalDateTime checkIn, LocalDateTime checkOut) {
         String sql = """
             SELECT COUNT(*) FROM Booking
@@ -246,6 +280,19 @@ public class BookingRepository extends BaseRepository<Booking> {
             amount, bookingId);
     }
 
+<<<<<<< HEAD
+=======
+    public int updateEarlySurcharge(int bookingId, java.math.BigDecimal earlySurcharge) {
+        return executeUpdate("UPDATE Booking SET early_surcharge = ? WHERE booking_id = ?",
+            earlySurcharge, bookingId);
+    }
+
+    public int updateLateSurcharge(int bookingId, java.math.BigDecimal lateSurcharge) {
+        return executeUpdate("UPDATE Booking SET late_surcharge = ? WHERE booking_id = ?",
+            lateSurcharge, bookingId);
+    }
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     public int countAll() {
         String sql = "SELECT COUNT(*) FROM Booking";
         try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
@@ -258,8 +305,19 @@ public class BookingRepository extends BaseRepository<Booking> {
         return 0;
     }
 
+<<<<<<< HEAD
     public java.math.BigDecimal sumTotalPrice() {
         String sql = "SELECT COALESCE(SUM(total_price), 0) FROM Booking WHERE status IN ('CheckedIn', 'CheckedOut')";
+=======
+    // Revenue = sum of actual payments received (not full booking price)
+    public java.math.BigDecimal sumTotalPrice() {
+        String sql = "SELECT COALESCE(SUM(p.amount), 0) "
+                   + "FROM Payment p "
+                   + "JOIN Invoice i ON p.invoice_id = i.invoice_id "
+                   + "JOIN Booking b ON i.booking_id = b.booking_id "
+                   + "WHERE p.status = 'Success' "
+                   + "  AND b.status IN ('CheckedIn', 'CheckedOut')";
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
             try (var rs = ps.executeQuery()) {
                 if (rs.next()) return rs.getBigDecimal(1);
@@ -270,8 +328,20 @@ public class BookingRepository extends BaseRepository<Booking> {
         return java.math.BigDecimal.ZERO;
     }
 
+<<<<<<< HEAD
     public java.math.BigDecimal sumTotalPriceByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         String sql = "SELECT COALESCE(SUM(total_price), 0) FROM Booking WHERE status IN ('CheckedIn', 'CheckedOut') AND booking_date BETWEEN ? AND ?";
+=======
+    // Revenue by date range = sum of actual payments received
+    public java.math.BigDecimal sumTotalPriceByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        String sql = "SELECT COALESCE(SUM(p.amount), 0) "
+                   + "FROM Payment p "
+                   + "JOIN Invoice i ON p.invoice_id = i.invoice_id "
+                   + "JOIN Booking b ON i.booking_id = b.booking_id "
+                   + "WHERE p.status = 'Success' "
+                   + "  AND b.status IN ('CheckedIn', 'CheckedOut') "
+                   + "  AND b.booking_date BETWEEN ? AND ?";
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
         try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
             ps.setTimestamp(1, Timestamp.valueOf(startDate));
             ps.setTimestamp(2, Timestamp.valueOf(endDate));
@@ -340,6 +410,49 @@ public class BookingRepository extends BaseRepository<Booking> {
         return list;
     }
 
+<<<<<<< HEAD
+=======
+    public Booking findCurrentBookingForRoom(int roomId) {
+        String sql = """
+            SELECT b.*, r.room_number, rt.type_name, a.full_name as customer_name,
+                   a.email as customer_email, a.phone as customer_phone
+            FROM Booking b
+            LEFT JOIN Room r ON b.room_id = r.room_id
+            JOIN RoomType rt ON b.type_id = rt.type_id
+            JOIN Account a ON b.customer_id = a.account_id
+            WHERE b.room_id = ? AND b.status = 'CheckedIn'
+            """;
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, roomId);
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Booking b = mapRow(rs);
+                    RoomType rt = new RoomType();
+                    rt.setTypeName(rs.getString("type_name"));
+                    b.setRoomType(rt);
+                    String roomNumber = rs.getString("room_number");
+                    if (roomNumber != null) {
+                        Room room = new Room();
+                        room.setRoomNumber(roomNumber);
+                        b.setRoom(room);
+                    }
+                    Customer c = new Customer();
+                    Account a = new Account();
+                    a.setFullName(rs.getString("customer_name"));
+                    a.setEmail(rs.getString("customer_email"));
+                    a.setPhone(rs.getString("customer_phone"));
+                    c.setAccount(a);
+                    b.setCustomer(c);
+                    return b;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Find current booking failed", e);
+        }
+        return null;
+    }
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     public List<Booking> findByRoomId(int roomId) {
         String sql = """
             SELECT b.*, r.room_number, rt.type_name, a.full_name as customer_name
@@ -441,4 +554,16 @@ public class BookingRepository extends BaseRepository<Booking> {
         }
         return false;
     }
+<<<<<<< HEAD
+=======
+
+    public Booking findByIdWithRooms(int bookingId) {
+        Booking b = findByIdWithDetails(bookingId);
+        if (b != null) {
+            BookingRoomRepository brRepo = new BookingRoomRepository();
+            b.setBookingRooms(brRepo.findByBookingIdWithDetails(bookingId));
+        }
+        return b;
+    }
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 }

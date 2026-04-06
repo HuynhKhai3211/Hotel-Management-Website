@@ -1,6 +1,10 @@
 package com.mycompany.hotelmanagementsystem.dao;
 
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.utils.DbContext;
+=======
+import com.mycompany.hotelmanagementsystem.config.DbContext;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

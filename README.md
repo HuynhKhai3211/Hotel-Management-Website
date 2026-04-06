@@ -1,2 +1,2 @@
 # Hotel-Management-Website
-Hotel management
+Hotel management website

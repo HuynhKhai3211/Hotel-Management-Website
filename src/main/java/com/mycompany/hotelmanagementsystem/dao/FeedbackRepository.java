@@ -2,10 +2,17 @@ package com.mycompany.hotelmanagementsystem.dao;
 
 import com.mycompany.hotelmanagementsystem.model.Customer;
 import com.mycompany.hotelmanagementsystem.model.Booking;
+<<<<<<< HEAD
 import com.mycompany.hotelmanagementsystem.model.Feedback;
 import com.mycompany.hotelmanagementsystem.model.Account;
 import com.mycompany.hotelmanagementsystem.model.Room;
 import com.mycompany.hotelmanagementsystem.model.RoomType;
+=======
+import com.mycompany.hotelmanagementsystem.model.Room;
+import com.mycompany.hotelmanagementsystem.model.Account;
+import com.mycompany.hotelmanagementsystem.model.RoomType;
+import com.mycompany.hotelmanagementsystem.model.Feedback;
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -102,6 +109,51 @@ public class FeedbackRepository extends BaseRepository<Feedback> {
         }
     }
 
+<<<<<<< HEAD
+=======
+    public List<Feedback> findVisibleWithDetails(int limit) {
+        String sql = """
+            SELECT TOP (?) f.*, a.full_name AS customer_name, r.room_number, rt.type_name,
+                   fr.reply_content AS admin_reply
+            FROM Feedback f
+            JOIN Booking b ON f.booking_id = b.booking_id
+            JOIN Account a ON b.customer_id = a.account_id
+            JOIN Room r ON b.room_id = r.room_id
+            JOIN RoomType rt ON r.type_id = rt.type_id
+            LEFT JOIN FeedbackReply fr ON f.feedback_id = fr.feedback_id
+            WHERE f.is_hidden = 0 AND f.rating >= 4
+            ORDER BY f.rating DESC, f.created_at DESC
+            """;
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, limit);
+            try (var rs = ps.executeQuery()) {
+                List<Feedback> list = new ArrayList<>();
+                while (rs.next()) {
+                    Feedback f = mapRow(rs);
+                    Booking booking = new Booking();
+                    booking.setBookingId(f.getBookingId());
+                    Customer customer = new Customer();
+                    Account account = new Account();
+                    account.setFullName(rs.getString("customer_name"));
+                    customer.setAccount(account);
+                    booking.setCustomer(customer);
+                    Room room = new Room();
+                    room.setRoomNumber(rs.getString("room_number"));
+                    RoomType roomType = new RoomType();
+                    roomType.setTypeName(rs.getString("type_name"));
+                    room.setRoomType(roomType);
+                    booking.setRoom(room);
+                    f.setBooking(booking);
+                    list.add(f);
+                }
+                return list;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Find visible feedback failed", e);
+        }
+    }
+
+>>>>>>> e968fe16406324ee01e4584da7e6dbe2840dfe5b
     public int updateIsHidden(int feedbackId, boolean isHidden) {
         return executeUpdate("UPDATE Feedback SET is_hidden = ? WHERE feedback_id = ?",
             isHidden ? 1 : 0, feedbackId);
