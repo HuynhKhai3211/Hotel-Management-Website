@@ -1,11 +1,11 @@
 package com.mycompany.hotelmanagementsystem.service;
 
 import com.mycompany.hotelmanagementsystem.constant.BookingStatus;
-import com.mycompany.hotelmanagementsystem.utils.ServiceResult;
-import com.mycompany.hotelmanagementsystem.model.Booking;
-import com.mycompany.hotelmanagementsystem.model.ServiceRequest;
-import com.mycompany.hotelmanagementsystem.dao.BookingRepository;
-import com.mycompany.hotelmanagementsystem.dao.ServiceRequestRepository;
+import com.mycompany.hotelmanagementsystem.util.ServiceResult;
+import com.mycompany.hotelmanagementsystem.entity.Booking;
+import com.mycompany.hotelmanagementsystem.entity.ServiceRequest;
+import com.mycompany.hotelmanagementsystem.dal.BookingRepository;
+import com.mycompany.hotelmanagementsystem.dal.ServiceRequestRepository;
 import java.util.List;
 
 public class ServiceRequestService {
